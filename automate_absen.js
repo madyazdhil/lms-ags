@@ -57,46 +57,75 @@ async function fillAirtableAttendanceForm(browser, session) {
 
   try {
     await page.goto(AIRTABLE_FORM_URL, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2000); // Allow Airtable form components to fully render
+    await page.waitForTimeout(2500);
 
-    // Fill Teacher Name & Class Code
-    const textInputs = page.locator('input[type="text"], textarea');
-    const inputCount = await textInputs.count();
-
-    for (let i = 0; i < inputCount; i++) {
-      const input = textInputs.nth(i);
-      const placeholder = (await input.getAttribute('placeholder') || '').toLowerCase();
-      const parentText = (await input.locator('xpath=ancestor::div[contains(@class, "field")]').innerText().catch(() => '')).toLowerCase();
-
-      if (parentText.includes('class code') || parentText.includes('kode kelas') || placeholder.includes('class code')) {
-        await input.fill(DEFAULT_CLASS_CODE);
-      } else if (parentText.includes('nama') || parentText.includes('teacher') || placeholder.includes('nama')) {
-        await input.fill(DEFAULT_TEACHER_NAME);
-      } else if (parentText.includes('pertemuan') || parentText.includes('sesi') || parentText.includes('session')) {
-        await input.fill(session.pertemuan);
-      } else if (parentText.includes('materi') || parentText.includes('topik') || parentText.includes('topic')) {
-        await input.fill(session.title);
-      } else if (parentText.includes('recording') || parentText.includes('link') || parentText.includes('url')) {
-        await input.fill(session.recording_url || '-');
-      } else if (parentText.includes('tanggal') || parentText.includes('date')) {
-        await input.fill(session.date);
-      }
+    // Reject Cookie Banner if present
+    const rejectCookie = page.locator('button:has-text("Reject All"), button:has-text("Agree")');
+    if (await rejectCookie.count() > 0) {
+      await rejectCookie.first().click().catch(() => {});
+      await page.waitForTimeout(1000);
     }
 
-    // Handle Airtable Single-Select Dropdowns if Class Code is a dropdown picker
-    const selectPills = page.locator('div[role="option"], div[data-test="option"]');
-    if (await selectPills.count() > 0) {
-      const targetOption = selectPills.filter({ hasText: 'Coding' }).first();
-      if (await targetOption.isVisible()) {
-        await targetOption.click();
-      }
+    // 1. Class Conducted Date *
+    const dateInput = page.locator('input[placeholder="mm/dd/yyyy"], input[type="date"]').first();
+    if (await dateInput.isVisible()) {
+      await dateInput.fill(session.date || '07/22/2026');
     }
 
+    // 2. Week Session Conducted *
+    const weekNumStr = String(session.week_num || '1');
+    const weekSelect = page.locator('div:has-text("Week Session Conducted") ~ div div[role="button"], select').first();
+    if (await weekSelect.isVisible()) {
+      await weekSelect.click().catch(() => {});
+      await page.waitForTimeout(500);
+      const opt = page.locator('div[role="option"]').filter({ hasText: weekNumStr }).first();
+      if (await opt.isVisible()) await opt.click();
+    }
 
-    // Date picker field (if date input type="date" or specialized picker exists)
-    const dateInput = page.locator('input[type="date"]');
-    if (await dateInput.count() > 0 && await dateInput.first().isVisible()) {
-      await dateInput.first().fill(session.date);
+    // 3. Class Code * (+Add Linked Record)
+    const classCodeAdd = page.locator('div:has-text("Class Code") ~ div button:has-text("Add"), div:has-text("Class Code") ~ div div[role="button"]:has-text("Add")').first();
+    if (await classCodeAdd.isVisible()) {
+      await classCodeAdd.click();
+      await page.waitForTimeout(1000);
+      await page.keyboard.type(DEFAULT_CLASS_CODE);
+      await page.waitForTimeout(1000);
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(500);
+    }
+
+    // 4. Teacher's Name * (+Add Linked Record)
+    const teacherAdd = page.locator('div:has-text("Teacher\'s Name") ~ div button:has-text("Add"), div:has-text("Teacher\'s Name") ~ div div[role="button"]:has-text("Add")').first();
+    if (await teacherAdd.isVisible()) {
+      await teacherAdd.click();
+      await page.waitForTimeout(1000);
+      await page.keyboard.type(DEFAULT_TEACHER_NAME);
+      await page.waitForTimeout(1000);
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(500);
+    }
+
+    // 5. Type of Session * (Ekskul)
+    const ekskulBtn = page.locator('text="Ekskul"').first();
+    if (await ekskulBtn.isVisible()) {
+      await ekskulBtn.click().catch(() => {});
+    }
+
+    // 6. Role * (Master Teacher)
+    const roleBtn = page.locator('text="Master Teacher"').first();
+    if (await roleBtn.isVisible()) {
+      await roleBtn.click().catch(() => {});
+    }
+
+    // 7. Did you attend the session? * (Yes)
+    const attendBtn = page.locator('text="Yes"').first();
+    if (await attendBtn.isVisible()) {
+      await attendBtn.click().catch(() => {});
+    }
+
+    // 8. Student's Concern *
+    const concernField = page.locator('textarea, input[type="text"]').last();
+    if (await concernField.isVisible()) {
+      await concernField.fill('-').catch(() => {});
     }
 
     console.log(`[+] Form populated successfully for ${session.pertemuan}`);
