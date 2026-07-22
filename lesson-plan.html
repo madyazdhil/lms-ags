@@ -1,118 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lesson Plan - LMS AGS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <meta http-equiv="refresh" content="0;url=materi-smt2/silabus-presentation.html">
+    <title>Lesson Plan & Syllabus - LMS AGS</title>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            red: '#F4554C',
-                            navy: '#0B1B42',
-                            bg: '#EBDCD0',
-                            sidebar: '#F8F9FB',
-                            main: '#F4F6F9',
-                            textMain: '#2D3748',
-                            textMuted: '#A0AEC0',
-                            card: '#FFFFFF'
-                        }
-                    }
-                }
-            }
-        }
+        // Redirect temporarily to 24-session syllabus presentation
+        window.location.replace('materi-smt2/silabus-presentation.html');
     </script>
-    <style>
-        body {
-            background-color: #EBDCD0;
-        }
-    </style>
 </head>
-<body class="h-screen w-screen overflow-hidden font-sans text-brand-textMain antialiased bg-brand-main flex relative">
-
-    <!-- Blurred Background Placeholder UI -->
-    <div class="w-full h-full bg-white flex overflow-hidden relative filter blur-md select-none pointer-events-none opacity-40">
-        <!-- Sidebar -->
-        <aside class="w-[90px] bg-brand-sidebar flex flex-col items-center py-8 border-r border-gray-100">
-            <div class="w-10 h-10 bg-brand-navy rounded-full mb-auto"></div>
-        </aside>
-        <div class="flex-1 bg-brand-main p-8 flex flex-col items-center justify-center">
-            <div class="w-3/4 h-64 bg-white rounded-3xl shadow-sm"></div>
-        </div>
+<body style="background-color: #F3EFE9; font-family: 'Poppins', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; color: #2A2A35;">
+    <div style="text-align: center; background: white; padding: 30px 40px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.06);">
+        <h2 style="margin-bottom: 10px;">Membuka Silabus 24 Pertemuan... 🚀</h2>
+        <p style="color: #6C6C82; margin-bottom: 20px;">Mengalihkan ke materi presentasi interaktif.</p>
+        <a href="materi-smt2/silabus-presentation.html" style="background: #447EE0; color: white; padding: 10px 24px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block;">Klik Jika Tidak Otomatis Pindah ➞</a>
     </div>
-
-    <!-- BEAUTIFUL CONSTRUCTION / ACCESS BLOCKED MODAL POPUP -->
-    <div id="construction-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/60 backdrop-blur-xl">
-        <div id="modal-card" class="bg-white/90 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-3xl p-8 max-w-md w-full text-center flex flex-col items-center relative overflow-hidden transform scale-90 opacity-0 transition-all duration-300">
-            
-            <!-- Glowing Accent Background Effect -->
-            <div class="absolute -top-24 -left-24 w-48 h-48 bg-brand-red/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-brand-navy/20 rounded-full blur-3xl pointer-events-none"></div>
-
-            <!-- Animated Construction Badge -->
-            <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-brand-red/20 to-brand-red/10 border border-brand-red/30 flex items-center justify-center mb-6 shadow-inner text-brand-red">
-                <i class="ph-duotone ph-hammer text-4xl animate-bounce"></i>
-            </div>
-
-            <!-- Badge Tag -->
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-red/10 text-brand-red border border-brand-red/20 mb-3">
-                <span class="w-2 h-2 rounded-full bg-brand-red animate-ping"></span>
-                Sedang Dalam Pembangunan
-            </span>
-
-            <!-- Title -->
-            <h2 class="text-2xl font-extrabold text-brand-navy mb-2 tracking-tight">
-                Akses Masih Dibangun 🚀
-            </h2>
-
-            <!-- Subtitle -->
-            <p class="text-sm text-brand-textMain/80 leading-relaxed mb-8 px-2">
-                Modul & dokumen <strong class="text-brand-navy">Lesson Plan</strong> semester ini sedang dipersiapkan oleh tim pengajar. Tunggu ya, fitur ini akan segera hadir!
-            </p>
-
-            <!-- Quick Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-3 w-full">
-                <a href="index.html" class="flex-1 py-3 px-5 bg-brand-navy text-white font-semibold text-sm rounded-xl hover:bg-brand-navy/90 transition-all shadow-md flex items-center justify-center gap-2 group">
-                    <i class="ph-bold ph-house group-hover:-translate-x-0.5 transition-transform"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="class-sessions.html" class="flex-1 py-3 px-5 bg-brand-red text-white font-semibold text-sm rounded-xl hover:bg-brand-red/90 transition-all shadow-md flex items-center justify-center gap-2 group">
-                    <i class="ph-bold ph-book-open group-hover:scale-110 transition-transform"></i>
-                    <span>Sesi Kelas</span>
-                </a>
-            </div>
-
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof gsap !== 'undefined') {
-                gsap.to('#modal-card', {
-                    scale: 1,
-                    opacity: 1,
-                    duration: 0.5,
-                    ease: 'back.out(1.7)'
-                });
-            } else {
-                const card = document.getElementById('modal-card');
-                if (card) {
-                    card.classList.remove('scale-90', 'opacity-0');
-                    card.classList.add('scale-100', 'opacity-100');
-                }
-            }
-        });
-    </script>
 </body>
 </html>

@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Syllabus 24 Sessions - Python Telegram Bot for Kids</title>
+    
+    <!-- Google Fonts: Fredoka untuk judul ceria, Poppins untuk teks, Fira Code untuk IDE -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;500;600;700;800&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet">
+    
+    <!-- Pyodide: Mesin eksekusi Python di browser -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+    <style>
+        :root {
+            /* Fun & Bright Palette */
+            --bg-workspace: #F3EFE9;
+            --bg-slide: #FFFDF9;
+            
+            /* Primary Color Accents */
+            --c-yellow: #E8AA24;
+            --c-orange: #EF6C35;
+            --c-pink: #E0356D;       
+            --c-light-pink: #F47C9E;
+            --c-purple: #9A53E0;
+            --c-blue: #447EE0;
+            --c-light-blue: #4AB2D9;
+            --c-green: #48A850;
+            --c-telegram: #24A1DE;
+            
+            /* Text Colors */
+            --text-dark: #2A2A35;
+            --text-muted: #6C6C82;
+
+            /* IDE Colors */
+            --ide-bg: #1E1E2E;
+            --ide-text: #A6E22E;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-workspace);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            color: var(--text-dark);
+        }
+
+        #app-wrapper {
+            width: 96vw;
+            max-width: 1600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 1vh;
+        }
+
+        #presentation-container {
+            width: 100%;
+            height: 84vh;
+            background-color: var(--bg-slide);
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(42, 42, 53, 0.08);
+            border-radius: 32px; 
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(0.97) translateY(12px);
+            overflow-y: auto; 
+            overflow-x: hidden;
+        }
+
+        .slide::-webkit-scrollbar { width: 10px; }
+        .slide::-webkit-scrollbar-track { background: transparent; margin: 15px 0; }
+        .slide::-webkit-scrollbar-thumb {
+            background: #D8D8E5;
+            border-radius: 20px;
+            border: 3px solid var(--bg-slide);
+        }
+        .slide::-webkit-scrollbar-thumb:hover { background: var(--c-light-pink); }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+            z-index: 10;
+        }
+
+        h1, h2, h3, h4 { 
+            font-family: 'Fredoka', sans-serif; 
+            color: var(--text-dark); 
+            font-weight: 700;
+        }
+        h1 { font-size: 3.6rem; line-height: 1.1; margin-bottom: 15px;}
+        h2 { font-size: 2.4rem; margin-bottom: 15px; }
+        h3 { font-size: 1.5rem; }
+        p { font-size: 1rem; line-height: 1.5; font-weight: 500; color: var(--text-muted);}
+
+        /* Layout Helpers */
+        .row { display: flex; flex-direction: row; }
+        .col { display: flex; flex-direction: column; }
+        .align-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-around { justify-content: space-around; }
+        .h-full { height: 100%; } 
+        .w-full { width: 100%; }
+        .w-half { width: 48%; }
+        .gap-sm { gap: 0.6rem; }
+        .gap-md { gap: 1.2rem; }
+        .gap-lg { gap: 2rem; }
+        .text-center { text-align: center; }
+
+        /* Bottom Nav */
+        #bottom-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .slide-indicator {
+            font-size: 1.1rem; font-weight: 700;
+            color: var(--text-dark);
+            display: flex; align-items: center; gap: 10px;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .nav-controls {
+            display: flex; gap: 12px;
+        }
+
+        .btn {
+            background-color: var(--text-dark); 
+            color: white;
+            border: none;
+            padding: 10px 28px; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600; 
+            font-size: 1.05rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 15px rgba(42, 42, 53, 0.12);
+        }
+        .btn-primary {
+            background-color: var(--c-blue);
+            box-shadow: 0 6px 15px rgba(68, 126, 224, 0.25);
+        }
+        .btn:hover:not(:disabled) { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 18px rgba(42, 42, 53, 0.18);
+        }
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 10px 18px rgba(68, 126, 224, 0.35);
+        }
+        .btn:active:not(:disabled) { transform: translateY(0); }
+        .btn:disabled { 
+            background-color: #D8D8E5; color: #A0A0B5; 
+            cursor: not-allowed; box-shadow: none; 
+        }
+
+        .logo-mark {
+            width: 26px; height: 26px;
+            background: var(--c-pink);
+            border-radius: 8px; display: inline-block;
+            transform: rotate(12deg);
+        }
+
+        .tag-pill { 
+            display: inline-block; padding: 6px 18px; 
+            border-radius: 30px; font-weight: 700; font-size: 0.88rem;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            margin-bottom: 12px; font-family: 'Fredoka';
+        }
+        
+        /* Grids & Cards */
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        
+        .card { 
+            padding: 20px 18px; border-radius: 24px;
+            display: flex; flex-direction: column;
+            background: white;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+        }
+
+        .session-card {
+            background: white;
+            border-radius: 18px;
+            padding: 14px 16px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            border-left: 5px solid var(--c-blue);
+            transition: transform 0.2s ease;
+        }
+        .session-card:hover { transform: translateX(4px); }
+
+        .session-badge {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 16px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .badge-fase1 { background: rgba(68, 126, 224, 0.12); color: var(--c-blue); }
+        .badge-fase2 { background: rgba(239, 108, 53, 0.12); color: var(--c-orange); }
+        .badge-fase3 { background: rgba(154, 83, 224, 0.12); color: var(--c-purple); }
+        .badge-fase4 { background: rgba(72, 168, 80, 0.12); color: var(--c-green); }
+
+        /* Telegram Mockup UI */
+        .tg-mockup {
+            background: #7195BA;
+            border-radius: 20px;
+            padding: 16px;
+            width: 100%;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            font-family: 'Poppins', sans-serif;
+        }
+        .tg-header {
+            display: flex; align-items: center; gap: 10px;
+            padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2);
+            margin-bottom: 12px; color: white;
+        }
+        .tg-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--c-yellow); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 1.2rem; font-weight: 700;
+        }
+        .tg-chat-area {
+            display: flex; flex-direction: column; gap: 10px;
+            max-height: 240px; overflow-y: auto; padding-right: 4px;
+        }
+        .msg-bubble {
+            max-width: 85%; padding: 8px 12px; border-radius: 14px;
+            font-size: 0.88rem; line-height: 1.4;
+        }
+        .msg-in {
+            background: white; color: var(--text-dark);
+            border-top-left-radius: 3px; align-self: flex-start;
+        }
+        .msg-out {
+            background: #EEFFDE; color: var(--text-dark);
+            border-top-right-radius: 3px; align-self: flex-end;
+        }
+        .tg-keyboard {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+            margin-top: 10px; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 12px;
+        }
+        .tg-btn {
+            background: white; border: none; padding: 6px; border-radius: 6px;
+            font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+            color: #334155; text-align: center; cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        /* Float Animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float { animation: float 6s ease-in-out infinite; }
+
+        .blob-svg { width: 100%; height: 100%; overflow: visible; }
+
+        /* --- IDE SECTION (PYODIDE RUNNER) --- */
+        .ide-container-mini {
+            display: flex; gap: 12px; width: 100%; height: 250px;
+        }
+        .ide-window {
+            flex: 1; border-radius: 16px; display: flex; flex-direction: column;
+            overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+        .ide-header {
+            height: 34px; display: flex; align-items: center; padding: 0 14px;
+            gap: 6px; font-family: 'Poppins'; font-weight: 600; font-size: 0.8rem;
+        }
+        .ide-dots { width: 9px; height: 9px; border-radius: 50%; }
+        .dot-r { background-color: #FF5F56; }
+        .dot-y { background-color: #FFBD2E; }
+        .dot-g { background-color: #27C93F; }
+        
+        .ide-editor {
+            background-color: var(--ide-bg);
+            color: var(--ide-text);
+            padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.9rem;
+            flex-grow: 1; border: none; outline: none; resize: none;
+            line-height: 1.45; white-space: pre; overflow-x: auto;
+        }
+        
+        .ide-output-container {
+            background-color: #F8F9FA; border: 2px dashed #CBD5E1;
+            padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.9rem;
+            flex-grow: 1; color: #334155; overflow-y: auto; white-space: pre-wrap;
+        }
+
+        .btn-run {
+            background-color: var(--c-green); color: white; border: none;
+            padding: 8px 24px; border-radius: 50px; font-family: 'Fredoka';
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 6px 16px rgba(72, 168, 80, 0.3); transition: transform 0.2s;
+            margin-top: 10px; align-self: flex-start;
+        }
+        .btn-run:hover { transform: scale(1.03); }
+        .btn-run:disabled { background-color: #cbd5e1; cursor: wait; box-shadow: none; transform: scale(1); }
+    </style>
+</head>
+<body>
+
+    <div id="app-wrapper">
+        
+        <div id="presentation-container">
+            
+            <!-- SLIDE 1: Title & Hero -->
+            <div class="slide active" id="slide-1">
+                <div class="row h-full align-center justify-between">
+                    <div class="col w-half" style="z-index: 2;">
+                        <span class="tag-pill" style="background: rgba(36, 161, 222, 0.12); color: var(--c-telegram);">🤖 Syllabus 24 Pertemuan</span>
+                        <h1>Python <span style="color: var(--c-telegram);">Telegram Bot</span><br>For Kids & Teens</h1>
+                        <p style="margin-top: 8px; font-size: 1.15rem;">Perjalanan seru dari pemula hingga bisa membuat Bot Telegram Interaktif milikmu sendiri di Server Cloud (GitHub Codespaces)!</p>
+                        
+                        <div class="row gap-md" style="margin-top: 20px;">
+                            <div style="background: white; padding: 10px 18px; border-radius: 14px; box-shadow: 0 6px 15px rgba(0,0,0,0.04);">
+                                <strong style="color: var(--c-purple); font-size: 1rem; display: block;">🎯 Target Siswa</strong>
+                                <span style="font-size: 0.9rem;">SMP & SMA (Pemula - Lanjutan)</span>
+                            </div>
+                            <div style="background: white; padding: 10px 18px; border-radius: 14px; box-shadow: 0 6px 15px rgba(0,0,0,0.04);">
+                                <strong style="color: var(--c-orange); font-size: 1rem; display: block;">⏱️ Durasi Belajar</strong>
+                                <span style="font-size: 0.9rem;">24 Sesi @ 1 Jam (Online)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-half" style="position: relative; height: 100%;" class="animate-float">
+                        <svg class="blob-svg" viewBox="0 0 400 400">
+                            <circle cx="320" cy="90" r="28" fill="var(--c-yellow)" opacity="0.6"/>
+                            <path d="M 100 250 C 100 130, 300 130, 300 250 C 300 300, 240 300, 240 250 C 240 190, 160 190, 160 250 C 160 300, 100 300, 100 250 Z" fill="var(--c-telegram)"/>
+                            <ellipse cx="150" cy="170" rx="18" ry="28" fill="white" />
+                            <ellipse cx="250" cy="170" rx="18" ry="28" fill="white" />
+                            <circle cx="156" cy="174" r="11" fill="#1A1A1A" />
+                            <circle cx="244" cy="174" r="11" fill="#1A1A1A" />
+                            <circle cx="152" cy="168" r="3.5" fill="white" />
+                            <circle cx="240" cy="168" r="3.5" fill="white" />
+                            <circle cx="200" cy="110" r="10" fill="var(--c-yellow)"/>
+                            <line x1="200" y1="120" x2="200" y2="150" stroke="#1A1A1A" stroke-width="4" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Methodology & Modern Tools -->
+            <div class="slide" id="slide-2">
+                <h2 class="text-center">Keunggulan & Tools Pembelajaran 🛠️</h2>
+                <p class="text-center" style="margin-bottom: 25px;">Anak-anak belajar menggunakan standar alat developer profesional modern namun mudah diakses!</p>
+                
+                <div class="grid-4 h-full">
+                    <div class="card align-center text-center justify-center">
+                        <div style="width: 60px; height: 60px; background: rgba(36, 161, 222, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 2rem;">☁️</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">GitHub Codespaces</h3>
+                        <p style="font-size: 0.9rem;">Coding langsung di Cloud Server via browser! Tanpa perlu ribet install Python di laptop local.</p>
+                    </div>
+                    
+                    <div class="card align-center text-center justify-center">
+                        <div style="width: 60px; height: 60px; background: rgba(232, 170, 36, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 2rem;">🐍</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">Python 3 & Telebot</h3>
+                        <p style="font-size: 0.9rem;">Bahasa pemrograman terpopuler di dunia yang ramah pemula untuk membangun kecerdasan bot.</p>
+                    </div>
+
+                    <div class="card align-center text-center justify-center">
+                        <div style="width: 60px; height: 60px; background: rgba(154, 83, 224, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 2rem;">🎮</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">Ritual "Save Game"</h3>
+                        <p style="font-size: 0.9rem;">Belajar Git Commit & Sync dengan cara sederhana seperti menyimpan level game favorit mereka!</p>
+                    </div>
+
+                    <div class="card align-center text-center justify-center">
+                        <div style="width: 60px; height: 60px; background: rgba(72, 168, 80, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 2rem;">🚀</span>
+                        </div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">Real Bot Telegram</h3>
+                        <p style="font-size: 0.9rem;">Bot ciptaan siswa langsung live & bisa di-chat oleh teman maupun orang tua di HP masing-masing.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: Roadmap 4 Fase Utama -->
+            <div class="slide" id="slide-3">
+                <h2 class="text-center">Roadmap 4 Fase Pembelajaran 🗺️</h2>
+                <p class="text-center" style="margin-bottom: 25px;">24 Pertemuan dirancang secara bertahap dari pemahaman dasar hingga proyek aplikasi utuh.</p>
+                
+                <div class="grid-4 h-full">
+                    <div class="card" style="border-top: 6px solid var(--c-blue);">
+                        <div class="session-badge badge-fase1" style="margin-bottom: 10px;">FASE 1 • Sesi 1-6</div>
+                        <h3 style="font-size: 1.25rem; color: var(--c-blue); margin-bottom: 6px;">Fondasi Cloud & Python</h3>
+                        <p style="font-size: 0.88rem; margin-bottom: 12px;">Mengenal Codespaces, ritual Commit/Sync, Variabel, Tipe Data, Input, dan Logika If-Else.</p>
+                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
+                            🏆 Output: Text Adventure Game
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 6px solid var(--c-orange);">
+                        <div class="session-badge badge-fase2" style="margin-bottom: 10px;">FASE 2 • Sesi 7-12</div>
+                        <h3 style="font-size: 1.25rem; color: var(--c-orange); margin-bottom: 6px;">Bot & Runtime Telegram</h3>
+                        <p style="font-size: 0.88rem; margin-bottom: 12px;">BotFather token, Telegram Polling, Command Handlers (/start), Text Handlers & Media Gambar.</p>
+                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
+                            🏆 Output: Bot Asisten Pribadi
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 6px solid var(--c-purple);">
+                        <div class="session-badge badge-fase3" style="margin-bottom: 10px;">FASE 3 • Sesi 13-18</div>
+                        <h3 style="font-size: 1.25rem; color: var(--c-purple); margin-bottom: 6px;">Data & Alur Percakapan</h3>
+                        <p style="font-size: 0.88rem; margin-bottom: 12px;">List, For Loop, Dictionary (Key-Value), dan Next Step Handler untuk percakapan bertahap.</p>
+                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
+                            🏆 Output: Multi-step Dialog Bot
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 6px solid var(--c-green);">
+                        <div class="session-badge badge-fase4" style="margin-bottom: 10px;">FASE 4 • Sesi 19-24</div>
+                        <h3 style="font-size: 1.25rem; color: var(--c-green); margin-bottom: 6px;">Proyek Akhir & Demo</h3>
+                        <p style="font-size: 0.88rem; margin-bottom: 12px;">User State Memory (Skor), Reply Keyboard Buttons, Answer Validation, Debugging & Demo Day.</p>
+                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
+                            🏆 Output: Bot Kuis Interaktif Live!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: Fase 1 Details (Sessions 1 - 6) -->
+            <div class="slide" id="slide-4">
+                <div class="row align-center justify-between" style="margin-bottom: 15px;">
+                    <div>
+                        <span class="session-badge badge-fase1">FASE 1 (Sesi 1-6)</span>
+                        <h2>Fondasi "Cloud", "Save Game", & Python 💻</h2>
+                    </div>
+                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: Paham konsep server cloud, kebiasaan simpan kode ke GitHub, dan menguasai dasar bahasa Python.</p>
+                </div>
+
+                <div class="grid-3 gap-md">
+                    <div class="session-card" style="border-left-color: var(--c-blue);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-blue);">Sesi 01</strong>
+                            <span style="font-size: 0.75rem; background: #EBF3FF; padding: 2px 8px; border-radius: 10px; font-weight:600;">Cloud Setup</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Perkenalan GitHub & Codespaces</h4>
+                        <p style="font-size: 0.85rem;">Membuat repository, meluncurkan cloud IDE, jalankan file main.py & ASCII art.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-blue);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-blue);">Sesi 02</strong>
+                            <span style="font-size: 0.75rem; background: #EBF3FF; padding: 2px 8px; border-radius: 10px; font-weight:600;">Git & Variable</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Ritual "Sync" & Kotak Data</h4>
+                        <p style="font-size: 0.85rem;">Menyimpan kode via UI Source Control (Commit & Sync) & menyimpan data dalam Variabel.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-blue);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-blue);">Sesi 03</strong>
+                            <span style="font-size: 0.75rem; background: #EBF3FF; padding: 2px 8px; border-radius: 10px; font-weight:600;">Math & Logic</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Kalkulator Server</h4>
+                        <p style="font-size: 0.85rem;">Memahami tipe data Integer, Float, String, dan operasi aritmatika (+, -, *, /).</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-blue);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-blue);">Sesi 04</strong>
+                            <span style="font-size: 0.75rem; background: #EBF3FF; padding: 2px 8px; border-radius: 10px; font-weight:600;">Interactive</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Ngobrol Sama Komputer</h4>
+                        <p style="font-size: 0.85rem;">Menggunakan fungsi input() dan f-string untuk menerima jawaban pengguna secara dinamis.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-blue);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-blue);">Sesi 05</strong>
+                            <span style="font-size: 0.75rem; background: #EBF3FF; padding: 2px 8px; border-radius: 10px; font-weight:600;">Decision</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Logika Bercabang (If-Else)</h4>
+                        <p style="font-size: 0.85rem;">Membuat keputusan otomatis dengan struktur kondisi if, elif, dan else.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-blue);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-blue);">Sesi 06</strong>
+                            <span style="font-size: 0.75rem; background: #EBF3FF; padding: 2px 8px; border-radius: 10px; font-weight:600;">Evaluation</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Review & Mini Project Python</h4>
+                        <p style="font-size: 0.85rem;">Menggabungkan variabel, input, dan if-else untuk game "Pilih Jalan Cerita".</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: Highlight Project Fase 1 (WITH PYODIDE INTERACTIVE IDE) -->
+            <div class="slide" id="slide-5">
+                <div class="row align-center justify-between" style="margin-bottom: 12px;">
+                    <div>
+                        <span class="session-badge badge-fase1">Mini Project Sesi 6</span>
+                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Game "Pilih Jalan Cerita" 📖</h2>
+                    </div>
+                    <p style="font-size: 0.9rem;">Coba jalankan simulasi kode proyek Sesi 6 di bawah ini!</p>
+                </div>
+
+                <div class="row justify-between align-center" style="gap: 20px;">
+                    <!-- Pyodide Interactive IDE -->
+                    <div class="col" style="flex: 1.2;">
+                        <div class="ide-container-mini">
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #2D2D44; color: white;">
+                                    <div class="ide-dots dot-r"></div>
+                                    <div class="ide-dots dot-y"></div>
+                                    <div class="ide-dots dot-g"></div>
+                                    <span style="margin-left: 6px;">story_game.py</span>
+                                </div>
+                                <textarea class="ide-editor" spellcheck="false">
+# Proyek Sesi 6: Game Text Adventure
+nama = "Budi"
+pilihan_pintu = "1"
+
+print("Pahlawan:", nama)
+print("Pilih Pintu:", pilihan_pintu)
+
+if pilihan_pintu == "1":
+    print(f"Selamat {nama}, kamu menemukan Harta Karun! 💎")
+else:
+    print(f"Waduh {nama}, kamu bertemu Naga Api! 🐉")
+                                </textarea>
+                            </div>
+                            
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #E2E8F0; color: #475569;">
+                                    <span>Terminal Output</span>
+                                </div>
+                                <div class="ide-output-container">
+                                    (Klik 'Jalankan Kode' untuk melihat hasil...)
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-run" onclick="runPythonCode(this)">Jalankan Kode ▶️</button>
+                    </div>
+
+                    <!-- Skills Card -->
+                    <div class="col" style="flex: 0.8;">
+                        <div class="card" style="padding: 22px; border: 2px dashed var(--c-blue); background: white;">
+                            <h3 style="color: var(--c-blue); margin-bottom: 10px; font-size: 1.25rem;">Skill Dikuasai di Fase 1:</h3>
+                            <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 0.88rem; font-weight: 600;">
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--c-green);">✓</span> Navigasi Cloud IDE Codespaces</li>
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--c-green);">✓</span> Ritual Commit & Push (Sync Game)</li>
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--c-green);">✓</span> Variabel, Tipe Data & Aritmatika</li>
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--c-green);">✓</span> Interactive Input & Format f-string</li>
+                                <li style="display: flex; align-items: center; gap: 8px;"><span style="color: var(--c-green);">✓</span> Percabangan Logika If-Elif-Else</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: Fase 2 Details (Sessions 7 - 12) -->
+            <div class="slide" id="slide-6">
+                <div class="row align-center justify-between" style="margin-bottom: 15px;">
+                    <div>
+                        <span class="session-badge badge-fase2">FASE 2 (Sesi 7-12)</span>
+                        <h2>Membangkitkan Bot & Telegram Runtime 🤖</h2>
+                    </div>
+                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: Mengkoneksikan Python ke API Telegram, paham konsep polling, & penanganan media.</p>
+                </div>
+
+                <div class="grid-3 gap-md">
+                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-orange);">Sesi 07</strong>
+                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Telegram Setup</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Lahirnya Sang Bot</h4>
+                        <p style="font-size: 0.85rem;">Membuat Bot di BotFather, amankan Token, & install pyTelegramBotAPI.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-orange);">Sesi 08</strong>
+                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Polling Concept</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Konsep Runtime & Bot Beo</h4>
+                        <p style="font-size: 0.85rem;">Paham kenapa bot standby 24/7 (polling) dan membuat echo-bot pertama.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-orange);">Sesi 09</strong>
+                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Commands</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Bot Patuh Perintah</h4>
+                        <p style="font-size: 0.85rem;">Decorator @bot.message_handler untuk respon /start, /help, dan /sosmed.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-orange);">Sesi 10</strong>
+                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Text Filtering</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Bot Paham Teks & Anti-Toxic</h4>
+                        <p style="font-size: 0.85rem;">Membaca obrolan teks biasa dan memberi filter pintar untuk mendeteksi kata terlarang.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-orange);">Sesi 11</strong>
+                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Media Handling</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Bot Ngirim Gambar & Stiker</h4>
+                        <p style="font-size: 0.85rem;">Mengirim foto dari URL internet via /foto dan mengirim stiker Telegram favorit.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-orange);">Sesi 12</strong>
+                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Evaluation</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Mini Project Bot Asisten</h4>
+                        <p style="font-size: 0.85rem;">Menggabungkan Sesi 7-11 menjadi satu Bot Asisten Pribadi yang responsif.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: Showcase Telegram Bot (WITH PYODIDE INTERACTIVE IDE) -->
+            <div class="slide" id="slide-7">
+                <div class="row align-center justify-between" style="margin-bottom: 12px;">
+                    <div>
+                        <span class="session-badge badge-fase2">Hasil Karya Sesi 7-12</span>
+                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Simulasi Bot Asisten Live 💬</h2>
+                    </div>
+                    <p style="font-size: 0.9rem;">Lihat UI Telegram Chat & jalankan simulasi logika Botnya!</p>
+                </div>
+
+                <div class="row justify-between align-center" style="gap: 20px;">
+                    <!-- Left: Telegram Mockup -->
+                    <div class="col" style="flex: 0.9;">
+                        <div class="tg-mockup">
+                            <div class="tg-header">
+                                <div class="tg-avatar">🤖</div>
+                                <div>
+                                    <strong style="font-size: 0.95rem; display:block;">AsistenCilik_Bot</strong>
+                                    <span style="font-size: 0.72rem; opacity: 0.85;">bot • online</span>
+                                </div>
+                            </div>
+                            <div class="tg-chat-area">
+                                <div class="msg-bubble msg-out">/start</div>
+                                <div class="msg-bubble msg-in">Halo! Aku Bot Asisten buatan Budi. Ketik /foto untuk lihat gambar! 🎨</div>
+                                <div class="msg-bubble msg-out">/foto</div>
+                                <div class="msg-bubble msg-in">📸 Foto kucing dikirim dari cloud server!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Pyodide Interactive IDE -->
+                    <div class="col" style="flex: 1.1;">
+                        <div class="ide-container-mini">
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #2D2D44; color: white;">
+                                    <div class="ide-dots dot-r"></div>
+                                    <div class="ide-dots dot-y"></div>
+                                    <div class="ide-dots dot-g"></div>
+                                    <span style="margin-left: 6px;">bot_asisten.py</span>
+                                </div>
+                                <textarea class="ide-editor" spellcheck="false">
+# Simulasi Logika Telebot Sesi 7-12
+def handle_command(cmd):
+    if cmd == "/start":
+        return "Halo! Aku Bot Asisten buatan Budi 🤖"
+    elif cmd == "/foto":
+        return "📸 [Mengirim foto dari URL cloud server]"
+    else:
+        return "Command tidak dikenal. Ketik /start"
+
+# Uji coba command
+print("User: /start")
+print("Bot:", handle_command("/start"))
+print("\nUser: /foto")
+print("Bot:", handle_command("/foto"))
+                                </textarea>
+                            </div>
+                            
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #E2E8F0; color: #475569;">
+                                    <span>Terminal Output</span>
+                                </div>
+                                <div class="ide-output-container">
+                                    (Klik 'Jalankan Kode' untuk tes bot...)
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-run" onclick="runPythonCode(this)">Jalankan Kode ▶️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 8: Fase 3 Details (Sessions 13 - 18) -->
+            <div class="slide" id="slide-8">
+                <div class="row align-center justify-between" style="margin-bottom: 15px;">
+                    <div>
+                        <span class="session-badge badge-fase3">FASE 3 (Sesi 13-18)</span>
+                        <h2>Struktur Data & Alur Percakapan 📚</h2>
+                    </div>
+                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: Mengolah data majemuk (List & Dictionary) dan membuat percakapan bertahap.</p>
+                </div>
+
+                <div class="grid-3 gap-md">
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-purple);">Sesi 13</strong>
+                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Data Structure</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Rak Buku Server (List)</h4>
+                        <p style="font-size: 0.85rem;">Menyimpan kumpulan data dalam List, serta memanipulasinya (append, remove).</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-purple);">Sesi 14</strong>
+                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Iteration</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Mesin Pengulang (For Loop)</h4>
+                        <p style="font-size: 0.85rem;">Melakukan perulangan otomatis untuk membaca seluruh isi List secara efisien.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-purple);">Sesi 15</strong>
+                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Bot Integration</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Daftar Menu Telegram</h4>
+                        <p style="font-size: 0.85rem;">Menggabungkan List & Loop ke dalam command /menu bot dengan emoji bullet point.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-purple);">Sesi 16</strong>
+                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Key-Value</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Loker Laci Ganda (Dictionary)</h4>
+                        <p style="font-size: 0.85rem;">Konsep Key-Value di Dictionary sebagai fondasi menyimpan skor dan data user.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-purple);">Sesi 17</strong>
+                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Dialog Flow</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Percakapan Berantai (Part 1)</h4>
+                        <p style="font-size: 0.85rem;">register_next_step_handler() agar bot ingat pesan selanjutnya adalah jawaban user.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-purple);">Sesi 18</strong>
+                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Multi-step</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Percakapan Berantai (Part 2)</h4>
+                        <p style="font-size: 0.85rem;">Menyatukan alur percakapan bertahap (Nama -> Umur -> Hobi) & merangkum hasilnya.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 9: Showcase Multi-Step Dialogue (WITH PYODIDE INTERACTIVE IDE) -->
+            <div class="slide" id="slide-9">
+                <div class="row align-center justify-between" style="margin-bottom: 12px;">
+                    <div>
+                        <span class="session-badge badge-fase3">Teknologi Sesi 17-18</span>
+                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Dialog Interaktif Multi-Step 🔄</h2>
+                    </div>
+                    <p style="font-size: 0.9rem;">Bot mengingat konteks dialog bertahap menggunakan Dictionary & Next Step Handler!</p>
+                </div>
+
+                <div class="row justify-between align-center" style="gap: 20px;">
+                    <!-- Left: Telegram Mockup -->
+                    <div class="col" style="flex: 0.85;">
+                        <div class="tg-mockup">
+                            <div class="tg-header">
+                                <div class="tg-avatar" style="background: var(--c-purple); color: white;">📝</div>
+                                <div>
+                                    <strong style="font-size: 0.95rem; display:block;">Survey_Bot</strong>
+                                    <span style="font-size: 0.72rem; opacity: 0.85;">bot • online</span>
+                                </div>
+                            </div>
+                            <div class="tg-chat-area">
+                                <div class="msg-bubble msg-out">/daftar</div>
+                                <div class="msg-bubble msg-in">Halo! Siapa namamu? 🤔</div>
+                                <div class="msg-bubble msg-out">Siti Nurhaliza</div>
+                                <div class="msg-bubble msg-in">Berapa usiamu, Siti? 🎂</div>
+                                <div class="msg-bubble msg-out">14</div>
+                                <div class="msg-bubble msg-in">✅ Datamu (Siti, 14 thn) tersimpan!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Pyodide Interactive IDE -->
+                    <div class="col" style="flex: 1.15;">
+                        <div class="ide-container-mini">
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #2D2D44; color: white;">
+                                    <div class="ide-dots dot-r"></div>
+                                    <div class="ide-dots dot-y"></div>
+                                    <div class="ide-dots dot-g"></div>
+                                    <span style="margin-left: 6px;">user_data.py</span>
+                                </div>
+                                <textarea class="ide-editor" spellcheck="false">
+# Simulasi Data Dictionary & Loop Sesi 15-18
+menu_makanan = ["Nasi Goreng", "Mie Ayam", "Bakso Super"]
+user_profile = {"nama": "Siti", "umur": 14, "hobi": "Coding"}
+
+print("=== DAFTAR MENU BOT ===")
+for i, item in enumerate(menu_makanan, 1):
+    print(f"{i}. 🍕 {item}")
+
+print("\n=== RINGKASAN DATA USER ===")
+for key, val in user_profile.items():
+    print(f"• {key.capitalize()}: {val}")
+                                </textarea>
+                            </div>
+                            
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #E2E8F0; color: #475569;">
+                                    <span>Terminal Output</span>
+                                </div>
+                                <div class="ide-output-container">
+                                    (Klik 'Jalankan Kode' untuk melihat output...)
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-run" onclick="runPythonCode(this)">Jalankan Kode ▶️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 10: Fase 4 Details (Sessions 19 - 24) -->
+            <div class="slide" id="slide-10">
+                <div class="row align-center justify-between" style="margin-bottom: 15px;">
+                    <div>
+                        <span class="session-badge badge-fase4">FASE 4 (Sesi 19-24)</span>
+                        <h2>Proyek Akhir: Bot Kuis Interaktif 🏆</h2>
+                    </div>
+                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: User state memory, Reply Keyboards, validasi jawaban, & Demo Day.</p>
+                </div>
+
+                <div class="grid-3 gap-md">
+                    <div class="session-card" style="border-left-color: var(--c-green);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-green);">Sesi 19</strong>
+                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">State & Memory</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Memori Bot & Skor User</h4>
+                        <p style="font-size: 0.85rem;">Menyimpan skor per-User ID Telegram dengan Dictionary agar data tidak tertukar.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-green);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-green);">Sesi 20</strong>
+                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Quiz Engine</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Merancang Pertanyaan Kuis</h4>
+                        <p style="font-size: 0.85rem;">Menyusun struktur soal & kunci jawaban kuis ke dalam Dictionary yang rapi.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-green);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-green);">Sesi 21</strong>
+                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Validation</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Validasi Jawaban Kuis</h4>
+                        <p style="font-size: 0.85rem;">Pengecekan jawaban anti-error (.lower()) & kalkulasi akumulasi skor akhir kuis.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-green);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-green);">Sesi 22</strong>
+                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Custom UI</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Upgrade Visual (Custom Keyboard)</h4>
+                        <p style="font-size: 0.85rem;">Membuat tombol Pilihan Ganda (ReplyKeyboardMarkup) di Telegram agar user tinggal klik.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-green);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-green);">Sesi 23</strong>
+                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Code Cleanup</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Final Debugging & Cleanup</h4>
+                        <p style="font-size: 0.85rem;">Merapikan struktur kode, membasmi bug, & memastikan perubahan tersimpan aman di GitHub.</p>
+                    </div>
+
+                    <div class="session-card" style="border-left-color: var(--c-green);">
+                        <div class="row justify-between align-center">
+                            <strong style="color: var(--c-green);">Sesi 24</strong>
+                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Celebration</span>
+                        </div>
+                        <h4 style="font-size: 1.05rem;">Demo Day & Perayaan! 🎉</h4>
+                        <p style="font-size: 0.85rem;">Presentasi hasil karya, saling mencoba bot buatan teman, & selebrasi kelulusan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 11: Showcase Final Project (WITH PYODIDE INTERACTIVE IDE) -->
+            <div class="slide" id="slide-11">
+                <div class="row align-center justify-between" style="margin-bottom: 12px;">
+                    <div>
+                        <span class="session-badge badge-fase4">Proyek Akhir Sesi 22-24</span>
+                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Bot Kuis dengan Tombol Pilihan 🎯</h2>
+                    </div>
+                    <p style="font-size: 0.9rem;">Uji coba logika kuis & skor individual pemain!</p>
+                </div>
+
+                <div class="row justify-between align-center" style="gap: 20px;">
+                    <!-- Left: Telegram Mockup with Custom Keyboard -->
+                    <div class="col" style="flex: 0.85;">
+                        <div class="tg-mockup">
+                            <div class="tg-header">
+                                <div class="tg-avatar" style="background: var(--c-green); color: white;">🎯</div>
+                                <div>
+                                    <strong style="font-size: 0.95rem; display:block;">KuisPintar_Bot</strong>
+                                    <span style="font-size: 0.72rem; opacity: 0.85;">bot • online</span>
+                                </div>
+                            </div>
+                            <div class="tg-chat-area">
+                                <div class="msg-bubble msg-in">
+                                    Soal 1/3: Ibukota Indonesia adalah?<br>
+                                    A. Bandung | B. Jakarta
+                                </div>
+                                <div class="msg-bubble msg-out">B. Jakarta</div>
+                                <div class="msg-bubble msg-in">🎉 Jawaban BENAR! (+10 Poin)</div>
+                            </div>
+                            <div class="tg-keyboard">
+                                <button class="tg-btn">A. Bandung</button>
+                                <button class="tg-btn">B. Jakarta</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Pyodide Interactive IDE -->
+                    <div class="col" style="flex: 1.15;">
+                        <div class="ide-container-mini">
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #2D2D44; color: white;">
+                                    <div class="ide-dots dot-r"></div>
+                                    <div class="ide-dots dot-y"></div>
+                                    <div class="ide-dots dot-g"></div>
+                                    <span style="margin-left: 6px;">quiz_engine.py</span>
+                                </div>
+                                <textarea class="ide-editor" spellcheck="false">
+# Logika Engine Skor Kuis Sesi 19-22
+user_scores = {}
+user_id = 987654
+
+def add_score(uid, points):
+    user_scores[uid] = user_scores.get(uid, 0) + points
+
+# Player menjawab kuis
+add_score(user_id, 10) # Soal 1 Benar
+add_score(user_id, 10) # Soal 2 Benar
+
+print(f"Pemain Telegram ID: {user_id}")
+print(f"Total Skor Akhir: {user_scores[user_id]} Poin 🏆")
+                                </textarea>
+                            </div>
+                            
+                            <div class="ide-window">
+                                <div class="ide-header" style="background-color: #E2E8F0; color: #475569;">
+                                    <span>Terminal Output</span>
+                                </div>
+                                <div class="ide-output-container">
+                                    (Klik 'Jalankan Kode' untuk menghitung skor...)
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-run" onclick="runPythonCode(this)">Jalankan Kode ▶️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 12: Interactive Full Playground IDE -->
+            <div class="slide" id="slide-12">
+                <div class="col h-full">
+                    <div class="row justify-between align-center" style="margin-bottom: 10px;">
+                        <div>
+                            <h2 style="margin-bottom: 2px; color: var(--c-blue);">Live Python Playground 🚀</h2>
+                            <p style="font-size: 0.9rem;">Bebas mengetik dan menguji kode Python buatanmu sendiri di sini!</p>
+                        </div>
+                        <span class="session-badge badge-fase1">Full Browser Python Engine</span>
+                    </div>
+                    
+                    <div class="ide-container-mini" style="height: 320px;">
+                        <div class="ide-window">
+                            <div class="ide-header" style="background-color: #2D2D44; color: white;">
+                                <div class="ide-dots dot-r"></div>
+                                <div class="ide-dots dot-y"></div>
+                                <div class="ide-dots dot-g"></div>
+                                <span style="margin-left: 6px;">main_sandbox.py</span>
+                            </div>
+                            <textarea class="ide-editor" spellcheck="false">
+# Arena Bebas Coding Python
+print("🎉 Halo dari Kelas Python Telegram Bot!")
+
+# Coba perulangan & matematika
+total = 0
+for i in range(1, 6):
+    total += i
+    print(f"Langkah {i}: Total = {total}")
+
+print("\nHasil Akhir:", total)
+                            </textarea>
+                        </div>
+                        
+                        <div class="ide-window">
+                            <div class="ide-header" style="background-color: #E2E8F0; color: #475569;">
+                                <span>Terminal Output</span>
+                            </div>
+                            <div class="ide-output-container">
+                                (Klik tombol di bawah untuk eksekusi kode...)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-run" onclick="runPythonCode(this)">Jalankan Kode ▶️</button>
+                </div>
+            </div>
+
+            <!-- SLIDE 13: Summary & Conclusion -->
+            <div class="slide" id="slide-13">
+                <div class="row h-full align-center justify-between">
+                    <div class="col w-half">
+                        <span class="tag-pill" style="background: rgba(72, 168, 80, 0.12); color: var(--c-green);">🎉 Siap Menjadi Bot Developer!</span>
+                        <h2 style="font-size: 2.8rem; line-height: 1.15;">24 Pertemuan Menuju Masa Depan 🚀</h2>
+                        <p style="font-size: 1.05rem; margin-top: 12px; margin-bottom: 20px;">
+                            Dari pemula tanpa pengalaman, anak-anak pulang membawa portofolio bot buatan sendiri yang aktif di internet dan dapat dipamerkan!
+                        </p>
+                        
+                        <div class="row gap-md">
+                            <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
+                                <h3 style="font-size: 2rem; color: var(--c-blue);">100%</h3>
+                                <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Praktek Hands-On</p>
+                            </div>
+                            <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
+                                <h3 style="font-size: 2rem; color: var(--c-purple);">4</h3>
+                                <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Proyek Aplikasi</p>
+                            </div>
+                            <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
+                                <h3 style="font-size: 2rem; color: var(--c-green);">1</h3>
+                                <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Live Bot Telegram</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="w-half col align-center justify-center">
+                        <div style="width: 300px; height: 300px;" class="animate-float">
+                            <svg class="blob-svg" viewBox="0 0 350 350">
+                                <path d="M 170 50 C 260 50, 310 110, 300 190 C 290 280, 230 310, 150 300 C 60 290, 50 210, 60 130 C 70 60, 100 50, 170 50 Z" fill="var(--c-green)"/>
+                                <ellipse cx="140" cy="140" rx="18" ry="28" fill="white" />
+                                <ellipse cx="210" cy="140" rx="18" ry="28" fill="white" />
+                                <circle cx="146" cy="144" r="11" fill="#1A1A1A" />
+                                <circle cx="204" cy="144" r="11" fill="#1A1A1A" />
+                                <circle cx="142" cy="138" r="3.5" fill="white" />
+                                <circle cx="200" cy="138" r="3.5" fill="white" />
+                                <path d="M 280 80 L 295 125 L 345 130 L 305 165 L 315 215 L 270 190 L 225 215 L 235 165 L 195 130 L 245 125 Z" fill="var(--c-yellow)" transform="scale(0.7) translate(60, -10)"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Navigation Bar Below -->
+        <div id="bottom-bar">
+            <div class="slide-indicator">
+                <a href="../index.html" style="display: inline-flex; align-items: center; text-decoration: none;" title="Ke Dashboard LMS">
+                    <span class="logo-mark"></span>
+                </a>
+                Hal. <span id="current-page">1</span> / 13
+            </div>
+            <div class="nav-controls">
+                <a href="../index.html" class="btn" style="text-decoration: none; background: #E2E8F0; color: #334155; display: inline-flex; align-items: center; gap: 6px;">🏠 Dashboard</a>
+                <button class="btn" id="prev-btn" disabled>Kembali</button>
+                <button class="btn btn-primary" id="next-btn">Lanjut ➞</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- 1. SLIDE NAVIGATION LOGIC ---
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const currentPageSpan = document.getElementById('current-page');
+        let currentSlideIndex = 0;
+
+        function updateSlides() {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlideIndex].classList.add('active');
+            currentPageSpan.textContent = currentSlideIndex + 1;
+
+            prevBtn.disabled = currentSlideIndex === 0;
+            
+            if (currentSlideIndex === slides.length - 1) {
+                nextBtn.disabled = true;
+                nextBtn.textContent = "Selesai 🎉";
+                nextBtn.classList.remove('btn-primary');
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.textContent = "Lanjut ➞";
+                nextBtn.classList.add('btn-primary');
+            }
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                updateSlides();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlides();
+            }
+        });
+
+        // Keyboard Arrow Key Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                if (currentSlideIndex < slides.length - 1) {
+                    currentSlideIndex++;
+                    updateSlides();
+                }
+            } else if (e.key === 'ArrowLeft') {
+                if (currentSlideIndex > 0) {
+                    currentSlideIndex--;
+                    updateSlides();
+                }
+            }
+        });
+
+        updateSlides();
+
+
+        // --- 2. PYTHON IDE LOGIC (PYODIDE - UNIVERSAL RUNNER) ---
+        let pyodideInstance = null;
+        let pyodideReadyPromise = initPyodide();
+
+        async function initPyodide() {
+            try {
+                pyodideInstance = await loadPyodide();
+                document.querySelectorAll('.btn-run').forEach(btn => {
+                    btn.innerHTML = "Jalankan Kode ▶️";
+                    btn.disabled = false;
+                });
+                return pyodideInstance;
+            } catch (err) {
+                document.querySelectorAll('.btn-run').forEach(btn => {
+                    btn.innerHTML = "Gagal Memuat Python ❌";
+                });
+                console.error("Pyodide Init Error:", err);
+            }
+        }
+
+        async function runPythonCode(btn) {
+            if (!pyodideInstance) {
+                let pyodide = await pyodideReadyPromise;
+                if (!pyodide) return;
+            }
+
+            const slideContainer = btn.closest('.slide') || btn.parentElement;
+            const codeInput = slideContainer.querySelector('.ide-editor');
+            const outputDiv = slideContainer.querySelector('.ide-output-container');
+
+            if (!codeInput || !outputDiv) return;
+
+            btn.disabled = true;
+            btn.innerHTML = "Menjalankan... ⚙️";
+            outputDiv.innerHTML = "";
+
+            pyodideInstance.setStdout({ 
+                batched: (msg) => { 
+                    outputDiv.innerHTML += msg + "<br>"; 
+                } 
+            });
+
+            try {
+                const code = codeInput.value;
+                await pyodideInstance.runPythonAsync(code);
+                
+                if (outputDiv.innerHTML === "") {
+                    outputDiv.innerHTML = "<i style='color:#94a3b8;'>Kode selesai dijalankan (tanpa output print).</i>";
+                }
+            } catch (err) {
+                outputDiv.innerHTML = `<span style="color: var(--c-pink); font-weight:bold;">Oops, ada bug 🐛:<br><br>${err.message}</span>`;
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = "Jalankan Kode ▶️";
+        }
+    </script>
+</body>
+</html>

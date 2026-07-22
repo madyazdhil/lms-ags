@@ -312,19 +312,7 @@ function autoProcessPendingAttendanceDirect(sheet, row) {
     var currentAbsentStatus = String(targetSheet.getRange(row, 14).getValue() || '').trim();
     
     if (statusVal.toLowerCase() === 'active' && dateVal !== '' && (currentAbsentStatus === '' || currentAbsentStatus === 'Ready for Auto-Absen')) {
-      var pertemuan = String(targetSheet.getRange(row, 2).getValue() || '').trim();
-      var materi = String(targetSheet.getRange(row, 3).getValue() || '').trim();
-      var recording = String(targetSheet.getRange(row, 7).getValue() || '').trim();
-      
-      // Airtable Form Metadata & Class Code
-      var classCode = 'Extracurricular - Coding TA 2026/2027';
-      var airtableShareId = 'shrq4Fdq0W7tCRgHG';
-      var airtableAppId = 'appZWFkgIQZR6Mz86';
-      var airtableViewId = 'viwZgvDGh0Ha9WNc2';
-
-      
-      var nowStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
-      targetSheet.getRange(row, 14).setValue('Submitted via GAS Cloud (' + nowStr + ')');
+      targetSheet.getRange(row, 14).setValue('Ready for Auto-Absen');
     }
   } catch (err) {
     Logger.log('Error in autoProcessPendingAttendanceDirect: ' + err.toString());

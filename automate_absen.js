@@ -1,210 +1,162 @@
-/**
- * LMS-AGS Automated Teacher Attendance Form Submission using Playwright
- * 
- * Target Form: AGS Teacher Attendance Form (Airtable)
- * Form URL: https://airtable.com/appZWFkgIQZR6Mz86/shrq4Fdq0W7tCRgHG
- * 
- * Usage:
- * 1. Install dependencies: npm install playwright node-fetch
- * 2. Set your deployed Apps Script Web App URL in GAS_WEB_APP_URL below (or via process.env.GAS_WEB_APP_URL).
- * 3. Run script: node automate_absen.js
- */
-
 const { chromium } = require('playwright');
-const fetch = require('node-fetch');
+const path = require('path');
+const fs = require('fs');
 
-// CONFIGURATION
-const GAS_WEB_APP_URL = process.env.GAS_WEB_APP_URL || 'https://script.google.com/macros/s/AKfycbxSze-Gb7Sz7RPb9t-a_1WW887-iVee-hho6bGQ_Tv2zGWsUxiZdPKK4W7TkC7pY1rZ/exec';
 const AIRTABLE_FORM_URL = 'https://airtable.com/appZWFkgIQZR6Mz86/shrq4Fdq0W7tCRgHG';
+const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzQ_FIXME_YOUR_DEPLOYED_ID/exec'; // Replace with deployed Web App URL if fetching dynamically
+const DEFAULT_CLASS_CODE = 'Extracurricular - Coding TA 2026/2027';
+const DEFAULT_TEACHER_NAME = 'Yazid Hilmi';
 
-const DEFAULT_TEACHER_NAME = process.env.TEACHER_NAME || 'Yazid Hilmi';
-const DEFAULT_CLASS_CODE = process.env.CLASS_CODE || 'Extracurricular - Coding TA 2026/2027';
-
-async function fetchPendingSessions() {
-  if (GAS_WEB_APP_URL.includes('YOUR_DEPLOYED_SCRIPT_ID')) {
-    console.warn('[!] WARNING: GAS_WEB_APP_URL is not configured yet.');
-    console.warn('[!] Please deploy code.gs as Web App and set GAS_WEB_APP_URL in automate_absen.js or process.env.GAS_WEB_APP_URL');
-  }
-
-  try {
-    const res = await fetch(`${GAS_WEB_APP_URL}?action=getPendingAttendance`);
-    const json = await res.json();
-    if (json.status === 'success' && Array.isArray(json.data)) {
-      return json.data;
-    }
-  } catch (err) {
-    console.error('Error fetching pending sessions from Apps Script:', err.message);
-  }
-  return [];
-}
-
-async function markSessionSubmitted(sessionId) {
-  try {
-    const res = await fetch(`${GAS_WEB_APP_URL}?action=markAttendanceSubmitted&sessionId=${encodeURIComponent(sessionId)}`);
-    const json = await res.json();
-    console.log(`[+] Marked session ${sessionId} status:`, json.message);
-  } catch (err) {
-    console.error(`[-] Failed to mark session ${sessionId} as submitted:`, err.message);
-  }
-}
-
-async function fillAirtableAttendanceForm(browser, session) {
-  console.log(`\n[>] Processing Attendance for: ${session.pertemuan} (${session.title})`);
-  console.log(`    Date: ${session.date} | Class Code: ${DEFAULT_CLASS_CODE}`);
-
-  const context = await browser.newContext();
-  const page = await context.newPage();
+async function submitAttendance(sessionData) {
+  console.log(`\n🚀 Starting submission for Sesi ${sessionData.week_num} (${sessionData.date})...`);
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 2600 } });
 
   try {
     await page.goto(AIRTABLE_FORM_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(2500);
 
-    // Reject Cookie Banner if present
+    // Cookie Banner
     const rejectCookie = page.locator('button:has-text("Reject All"), button:has-text("Agree")');
     if (await rejectCookie.count() > 0) {
       await rejectCookie.first().click().catch(() => {});
       await page.waitForTimeout(1000);
     }
 
-    // 1. Class Conducted Date *
-    const dateInput = page.locator('input[placeholder="mm/dd/yyyy"], input[type="date"]').first();
-    if (await dateInput.isVisible()) {
-      await dateInput.fill(session.date || '07/22/2026');
-    }
+    // 1. Date
+    console.log(`[1] Date: ${sessionData.date}`);
+    const dateInput = page.locator('input[placeholder="mm/dd/yyyy"]').first();
+    await dateInput.fill(sessionData.date);
+    await page.keyboard.press('Escape');
 
-    // 2. Week Session Conducted *
-    const weekNumStr = String(session.week_num || '1');
-    const weekSelect = page.locator('div:has-text("Week Session Conducted") ~ div div[role="button"], select').first();
-    if (await weekSelect.isVisible()) {
-      await weekSelect.click().catch(() => {});
+    // 2. Week Session Conducted (Combobox)
+    console.log(`[2] Week Session Conducted: ${sessionData.week_num}`);
+    const weekContainer = page.locator('.sharedFormField').filter({ hasText: 'Week Session Conducted' }).first();
+    const weekCombobox = weekContainer.locator('div[data-testid="autocomplete-button"], div[role="combobox"]').first();
+    if (await weekCombobox.isVisible()) {
+      await weekCombobox.click();
+      await page.waitForTimeout(800);
+      await page.keyboard.type(String(sessionData.week_num || '1'));
+      await page.waitForTimeout(800);
+      await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
-      const opt = page.locator('div[role="option"]').filter({ hasText: weekNumStr }).first();
-      if (await opt.isVisible()) await opt.click();
     }
 
-    // 3. Class Code * (+Add Linked Record)
-    const classCodeAdd = page.locator('div:has-text("Class Code") ~ div button:has-text("Add"), div:has-text("Class Code") ~ div div[role="button"]:has-text("Add")').first();
+    // 3. Class Code (+Add Linked Record)
+    console.log(`[3] Class Code: ${DEFAULT_CLASS_CODE}`);
+    const classCodeAdd = page.locator('div:has-text("Class Code") ~ div button:has-text("Add"), div:has-text("Class Code") ~ div div[role="button"]').first();
     if (await classCodeAdd.isVisible()) {
       await classCodeAdd.click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(800);
       await page.keyboard.type(DEFAULT_CLASS_CODE);
       await page.waitForTimeout(1000);
       await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
     }
 
-    // 4. Teacher's Name * (+Add Linked Record)
-    const teacherAdd = page.locator('div:has-text("Teacher\'s Name") ~ div button:has-text("Add"), div:has-text("Teacher\'s Name") ~ div div[role="button"]:has-text("Add")').first();
+    // 4. Teacher's Name (+Add Linked Record)
+    console.log(`[4] Teacher: ${DEFAULT_TEACHER_NAME}`);
+    const teacherAdd = page.locator('div:has-text("Teacher\'s Name") ~ div button:has-text("Add"), div:has-text("Teacher\'s Name") ~ div div[role="button"]').first();
     if (await teacherAdd.isVisible()) {
       await teacherAdd.click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(800);
       await page.keyboard.type(DEFAULT_TEACHER_NAME);
       await page.waitForTimeout(1000);
       await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
     }
 
-    // 5. Type of Session * (Ekskul)
-    const ekskulBtn = page.locator('text="Ekskul"').first();
-    if (await ekskulBtn.isVisible()) {
-      await ekskulBtn.click().catch(() => {});
-    }
+    // 5. Session Type & 6. Role
+    console.log(`[5-6] Session Type (Ekskul) & Role (Master Teacher)`);
+    await page.click('text="Ekskul"');
+    await page.click('text="Master Teacher"');
 
-    // 6. Role * (Master Teacher)
-    const roleBtn = page.locator('text="Master Teacher"').first();
-    if (await roleBtn.isVisible()) {
-      await roleBtn.click().catch(() => {});
-    }
+    // 7. Did you attend the session?
+    console.log(`[7] Did you attend (Yes)`);
+    await page.click('text="Yes"');
+    await page.waitForTimeout(1500);
 
-    // 7. Did you attend the session? * (Yes)
-    const attendBtn = page.locator('text="Yes"').first();
-    if (await attendBtn.isVisible()) {
-      await attendBtn.click().catch(() => {});
-      await page.waitForTimeout(1500); // Wait for conditional questions to appear
-    }
-
-    // 8. Sub-Topic Covered in the class * -> Select "Other Sub-Topic"
-    const subtopicAddBtn = page.locator('div:has-text("Sub-Topic Covered in the class") ~ div button:has-text("Add"), div:has-text("Sub-Topic Covered in the class") ~ div div[role="button"]:has-text("Add")').first();
+    // 8. Sub-Topic Covered (+Add Linked Record -> Other Sub-Topic)
+    console.log(`[8] Sub-Topic (Other Sub-Topic)`);
+    const subtopicAddBtn = page.locator('div:has-text("Sub-Topic Covered in the class") ~ div button:has-text("Add"), div:has-text("Sub-Topic Covered in the class") ~ div div[role="button"]').first();
     if (await subtopicAddBtn.isVisible()) {
       await subtopicAddBtn.click();
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(800);
       await page.keyboard.type('Other Sub-Topic');
       await page.waitForTimeout(1000);
       await page.keyboard.press('Enter');
       await page.waitForTimeout(500);
     }
 
-    // 9. Other Sub-Topic Covered in the class * -> Fill Column C (Materi / Title)
-    const otherSubtopicInput = page.locator('div:has-text("Other Sub-Topic Covered in the class") ~ div input, div:has-text("Other Sub-Topic Covered in the class") ~ div textarea').first();
+    // 9. Other Sub-Topic Title
+    console.log(`[9] Title: ${sessionData.title}`);
+    const otherSubtopicContainer = page.locator('div.sharedFormField').filter({ hasText: 'Other Sub-Topic Covered in the class' }).first();
+    const otherSubtopicInput = otherSubtopicContainer.locator('input, textarea').first();
     if (await otherSubtopicInput.isVisible()) {
-      await otherSubtopicInput.fill(session.title || 'Materi Sesi');
+      await otherSubtopicInput.fill(sessionData.title || 'Materi Sesi');
     }
 
-    // 10. Class Duration (hour) * -> Select "1"
-    const durationBtn = page.locator('text="1"').first();
+    // 10. Class Duration (1 hour)
+    console.log(`[10] Duration (1 hour)`);
+    const durationContainer = page.locator('.sharedFormField').filter({ hasText: 'Class Duration' }).first();
+    const durationBtn = durationContainer.locator('div, span, label').filter({ hasText: /^1$/ }).first();
     if (await durationBtn.isVisible()) {
-      await durationBtn.click().catch(() => {});
+      await durationBtn.click();
+    } else {
+      await page.click('text="1"');
     }
 
-    // 11. Was there any problem during the session? * -> Select "No, it was well conducted"
-    const problemBtn = page.locator('text="No, it was well conducted"').first();
-    if (await problemBtn.isVisible()) {
-      await problemBtn.click().catch(() => {});
-    }
+    // 11. Was there any problem
+    console.log(`[11] Problem (No)`);
+    await page.click('text="No, it was well conducted"');
 
     // 12. Student's Concern *
-    const concernField = page.locator('textarea, input[type="text"]').last();
-    if (await concernField.isVisible()) {
-      await concernField.fill('-').catch(() => {});
+    console.log(`[12] Student Concern (-)`);
+    const concernContainer = page.locator('.sharedFormField').filter({ hasText: "Student's Concern" }).first();
+    const textarea = concernContainer.locator('textarea, input, [contenteditable="true"]').first();
+    if (await textarea.isVisible()) {
+      await textarea.fill(sessionData.concern || '-');
     }
 
+    await page.waitForTimeout(1500);
 
-    console.log(`[+] Form populated successfully for ${session.pertemuan}`);
-
-    // Click Submit button
-    const submitBtn = page.locator('button[type="submit"], input[type="submit"], div[role="button"]:has-text("Submit")').first();
+    // 13. SUBMIT
+    console.log(`[13] Submitting to Airtable...`);
+    const submitBtn = page.locator('button').filter({ hasText: /^Submit$/ }).first();
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
-      await page.waitForTimeout(3000);
-      console.log(`[✔] Form submitted on Airtable for ${session.pertemuan}`);
+      await page.waitForTimeout(5000);
       
-      // Update Google Spreadsheet status via Apps Script API
-      await markSessionSubmitted(session.id);
-    } else {
-      console.warn(`[!] Submit button not found on Airtable form!`);
+      const ssPath = `absen_session_${sessionData.week_num}_confirmation.png`;
+      await page.screenshot({ path: ssPath, fullPage: true });
+      console.log(`🎉 Session ${sessionData.week_num} attendance successfully submitted to Airtable! Screenshot: ${ssPath}`);
+      return true;
     }
-
   } catch (err) {
-    console.error(`[!] Error processing form for ${session.pertemuan}:`, err.message);
+    console.error(`❌ Error submitting session ${sessionData.week_num}:`, err);
+    return false;
   } finally {
-    await context.close();
+    await browser.close();
   }
+  return false;
 }
 
-async function runAutoAbsen() {
-  console.log('====================================================');
-  console.log('🤖 LMS-AGS Auto Attendance Script (Playwright)');
-  console.log('====================================================');
-
-  const pendingSessions = await fetchPendingSessions();
-
-  if (pendingSessions.length === 0) {
-    console.log('[i] No pending sessions found. (Make sure Status = Active & Date is filled in Col E & F)');
-    return;
-  }
-
-  console.log(`[i] Found ${pendingSessions.length} pending session(s) to submit.`);
-
-  const browser = await chromium.launch({ headless: true });
-  for (const session of pendingSessions) {
-    await fillAirtableAttendanceForm(browser, session);
-  }
-  await browser.close();
-  console.log('\n[✔] All pending attendance forms processed.');
-}
-
+// Standalone execution entry point (Local or GitHub Action)
 if (require.main === module) {
-  runAutoAbsen();
+  (async () => {
+    const targetWeek = process.env.TARGET_WEEK || '1';
+    console.log(`🤖 Auto Attendance Runner starting for Week: ${targetWeek}`);
+    
+    // Sample data structure for target session
+    const sampleSession = {
+      date: '07/22/2026',
+      week_num: targetWeek,
+      title: 'Pertemuan 1: Perkenalan Markas Coding di Cloud (GitHub Codespaces)',
+      concern: '-'
+    };
+
+    await submitAttendance(sampleSession);
+  })();
 }
 
-module.exports = { runAutoAbsen, fetchPendingSessions };
+module.exports = { submitAttendance };
