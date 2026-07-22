@@ -1,3 +1,18 @@
 node_modules/
 .DS_Store
 *.log
+*.png
+.env
+
+# Scratch and debug test scripts
+test_*.js
+dump_*.js
+inspect_*.js
+fill_*.js
+fix_*.js
+generate_*.js
+click_*.js
+target_*.js
+find_*.js
+submit_absen_now.js
+submit_absen_flawless.js
