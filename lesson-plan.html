@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -18,20 +19,15 @@
                     },
                     colors: {
                         brand: {
-                            red: '#F4554C',     /* Main coral/red accent */
-                            navy: '#0B1B42',    /* Dark blue for active states and text */
-                            bg: '#EBDCD0',      /* Outer warm background */
-                            sidebar: '#F8F9FB', /* Light gray sidebar */
-                            main: '#F4F6F9',    /* Main content background */
+                            red: '#F4554C',
+                            navy: '#0B1B42',
+                            bg: '#EBDCD0',
+                            sidebar: '#F8F9FB',
+                            main: '#F4F6F9',
                             textMain: '#2D3748',
                             textMuted: '#A0AEC0',
                             card: '#FFFFFF'
                         }
-                    },
-                    boxShadow: {
-                        'app': '0 30px 60px -15px rgba(0, 0, 0, 0.2)',
-                        'card': '0 4px 20px -10px rgba(0, 0, 0, 0.05)',
-                        'timeline': '0 10px 25px -5px rgba(11, 27, 66, 0.15)',
                     }
                 }
             }
@@ -41,182 +37,82 @@
         body {
             background-color: #EBDCD0;
         }
-        
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
     </style>
 </head>
-<body class="h-screen w-screen overflow-hidden font-sans text-brand-textMain antialiased bg-brand-main flex">
+<body class="h-screen w-screen overflow-hidden font-sans text-brand-textMain antialiased bg-brand-main flex relative">
 
-    <!-- Main App Container (Full Screen 100vw x 100vh) -->
-    <div class="w-full h-full bg-white flex overflow-hidden relative">
-
-        <!-- LEFT SIDEBAR -->
-        <aside class="w-[90px] bg-brand-sidebar flex flex-col items-center py-8 flex-shrink-0 relative border-r border-gray-100 z-20 shadow-sm">
-            
-            <!-- Logo -->
-            <a href="index.html" class="relative w-10 h-10 cursor-pointer mb-auto" title="Home">
-                <div class="absolute inset-0 bg-brand-navy rounded-full scale-[0.65] -translate-y-2"></div>
-                <div class="absolute inset-0 bg-brand-red rounded-full scale-[0.65] translate-y-1"></div>
-            </a>
-
-            <!-- Centered Navigation -->
-            <nav class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full items-center">
-                <!-- Home -->
-                <a href="index.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Home">
-                    <i class="ph ph-house text-[28px]"></i>
-                </a>
-
-                <!-- Class Sessions -->
-                <a href="class-sessions.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Class Sessions">
-                    <i class="ph ph-book-open text-[28px]"></i>
-                </a>
-                
-                <!-- Active Clipboard (Lesson Plans) -->
-                <a href="lesson-plan.html" class="relative group flex items-center justify-center w-12 h-12 text-brand-red" title="Lesson Plans">
-                    <div class="absolute -left-[21px] top-1/2 -translate-y-1/2 w-1.5 h-6 bg-brand-red rounded-r-lg shadow-sm"></div>
-                    <i class="ph-fill ph-clipboard-text text-[28px]"></i>
-                </a>
-            </nav>
-
-            <!-- Exit/Logout -->
-            <a href="login.html" onclick="if(window.Auth) Auth.logout();" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12 mt-auto" title="Log Out">
-                <i class="ph ph-sign-out text-[28px]"></i>
-            </a>
+    <!-- Blurred Background Placeholder UI -->
+    <div class="w-full h-full bg-white flex overflow-hidden relative filter blur-md select-none pointer-events-none opacity-40">
+        <!-- Sidebar -->
+        <aside class="w-[90px] bg-brand-sidebar flex flex-col items-center py-8 border-r border-gray-100">
+            <div class="w-10 h-10 bg-brand-navy rounded-full mb-auto"></div>
         </aside>
-
-        <!-- MIDDLE SIDEBAR (Module & Topic List - Scrollable Pane) -->
-        <section class="w-[380px] lg:w-[420px] bg-brand-sidebar border-r border-gray-100 flex flex-col flex-shrink-0 h-full relative z-10">
-            
-            <!-- Top Search / Filter Header -->
-            <div class="p-6 border-b border-gray-100 bg-brand-sidebar flex flex-col gap-4 flex-shrink-0">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h1 class="text-xl font-bold text-brand-navy">Lesson Plan</h1>
-                        <p class="text-xs text-brand-textMuted font-medium">Coding Club TA 2025/2026 (24 Sesi)</p>
-                    </div>
-                </div>
-
-                <!-- Search Input -->
-                <div class="relative w-full">
-                    <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-lg"></i>
-                    <input type="text" placeholder="Cari topik atau materi..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-100 rounded-xl text-sm font-medium focus:outline-none focus:border-brand-red/40 transition-colors shadow-sm placeholder:text-gray-400">
-                </div>
-            </div>
-
-            <!-- List Container (Scrollable) -->
-            <div id="lesson-plan-list" class="flex-1 overflow-y-auto p-4 flex flex-col gap-6 custom-scrollbar">
-                <!-- Dynamically populated by JS script -->
-            </div>
-        </section>
-
-        <!-- DETAIL VIEW (Right Panel - Reading Pane / Iframe Sandbox) -->
-        <main class="flex-1 bg-white flex flex-col relative overflow-hidden">
-            
-            <!-- Top Header for Detail Pane -->
-            <header class="h-[80px] flex items-center justify-between px-8 border-b border-gray-100 flex-shrink-0 bg-white z-10">
-                <div>
-                    <div class="flex items-center gap-3 mb-0.5">
-                        <span id="detail-fase-badge" class="text-[11px] font-bold text-brand-red uppercase tracking-wider bg-brand-red/10 px-2 py-0.5 rounded-md">FASE 1 • Meet 1</span>
-                    </div>
-                    <h2 id="detail-title" class="text-xl font-bold text-brand-navy">Sesi 1: Perkenalan GitHub & Markas Codespaces</h2>
-                </div>
-
-                <a id="detail-open-tab" href="materi-smt2/pertemuan-01.html" target="_blank" class="px-4 py-2 bg-brand-red text-white font-semibold text-xs rounded-full hover:scale-105 transition-transform flex items-center gap-1.5 shadow-sm">
-                    <span>Buka Materi</span>
-                    <i class="ph-bold ph-arrow-up-right"></i>
-                </a>
-            </header>
-
-            <!-- Content Area (The Iframe Sandbox) -->
-            <div class="flex-1 p-4 lg:p-6 bg-brand-main overflow-hidden flex flex-col">
-                
-                <div class="flex items-center justify-between mb-4 px-2">
-                    <h3 class="font-bold text-brand-navy text-lg">Dokumen / Slide Lesson Plan (Kolom K)</h3>
-                    <div class="flex gap-2">
-                        <div class="w-2.5 h-2.5 rounded-full bg-brand-red"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-[#F4CA4C]"></div>
-                        <div class="w-2.5 h-2.5 rounded-full bg-[#4CAF50]"></div>
-                    </div>
-                </div>
-
-                <!-- Iframe Container -->
-                <div class="flex-1 w-full bg-white rounded-[32px] shadow-sm border border-gray-100 flex flex-col relative overflow-hidden group">
-                    <iframe 
-                        id="lesson-plan-iframe" 
-                        src="materi-smt2/pertemuan-01.html" 
-                        class="flex-1 w-full bg-white border-none rounded-[32px]"
-                        title="Lesson Plan Document Sandbox">
-                    </iframe>
-                </div>
-
-            </div>
-        </main>
-
+        <div class="flex-1 bg-brand-main p-8 flex flex-col items-center justify-center">
+            <div class="w-3/4 h-64 bg-white rounded-3xl shadow-sm"></div>
+        </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- BEAUTIFUL CONSTRUCTION / ACCESS BLOCKED MODAL POPUP -->
+    <div id="construction-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/60 backdrop-blur-xl">
+        <div id="modal-card" class="bg-white/90 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-3xl p-8 max-w-md w-full text-center flex flex-col items-center relative overflow-hidden transform scale-90 opacity-0 transition-all duration-300">
+            
+            <!-- Glowing Accent Background Effect -->
+            <div class="absolute -top-24 -left-24 w-48 h-48 bg-brand-red/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-brand-navy/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <!-- Animated Construction Badge -->
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-brand-red/20 to-brand-red/10 border border-brand-red/30 flex items-center justify-center mb-6 shadow-inner text-brand-red">
+                <i class="ph-duotone ph-hammer text-4xl animate-bounce"></i>
+            </div>
+
+            <!-- Badge Tag -->
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-red/10 text-brand-red border border-brand-red/20 mb-3">
+                <span class="w-2 h-2 rounded-full bg-brand-red animate-ping"></span>
+                Sedang Dalam Pembangunan
+            </span>
+
+            <!-- Title -->
+            <h2 class="text-2xl font-extrabold text-brand-navy mb-2 tracking-tight">
+                Akses Masih Dibangun 🚀
+            </h2>
+
+            <!-- Subtitle -->
+            <p class="text-sm text-brand-textMain/80 leading-relaxed mb-8 px-2">
+                Modul & dokumen <strong class="text-brand-navy">Lesson Plan</strong> semester ini sedang dipersiapkan oleh tim pengajar. Tunggu ya, fitur ini akan segera hadir!
+            </p>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 w-full">
+                <a href="index.html" class="flex-1 py-3 px-5 bg-brand-navy text-white font-semibold text-sm rounded-xl hover:bg-brand-navy/90 transition-all shadow-md flex items-center justify-center gap-2 group">
+                    <i class="ph-bold ph-house group-hover:-translate-x-0.5 transition-transform"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="class-sessions.html" class="flex-1 py-3 px-5 bg-brand-red text-white font-semibold text-sm rounded-xl hover:bg-brand-red/90 transition-all shadow-md flex items-center justify-center gap-2 group">
+                    <i class="ph-bold ph-book-open group-hover:scale-110 transition-transform"></i>
+                    <span>Sesi Kelas</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const res = await fetchAPI('getLessonPlans');
-            const lessonPlans = (res && res.data && res.data.length > 0) ? res.data : window.MOCK_DATA.sessions.map(s => ({
-                id: 'LP' + (s.week_num < 10 ? '0' + s.week_num : s.week_num),
-                week_num: s.week_num,
-                topic: s.title,
-                summary: s.description,
-                gdoc_url: s.lesson_plan_link || s.material_embed_url,
-                fase: s.fase,
-                status: s.status
-            }));
-
-            const listContainer = document.getElementById('lesson-plan-list');
-            if (listContainer && lessonPlans.length > 0) {
-                listContainer.innerHTML = lessonPlans.map((lp, idx) => `
-                    <div onclick="selectLessonPlan(${idx})" class="bg-transparent hover:bg-white rounded-2xl p-4 border border-transparent hover:border-gray-100 hover:shadow-sm cursor-pointer transition-all group ${idx === 0 ? 'bg-white border-gray-100 shadow-sm ring-1 ring-brand-navy/10' : ''}">
-                        <div class="flex gap-4 items-center">
-                            <div class="w-12 h-12 rounded-[14px] bg-[#FFF0EF] flex items-center justify-center flex-shrink-0 text-brand-red group-hover:scale-105 transition-transform font-bold text-sm">
-                                ${lp.week_num || (idx + 1)}
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex justify-between items-start mb-1">
-                                    <span class="text-[10px] font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded-md truncate">Sesi ${lp.week_num || (idx + 1)}</span>
-                                </div>
-                                <h3 class="font-bold text-brand-navy text-[14px] leading-tight mb-1 truncate">${lp.topic || lp.title}</h3>
-                                <p class="text-xs text-brand-textMuted line-clamp-1">${lp.summary || 'Klik untuk membuka materi & panduan.'}</p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-
-                window.ALL_LESSON_PLANS = lessonPlans;
-                selectLessonPlan(0);
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof gsap !== 'undefined') {
+                gsap.to('#modal-card', {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: 'back.out(1.7)'
+                });
+            } else {
+                const card = document.getElementById('modal-card');
+                if (card) {
+                    card.classList.remove('scale-90', 'opacity-0');
+                    card.classList.add('scale-100', 'opacity-100');
+                }
             }
         });
-
-        function selectLessonPlan(index) {
-            if (!window.ALL_LESSON_PLANS || !window.ALL_LESSON_PLANS[index]) return;
-            const lp = window.ALL_LESSON_PLANS[index];
-
-            const detailTitle = document.getElementById('detail-title');
-            const detailBadge = document.getElementById('detail-fase-badge');
-            const detailOpenTab = document.getElementById('detail-open-tab');
-            const iframe = document.getElementById('lesson-plan-iframe');
-
-            if (detailTitle) detailTitle.innerText = lp.topic || lp.title;
-            if (detailBadge) detailBadge.innerText = lp.fase || ('Sesi ' + lp.week_num);
-            
-            const targetUrl = lp.gdoc_url || lp.lesson_plan_link || 'materi-smt2/pertemuan-01.html';
-            if (detailOpenTab) detailOpenTab.href = targetUrl;
-            if (iframe) iframe.src = targetUrl;
-        }
     </script>
 </body>
 </html>
