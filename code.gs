@@ -316,10 +316,12 @@ function autoProcessPendingAttendanceDirect(sheet, row) {
       var materi = String(targetSheet.getRange(row, 3).getValue() || '').trim();
       var recording = String(targetSheet.getRange(row, 7).getValue() || '').trim();
       
-      // Airtable Form Metadata
+      // Airtable Form Metadata & Class Code
+      var classCode = 'Extracurricular - Coding TA 2026/2027';
       var airtableShareId = 'shrq4Fdq0W7tCRgHG';
       var airtableAppId = 'appZWFkgIQZR6Mz86';
       var airtableViewId = 'viwZgvDGh0Ha9WNc2';
+
       
       var nowStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
       targetSheet.getRange(row, 14).setValue('Submitted via GAS Cloud (' + nowStr + ')');

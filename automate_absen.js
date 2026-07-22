@@ -18,6 +18,7 @@ const GAS_WEB_APP_URL = process.env.GAS_WEB_APP_URL || 'https://script.google.co
 const AIRTABLE_FORM_URL = 'https://airtable.com/appZWFkgIQZR6Mz86/shrq4Fdq0W7tCRgHG';
 
 const DEFAULT_TEACHER_NAME = process.env.TEACHER_NAME || 'Yazid Hilmi';
+const DEFAULT_CLASS_CODE = process.env.CLASS_CODE || 'Extracurricular - Coding TA 2026/2027';
 
 async function fetchPendingSessions() {
   if (GAS_WEB_APP_URL.includes('YOUR_DEPLOYED_SCRIPT_ID')) {
@@ -49,7 +50,7 @@ async function markSessionSubmitted(sessionId) {
 
 async function fillAirtableAttendanceForm(browser, session) {
   console.log(`\n[>] Processing Attendance for: ${session.pertemuan} (${session.title})`);
-  console.log(`    Date: ${session.date} | Recording: ${session.recording_url || 'N/A'}`);
+  console.log(`    Date: ${session.date} | Class Code: ${DEFAULT_CLASS_CODE}`);
 
   const context = await browser.newContext();
   const page = await context.newPage();
@@ -58,23 +59,18 @@ async function fillAirtableAttendanceForm(browser, session) {
     await page.goto(AIRTABLE_FORM_URL, { waitUntil: 'networkidle' });
     await page.waitForTimeout(2000); // Allow Airtable form components to fully render
 
-    // Fill Teacher Name input field if present
-    const nameInput = page.locator('input[type="text"]').first();
-    if (await nameInput.isVisible()) {
-      await nameInput.fill(DEFAULT_TEACHER_NAME);
-    }
-
-    // Fill Session / Class details in inputs/textareas
+    // Fill Teacher Name & Class Code
     const textInputs = page.locator('input[type="text"], textarea');
     const inputCount = await textInputs.count();
 
     for (let i = 0; i < inputCount; i++) {
       const input = textInputs.nth(i);
       const placeholder = (await input.getAttribute('placeholder') || '').toLowerCase();
-      const nameAttr = (await input.getAttribute('name') || '').toLowerCase();
       const parentText = (await input.locator('xpath=ancestor::div[contains(@class, "field")]').innerText().catch(() => '')).toLowerCase();
 
-      if (parentText.includes('nama') || parentText.includes('teacher') || placeholder.includes('nama')) {
+      if (parentText.includes('class code') || parentText.includes('kode kelas') || placeholder.includes('class code')) {
+        await input.fill(DEFAULT_CLASS_CODE);
+      } else if (parentText.includes('nama') || parentText.includes('teacher') || placeholder.includes('nama')) {
         await input.fill(DEFAULT_TEACHER_NAME);
       } else if (parentText.includes('pertemuan') || parentText.includes('sesi') || parentText.includes('session')) {
         await input.fill(session.pertemuan);
@@ -86,6 +82,16 @@ async function fillAirtableAttendanceForm(browser, session) {
         await input.fill(session.date);
       }
     }
+
+    // Handle Airtable Single-Select Dropdowns if Class Code is a dropdown picker
+    const selectPills = page.locator('div[role="option"], div[data-test="option"]');
+    if (await selectPills.count() > 0) {
+      const targetOption = selectPills.filter({ hasText: 'Coding' }).first();
+      if (await targetOption.isVisible()) {
+        await targetOption.click();
+      }
+    }
+
 
     // Date picker field (if date input type="date" or specialized picker exists)
     const dateInput = page.locator('input[type="date"]');

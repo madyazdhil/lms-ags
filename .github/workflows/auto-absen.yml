@@ -30,5 +30,7 @@ jobs:
         env:
           GAS_WEB_APP_URL: ${{ secrets.GAS_WEB_APP_URL || 'https://script.google.com/macros/s/AKfycbxSze-Gb7Sz7RPb9t-a_1WW887-iVee-hho6bGQ_Tv2zGWsUxiZdPKK4W7TkC7pY1rZ/exec' }}
           TEACHER_NAME: ${{ secrets.TEACHER_NAME || 'Yazid Hilmi' }}
+          CLASS_CODE: ${{ secrets.CLASS_CODE || 'Extracurricular - Coding TA 2026/2027' }}
         run: node automate_absen.js
+
 
