@@ -15,6 +15,7 @@ Before writing code, AI agents need to understand the core purpose of the applic
 - **Project Name**: LMS AGS Semester 2 - PPT Presentation Coding Python & Telegram Bot for Kids
 - **Core Value Proposition / Tagline**: Slide Presentasi HTML Interaktif, Bubbly & Fun berbasis Pyodide (Python in Browser) untuk Mengajar Coding Python & Bot Telegram bagi Siswa SMP/SMA (24 Pertemuan)
 - **Target Audience / Key Personas**: Siswa SMP & SMA (Usia 12–18 tahun, Pemula hingga Lanjutan), Instruktur / Pengajar Coding LMS AGS
+- **Required Presentation Language**: English. All student-facing slide copy, stories, explanations, analogies, instructions, challenges, button labels, IDE prompts, sample code strings, terminal output, and runtime/error messages must be written in clear, age-appropriate English. Indonesian may remain only in internal planning documents or developer comments that are never shown to students.
 - **Primary Problem Solved**: Menyajikan modul materi Python & Bot Telegram yang terstruktur, sangat visual (bubbly flat design dengan ilustrasi Blob), interaktif (dapat menjalankan kode Python langsung di slide via Pyodide IDE), dan bertahap (40+ slide per sesi) sehingga siswa paham konsep abstrak melalui cerita dan contoh sehari-hari.
 
 #### Key MVP Features (Must Have for Production v1.0)
@@ -31,6 +32,8 @@ Before writing code, AI agents need to understand the core purpose of the applic
 10. **3 Soal Challenge Mandiri**: 3 soal latihan/tantangan dengan tingkatan variatif untuk dikerjakan siswa di akhir sesi.
 11. **Pengambilan Materi Berdasarkan Silabus**: Acuan topik dan alur materi disesuaikan dengan silabus 24 sesi pada [silabus.md](file:///Users/yazidhilmi/Documents/Edu/Personal_pro/LMS-ags/materi-smt2/silabus.md) (Catatan: file ini berisi Silabus Kurikulum 24 Pertemuan; Lesson Plan detail untuk LMS akan dibuat secara terpisah di luar pembuatan slide presentasi).
 12. **Alur Kerja QC Per Sesi**: Pembuatan dilakukan 1 file HTML per sesi terlebih dahulu agar dapat di-QC (Quality Control) oleh pengajar sebelum lanjut ke sesi berikutnya.
+13. **English-Only Student Experience**: Seluruh teks yang terlihat atau dibaca siswa wajib menggunakan bahasa Inggris yang natural dan sesuai usia 12–18 tahun, termasuk teks di dalam contoh kode Python. Jangan mencampur bahasa Indonesia dan Inggris pada slide produksi.
+14. **Bookmark Materi Wajib & Selalu Sinkron**: Setiap kali sebuah file materi `pertemuan-XX.html` atau file materi lain bernama `*generated.html` dibuat maupun diubah, AI/developer wajib langsung membuat atau memperbarui [bookmark.md](file:///Users/yazidhilmi/Documents/Edu/Personal_pro/LMS-ags/materi-smt2/bookmark.md). Tulis satu link file di atas daftar, lalu tulis setiap bookmark sebagai baris teks polos dengan format persis `1 - 5 = Nama Materi`. Jangan memakai bullet, tabel, link pada rentang angka, atau tambahan keterangan lain. Rentang harus mengikuti isi slide aktual, tidak boleh ditebak hanya dari silabus.
 
 #### Phase 2 Features (Nice to Have / Post-Launch)
 
@@ -142,6 +145,7 @@ Rules defined here tell the AI agent what coding patterns are required or strict
   LMS-ags/materi-smt2/
   ├── template.html
   ├── checklist.md
+  ├── bookmark.md
   ├── silabus.md
   ├── pertemuan-01.html
   ├── pertemuan-02.html
@@ -150,10 +154,15 @@ Rules defined here tell the AI agent what coding patterns are required or strict
   ```
 - **Naming Conventions**:
   - File HTML: `pertemuan-01.html` s.d. `pertemuan-24.html` (2 digit zero-padded)
+  - Indeks bookmark: `bookmark.md` (satu file pusat untuk semua materi HTML)
   - Slide ID: `slide-1`, `slide-2`, ..., `slide-N` (1-indexed)
   - Class CSS: `slide`, `btn`, `btn-primary`, `card`, `step-pill`, `tag-pill`, `blob-svg`, `ide-container`, `ide-window`, `ide-editor`, `ide-output-container`, `btn-run`
 - **Error Handling Policy**: Pyodide error output disajikan dalam pesan berwarna pink cerah di kontainer terminal output tanpa memutus layout slide.
 - **Forbidden Packages / Patterns**: Dilarang menggunakan CSS framework eksternal yang tidak diminta (Tailwind/Bootstrap), dilarang menggunakan JS bundler rumit. Harus berbentuk file HTML static mandiri per sesi yang bisa langsung dibuka di browser.
+- **Language Standard**: Use concise international English, short sentences, familiar school-age vocabulary, and consistent technical terms. Preserve official product labels such as GitHub, Codespaces, Source Control, Commit, Sync Changes, Python, and Telegram exactly as shown in their interfaces.
+- **Mandatory English Gate**: A material HTML file is not complete and must not be handed off, published, or marked as QC-ready while any student-facing Indonesian text remains. This applies to titles, navigation, stories, instructions, quizzes, buttons, code strings, prompts, output examples, loading states, success messages, and error messages. Internal Markdown planning notes and non-rendered developer comments may use Indonesian.
+- **Bookmark Update Workflow**: After generating or editing any material HTML, count its final slides, identify the actual topic boundaries, and update `bookmark.md` in the same task. Put the material file link once above its bookmark list, then use only plain `start - end = topic` lines. Do not postpone the bookmark update to a later session.
+- **Deep-Link Requirement**: Every material HTML must read `#slide-N` on initial load and on `hashchange`, activate the requested slide when valid, and keep the URL hash synchronized when the learner navigates. Invalid or missing hashes must safely fall back to slide 1.
 
 ---
 
@@ -193,6 +202,9 @@ Specifies how the agent or developer should verify that features work correctly 
   - [ ] Navigasi Slide (Next, Prev, Keyboard Arrow Left/Right) berjalan lancar.
   - [ ] Eksekusi kode Python di Pyodide IDE (`#python-code` -> `#run-btn` -> `#python-output`) berfungsi mulus.
   - [ ] Tampilan konsisten dengan UI/UX [template.html](file:///Users/yazidhilmi/Documents/Edu/Personal_pro/LMS-ags/materi-smt2/template.html).
+  - [ ] Seluruh student-facing content menggunakan bahasa Inggris tanpa sisa teks bahasa Indonesia, termasuk tombol navigasi, prompt IDE, output, challenge, dan pesan error.
+  - [ ] `bookmark.md` sudah dibuat/diperbarui pada task yang sama, mencakup seluruh rentang materi dari slide pertama sampai terakhir tanpa celah atau tumpang tindih.
+  - [ ] Setiap bagian bookmark memiliki satu link file di atasnya dan baris rentang berformat persis `1 - 5 = Nama Materi` tanpa bullet atau link tambahan.
 - **Verification Commands to Run**: Buka file HTML di browser lokal (`open pertemuan-XX.html` atau `npx http-server .`), uji navigasi tombol dan eksekusi Pyodide IDE.
 
 ---
@@ -226,4 +238,3 @@ Details how the app will be built, deployed to production, monitored, and mainta
 - **Error Tracking & Telemetry**: QC Manual per file sesi sebelum dipublikasikan
 - **Analytics Platform**: N/A / GitHub Traffic Insights
 - **Post-Launch Maintenance Plan**: Penyesuaian materi berkala sesuai perkembangan feedback siswa di kelas.
-
