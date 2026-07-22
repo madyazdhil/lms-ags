@@ -316,9 +316,10 @@ function autoProcessPendingAttendanceDirect(sheet, row) {
       var materi = String(targetSheet.getRange(row, 3).getValue() || '').trim();
       var recording = String(targetSheet.getRange(row, 7).getValue() || '').trim();
       
-      // Submit form directly via Google Apps Script Cloud UrlFetchApp
-      var airtableFormShareId = 'shrq4Fdq0W7tCRgHG';
+      // Airtable Form Metadata
+      var airtableShareId = 'shrq4Fdq0W7tCRgHG';
       var airtableAppId = 'appZWFkgIQZR6Mz86';
+      var airtableViewId = 'viwZgvDGh0Ha9WNc2';
       
       var nowStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
       targetSheet.getRange(row, 14).setValue('Submitted via GAS Cloud (' + nowStr + ')');
@@ -327,5 +328,6 @@ function autoProcessPendingAttendanceDirect(sheet, row) {
     Logger.log('Error in autoProcessPendingAttendanceDirect: ' + err.toString());
   }
 }
+
 
 
