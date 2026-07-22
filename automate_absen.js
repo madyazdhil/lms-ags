@@ -120,13 +120,44 @@ async function fillAirtableAttendanceForm(browser, session) {
     const attendBtn = page.locator('text="Yes"').first();
     if (await attendBtn.isVisible()) {
       await attendBtn.click().catch(() => {});
+      await page.waitForTimeout(1500); // Wait for conditional questions to appear
     }
 
-    // 8. Student's Concern *
+    // 8. Sub-Topic Covered in the class * -> Select "Other Sub-Topic"
+    const subtopicAddBtn = page.locator('div:has-text("Sub-Topic Covered in the class") ~ div button:has-text("Add"), div:has-text("Sub-Topic Covered in the class") ~ div div[role="button"]:has-text("Add")').first();
+    if (await subtopicAddBtn.isVisible()) {
+      await subtopicAddBtn.click();
+      await page.waitForTimeout(1000);
+      await page.keyboard.type('Other Sub-Topic');
+      await page.waitForTimeout(1000);
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(500);
+    }
+
+    // 9. Other Sub-Topic Covered in the class * -> Fill Column C (Materi / Title)
+    const otherSubtopicInput = page.locator('div:has-text("Other Sub-Topic Covered in the class") ~ div input, div:has-text("Other Sub-Topic Covered in the class") ~ div textarea').first();
+    if (await otherSubtopicInput.isVisible()) {
+      await otherSubtopicInput.fill(session.title || 'Materi Sesi');
+    }
+
+    // 10. Class Duration (hour) * -> Select "1"
+    const durationBtn = page.locator('text="1"').first();
+    if (await durationBtn.isVisible()) {
+      await durationBtn.click().catch(() => {});
+    }
+
+    // 11. Was there any problem during the session? * -> Select "No, it was well conducted"
+    const problemBtn = page.locator('text="No, it was well conducted"').first();
+    if (await problemBtn.isVisible()) {
+      await problemBtn.click().catch(() => {});
+    }
+
+    // 12. Student's Concern *
     const concernField = page.locator('textarea, input[type="text"]').last();
     if (await concernField.isVisible()) {
       await concernField.fill('-').catch(() => {});
     }
+
 
     console.log(`[+] Form populated successfully for ${session.pertemuan}`);
 
