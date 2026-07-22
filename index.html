@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Dashboard - Alta Global School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#F4554C',     /* Main coral/red accent */
+                            navy: '#0B1B42',    /* Right panel dark blue */
+                            bg: '#F4F6F9',      /* Main background */
+                            sidebar: '#FFFFFF', /* White sidebar */
+                            main: '#F4F6F9',    /* Main content background */
+                            textMain: '#2D3748',
+                            textMuted: '#A0AEC0',
+                            card: '#FFFFFF'
+                        }
+                    },
+                    boxShadow: {
+                        'app': 'none',
+                        'card': '0 4px 20px -10px rgba(0, 0, 0, 0.05)',
+                        'date': '0 10px 20px -5px rgba(244, 85, 76, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #F4F6F9;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="w-screen h-screen m-0 p-0 overflow-hidden font-sans text-brand-textMain antialiased bg-brand-main">
+
+    <!-- Main App Container (Full Screen 100vw x 100vh) -->
+    <div class="w-full h-full bg-brand-main flex overflow-hidden relative">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="w-[90px] bg-white flex flex-col items-center py-8 flex-shrink-0 relative border-r border-gray-100 z-10">
+            
+            <!-- Logo -->
+            <a href="index.html" class="relative w-10 h-10 cursor-pointer mb-auto">
+                <div class="absolute inset-0 bg-brand-navy rounded-full scale-[0.65] -translate-y-2"></div>
+                <div class="absolute inset-0 bg-brand-red rounded-full scale-[0.65] translate-y-1"></div>
+            </a>
+
+            <!-- Centered Navigation -->
+            <nav class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full items-center">
+                
+                <!-- Home (Active) -->
+                <a href="index.html" class="relative group flex items-center justify-center w-12 h-12 text-brand-red" title="Home">
+                    <div class="absolute -left-[21px] top-1/2 -translate-y-1/2 w-1.5 h-6 bg-brand-red rounded-r-lg"></div>
+                    <i class="ph-fill ph-house text-[28px]"></i>
+                </a>
+
+                <!-- Class Sessions -->
+                <a href="class-sessions.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Class Sessions">
+                    <i class="ph ph-book-open text-[28px]"></i>
+                </a>
+                
+                <!-- Lesson Plans -->
+                <a href="lesson-plan.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Lesson Plans">
+                    <i class="ph ph-clipboard-text text-[28px]"></i>
+                </a>
+            </nav>
+
+            <!-- Exit/Logout -->
+            <a href="login.html" onclick="if(window.Auth) Auth.logout();" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12 mt-auto" title="Log Out">
+                <i class="ph ph-sign-out text-[28px]"></i>
+            </a>
+        </aside>
+
+        <!-- MAIN CENTER CONTENT (Fills remaining screen width) -->
+        <main class="flex-1 flex flex-col h-full overflow-y-auto px-10 xl:px-14 py-10 relative">
+            
+            <!-- Header -->
+            <header class="flex items-center justify-between mb-8 w-full">
+                <!-- Greeting -->
+                <h1 class="text-3xl font-bold text-brand-navy">Halo Students!</h1>
+
+                <!-- Help Button -->
+                <div class="flex items-center gap-4">
+                    <button class="px-5 py-2.5 text-[14px] font-semibold text-brand-textMain bg-white rounded-full shadow-sm hover:shadow transition-all border border-gray-100">
+                        Help
+                    </button>
+                </div>
+            </header>
+
+            <div class="flex-1 w-full flex flex-col">
+                
+                <!-- Calendar Section -->
+                <section class="mb-10">
+                    <div class="flex items-end justify-between border-b border-gray-200 pb-3 mb-6">
+                        <h2 id="calendar-title" class="text-xl font-bold text-brand-navy">July 2026 &bull; Week 4</h2>
+                    </div>
+                    
+                    <div class="flex items-center justify-between px-2">
+                        <button id="prev-week-btn" class="text-slate-400 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm hover:text-brand-red transition-colors cursor-pointer" title="Previous Week">
+                            <i class="ph-bold ph-caret-left"></i>
+                        </button>
+                        
+                        <div id="calendar-days" class="flex items-center gap-6 lg:gap-10">
+                            <!-- Dynamically populated by JS script -->
+                        </div>
+
+                        <button id="next-week-btn" class="text-slate-400 w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-sm hover:text-brand-red transition-colors cursor-pointer" title="Next Week">
+                            <i class="ph-bold ph-caret-right"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Main Task Cards Area -->
+                <div class="flex flex-col gap-5 w-full pb-8">
+                    
+                    <!-- Primary Lesson Card (Red) -->
+                    <a id="primary-lesson-card" href="class-sessions-meet.html?sessionId=SESS01" class="bg-brand-red rounded-3xl p-5 flex items-center justify-between shadow-[0_10px_20px_-5px_rgba(244,85,76,0.3)] cursor-pointer hover:scale-[1.01] transition-transform">
+                        <div class="flex items-center gap-5">
+                            
+                            <!-- Icon Art -->
+                            <div class="w-14 h-14 bg-[#FFF4CC] rounded-2xl relative overflow-hidden flex-shrink-0 shadow-inner flex items-center justify-center">
+                                <i class="ph-bold ph-code text-brand-navy text-2xl"></i>
+                            </div>
+
+                            <div>
+                                <span id="primary-badge" class="text-white/80 text-[10px] font-bold tracking-wider uppercase block mb-1">Active Module &bull; Sesi 1</span>
+                                <h3 id="primary-title" class="text-white font-bold text-[17px] leading-tight">Perkenalan GitHub & Markas Codespaces</h3>
+                                <p id="primary-desc" class="text-white/70 text-xs mt-1">Membuat Repo GitHub, Codespaces Cloud, IDE Terminal, & print() Pertama</p>
+                            </div>
+                        </div>
+                        <i class="ph-bold ph-caret-right text-white text-2xl opacity-80"></i>
+                    </a>
+
+                    <!-- Google Meet Card -->
+                    <a href="https://meet.google.com/pka-dbwt-tez" target="_blank" class="bg-white rounded-3xl p-5 flex items-center justify-between shadow-card cursor-pointer hover:scale-[1.01] transition-transform border border-gray-100 group">
+                        <div class="flex items-center gap-5">
+                            
+                            <!-- Abstract Pattern Icon Art -->
+                            <div class="w-14 h-14 bg-[#FFD700] rounded-2xl relative overflow-hidden flex-shrink-0 shadow-inner">
+                                <div class="absolute -top-2 -left-2 w-8 h-8 bg-[#EF4444] rounded-full"></div>
+                                <div class="absolute -bottom-1 -right-1 w-10 h-10 bg-[#3B82F6] rounded-tl-[24px]"></div>
+                                <div class="absolute top-2.5 right-2 w-1.5 h-1.5 bg-[#1E293B] rounded-full"></div>
+                                <div class="absolute bottom-2.5 left-2 w-1.5 h-1.5 bg-white rounded-full"></div>
+                                <div class="absolute top-5 left-5 w-2 h-2 border-[1.5px] border-[#1E293B] rounded-sm transform rotate-45"></div>
+                            </div>
+
+                            <div>
+                                <span class="text-brand-red text-[10px] font-bold tracking-wider uppercase block mb-1">Live Room &bull; Wed 6:30 – 7:30 PM</span>
+                                <h3 class="text-brand-navy font-bold text-[17px] leading-tight">Coding Club TA 2025/2026</h3>
+                                <p class="text-slate-400 text-xs mt-0.5 font-medium">Video call link: https://meet.google.com/pka-dbwt-tez</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-brand-red bg-brand-red/10 px-3 py-1.5 rounded-full group-hover:bg-brand-red group-hover:text-white transition-colors">Join Meet</span>
+                            <i class="ph-bold ph-caret-right text-slate-400 text-2xl group-hover:text-brand-red transition-colors"></i>
+                        </div>
+                    </a>
+
+                    <!-- Bottom Cards Grid (Lesson Plans & Class Materials) -->
+                    <div class="grid grid-cols-2 gap-5 mt-2">
+                        
+                        <!-- Lesson Plans Card -->
+                        <a href="lesson-plan.html" class="bg-white rounded-3xl p-4 flex items-center gap-4 shadow-card cursor-pointer hover:scale-[1.02] transition-transform border border-gray-100">
+                            <div class="w-12 h-12 bg-[#E0F2FE] rounded-[14px] relative overflow-hidden flex-shrink-0 shadow-inner">
+                                <div class="absolute top-1.5 left-1.5 right-1.5 bottom-1.5 bg-white rounded-md shadow-sm border border-[#BAE6FD]"></div>
+                                <div class="absolute top-3.5 left-3.5 w-5 h-[3px] bg-[#38BDF8] rounded-full"></div>
+                                <div class="absolute top-6 left-3.5 w-3 h-[3px] bg-[#7DD3FC] rounded-full"></div>
+                                <div class="absolute top-8 left-3.5 w-4 h-[3px] bg-[#7DD3FC] rounded-full"></div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-brand-navy text-[15px] mb-0.5">Lesson Plans</h3>
+                                <p class="text-slate-400 text-[11px] font-semibold uppercase tracking-wide">go to Lesson plan</p>
+                            </div>
+                        </a>
+                        
+                        <!-- Class Materials Card -->
+                        <a href="class-sessions.html" class="bg-white rounded-3xl p-4 flex items-center gap-4 shadow-card cursor-pointer hover:scale-[1.02] transition-transform border border-gray-100">
+                            <div class="w-12 h-12 bg-[#F3E8FF] rounded-[14px] relative overflow-hidden flex-shrink-0 shadow-inner">
+                                <div class="absolute top-2 left-1.5 w-9 h-7 bg-[#D8B4FE] rounded-sm"></div>
+                                <div class="absolute top-3.5 left-1.5 w-9 h-6 bg-[#A855F7] rounded-sm border-t border-[#F3E8FF] transform -rotate-3 origin-bottom-left shadow-sm"></div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-brand-navy text-[15px] mb-0.5">Class Materials</h3>
+                                <p class="text-slate-400 text-[11px] font-semibold uppercase tracking-wide">go to class mat'l</p>
+                            </div>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </main>
+
+        <!-- RIGHT PANEL (Teacher Card & Announcements) -->
+        <aside class="w-[360px] bg-brand-navy flex flex-col p-8 flex-shrink-0 z-20 shadow-[-10px_0_30px_-10px_rgba(0,0,0,0.1)] h-full overflow-y-auto">
+            
+            <h2 class="text-white text-[22px] font-bold mb-6">Your teacher</h2>
+            
+            <!-- Teacher Profile Card (White Card - Rectangular Photo Frame) -->
+            <div class="bg-white rounded-[32px] p-6 pb-7 flex flex-col items-center text-center shadow-xl relative overflow-hidden mb-8">
+                
+                <!-- Decorative background accent -->
+                <div class="absolute top-0 left-0 right-0 h-16 bg-gradient-to-r from-brand-red/10 to-purple-500/10"></div>
+
+                <!-- Teacher Rectangular Photo Frame (Not Round Circle!) -->
+                <div class="relative w-full h-44 mb-4 z-10 rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-slate-50 mt-2">
+                    <img src="assets/mr.yazd.png" alt="Mr. Yazid Hilmi" class="w-full h-full object-cover object-top" />
+                </div>
+
+                <h3 class="text-brand-navy font-bold text-lg mb-0.5 z-10">Mr. Yazid Hilmi</h3>
+                <span class="text-brand-red text-[11px] font-bold uppercase tracking-wider mb-3 z-10">IT Teacher & Curriculum Developer</span>
+                
+                <p class="text-slate-500 text-[12px] leading-relaxed mb-5 z-10 px-1 text-center font-normal">
+                    Curriculum Developer at Ruangguru with 5+ years of experience teaching and mentoring students, undergraduates, and educators across Jakarta and Tanjungpinang.
+                </p>
+
+                <a href="https://wa.me/62882019861992" target="_blank" class="bg-brand-red text-white font-bold py-2.5 px-8 rounded-full shadow-[0_8px_15px_-5px_rgba(244,85,76,0.5)] hover:scale-105 transition-transform z-10 text-sm inline-flex items-center gap-2">
+                    <i class="ph-bold ph-whatsapp-logo text-lg"></i>
+                    <span>Contact Mr. Yazid</span>
+                </a>
+            </div>
+            
+            <!-- Announcements Section (Dark Card) -->
+            <div class="mt-auto">
+                <div class="bg-[#1D2C59] rounded-3xl p-6 shadow-inner">
+                    <h4 class="text-white/60 text-[11px] font-bold tracking-[0.15em] uppercase mb-4">Announcements</h4>
+                    
+                    <!-- Announcement List -->
+                    <div class="flex flex-col gap-4">
+                        <!-- Item 1 -->
+                        <div class="flex gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-brand-red mt-1.5 flex-shrink-0"></div>
+                            <div>
+                                <h5 class="text-white text-sm font-semibold mb-1">New Assignment Uploaded</h5>
+                                <p class="text-white/50 text-[11px]">Due this Friday.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 2 -->
+                        <div class="flex gap-3">
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></div>
+                            <div>
+                                <h5 class="text-white text-sm font-semibold mb-1">Class Rescheduled</h5>
+                                <p class="text-white/50 text-[11px]">Moved to 2:00 PM.</p>
+                            </div>
+                        </div>
+
+                        <!-- Progress Dots -->
+                        <div class="flex gap-1.5 mt-2">
+                            <div class="h-1 flex-1 bg-brand-red rounded-full"></div>
+                            <div class="h-1 flex-1 bg-white/20 rounded-full"></div>
+                            <div class="h-1 flex-1 bg-white/20 rounded-full"></div>
+                            <div class="h-1 flex-1 bg-white/20 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let weekOffset = 0;
+            let selectedDate = new Date();
+
+            const calendarTitle = document.getElementById('calendar-title');
+            const calendarDays = document.getElementById('calendar-days');
+            const prevBtn = document.getElementById('prev-week-btn');
+            const nextBtn = document.getElementById('next-week-btn');
+
+            function renderCalendar() {
+                const baseDate = new Date();
+                baseDate.setDate(baseDate.getDate() + (weekOffset * 7));
+
+                const dayOfWeek = baseDate.getDay();
+                const distToMon = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek);
+                const monday = new Date(baseDate);
+                monday.setDate(baseDate.getDate() + distToMon);
+
+                const monthNames = ["January", "February", "March", "April", "May", "June", 
+                                    "July", "August", "September", "October", "November", "December"];
+                const monthName = monthNames[monday.getMonth()];
+                const year = monday.getFullYear();
+
+                const firstDayOfMonth = new Date(year, monday.getMonth(), 1);
+                const weekNum = Math.ceil((((monday - firstDayOfMonth) / (24 * 3600 * 1000)) + firstDayOfMonth.getDay() + 1) / 7);
+
+                if (calendarTitle) {
+                    calendarTitle.innerHTML = `${monthName} ${year} &bull; Week ${weekNum}`;
+                }
+
+                const today = new Date();
+                const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+                const dotColors = ["bg-orange-400", "bg-purple-400", "bg-brand-red", "bg-blue-400", "bg-yellow-400"];
+
+                if (calendarDays) {
+                    calendarDays.innerHTML = '';
+                    for (let i = 0; i < 5; i++) {
+                        const dayDate = new Date(monday);
+                        dayDate.setDate(monday.getDate() + i);
+
+                        const isToday = dayDate.toDateString() === today.toDateString();
+                        const isSelected = dayDate.toDateString() === selectedDate.toDateString();
+
+                        const dayEl = document.createElement('div');
+                        if (isToday || isSelected) {
+                            dayEl.className = 'flex flex-col items-center gap-1.5 cursor-pointer bg-white shadow-date py-3 px-5 rounded-[20px] -mt-3 -mb-3 relative z-10 border border-brand-red/20 transition-all';
+                        } else {
+                            dayEl.className = 'flex flex-col items-center gap-1.5 cursor-pointer opacity-50 hover:opacity-100 transition-opacity';
+                        }
+                        
+                        dayEl.innerHTML = `
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${daysShort[i]}</span>
+                            <span class="${(isToday || isSelected) ? 'text-xl' : 'text-lg'} font-bold text-brand-navy">${dayDate.getDate()}</span>
+                            <div class="${(isToday || isSelected) ? 'w-1.5 h-1.5 bg-brand-red' : 'w-1 h-1 ' + dotColors[i]} rounded-full"></div>
+                        `;
+
+                        dayEl.addEventListener('click', () => {
+                            selectedDate = dayDate;
+                            renderCalendar();
+                        });
+
+                        calendarDays.appendChild(dayEl);
+                    }
+                }
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    weekOffset--;
+                    renderCalendar();
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    weekOffset++;
+                    renderCalendar();
+                });
+            }
+
+            renderCalendar();
+
+            // Dynamically load Active Session from Google Sheet
+            (async () => {
+                const res = await fetchAPI('getSessions');
+                const sessions = (res && res.data && res.data.length > 0) ? res.data : window.MOCK_DATA.sessions;
+                
+                // Find latest Active session
+                let activeSess = sessions.slice().reverse().find(s => s.status && (s.status.toLowerCase() === 'active' || s.status.toLowerCase() === 'live'));
+                if (!activeSess) {
+                    activeSess = sessions[0];
+                }
+                
+                const card = document.getElementById('primary-lesson-card');
+                const badge = document.getElementById('primary-badge');
+                const title = document.getElementById('primary-title');
+                const desc = document.getElementById('primary-desc');
+
+                if (card) card.href = `class-sessions-meet.html?sessionId=${activeSess.id}`;
+                if (badge) badge.innerHTML = `Active Module &bull; ${activeSess.pertemuan || ('Sesi ' + activeSess.week_num)}`;
+                if (title) title.innerText = activeSess.title;
+                if (desc) desc.innerText = activeSess.description || (`Materi ${activeSess.pertemuan}: ${activeSess.title}`);
+            })();
+        });
+    </script>
+</body>
+</html>

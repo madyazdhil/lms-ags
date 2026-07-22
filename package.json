@@ -1,0 +1,13 @@
+{
+  "name": "lms-ags-attendance-automation",
+  "version": "1.0.0",
+  "description": "Automated Teacher Attendance Form submission using Playwright and Google Apps Script",
+  "main": "automate_absen.js",
+  "scripts": {
+    "absen": "node automate_absen.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "playwright": "^1.40.0"
+  }
+}

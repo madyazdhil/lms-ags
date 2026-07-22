@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Session & Materials - LMS AGS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#F4554C',     /* Main coral/red accent */
+                            navy: '#0B1B42',    /* Dark blue for active states and text */
+                            bg: '#EBDCD0',      /* Outer warm background */
+                            sidebar: '#F8F9FB', /* Light gray sidebar */
+                            main: '#F4F6F9',    /* Main content background */
+                            textMain: '#2D3748',
+                            textMuted: '#A0AEC0',
+                            card: '#FFFFFF'
+                        }
+                    },
+                    boxShadow: {
+                        'app': '0 30px 60px -15px rgba(0, 0, 0, 0.2)',
+                        'card': '0 4px 20px -10px rgba(0, 0, 0, 0.05)',
+                        'timeline': '0 10px 25px -5px rgba(11, 27, 66, 0.15)',
+                        'play': '0 10px 25px -5px rgba(0, 0, 0, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #EBDCD0;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden font-sans text-brand-textMain antialiased bg-brand-main flex">
+
+    <!-- Main App Container -->
+    <div class="w-full h-full bg-brand-main flex overflow-hidden relative">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="w-[90px] bg-white flex flex-col items-center py-8 flex-shrink-0 relative border-r border-gray-100 z-10">
+            
+            <!-- Logo -->
+            <a href="index.html" class="relative w-10 h-10 cursor-pointer mb-auto" title="Home">
+                <div class="absolute inset-0 bg-brand-navy rounded-full scale-[0.65] -translate-y-2"></div>
+                <div class="absolute inset-0 bg-brand-red rounded-full scale-[0.65] translate-y-1"></div>
+            </a>
+
+            <!-- Centered Navigation -->
+            <nav class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full items-center">
+                
+                <!-- Home -->
+                <a href="index.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Home">
+                    <i class="ph ph-house text-[28px]"></i>
+                </a>
+
+                <!-- Active Book Icon (Red) -> Class Sessions -->
+                <a href="class-sessions.html" class="relative group flex items-center justify-center w-12 h-12 text-brand-red" title="Class Sessions">
+                    <div class="absolute -left-[21px] top-1/2 -translate-y-1/2 w-1.5 h-6 bg-brand-red rounded-r-lg"></div>
+                    <i class="ph-fill ph-book-open text-[28px]"></i>
+                </a>
+                
+                <!-- Clipboard -> Lesson Plans -->
+                <a href="lesson-plan.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Lesson Plans">
+                    <i class="ph ph-clipboard-text text-[28px]"></i>
+                </a>
+            </nav>
+
+            <!-- Exit/Logout -->
+            <a href="login.html" onclick="if(window.Auth) Auth.logout();" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12 mt-auto" title="Log Out">
+                <i class="ph ph-sign-out text-[28px]"></i>
+            </a>
+        </aside>
+
+        <!-- MAIN CENTER CONTENT -->
+        <main class="flex-1 flex flex-col h-full overflow-y-auto px-6 xl:px-10 py-8 relative w-full">
+            
+            <!-- Header -->
+            <header class="flex items-center justify-between mb-8 w-full flex-shrink-0">
+                <a href="class-sessions.html" class="flex items-center gap-3 cursor-pointer group">
+                    <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm border border-gray-100 group-hover:shadow transition-all">
+                        <i class="ph-bold ph-arrow-left text-brand-navy"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-brand-navy">Coding Club TA 2025/2026</h1>
+                        <p class="text-xs text-slate-400 font-medium">Membuat Bot Telegram dengan Python (24 Sesi)</p>
+                    </div>
+                </a>
+            </header>
+
+            <!-- SECTION 1: RECORDING PLAYER & COURSE TIMELINE -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full mb-10">
+                
+                <!-- LEFT COLUMN (Recording Player & Session Title) -->
+                <div class="lg:col-span-8 flex flex-col gap-6">
+                    
+                    <!-- Video Recording Player Container -->
+                    <div id="recording-container" class="relative w-full aspect-video bg-[#0B1B42] rounded-[32px] overflow-hidden shadow-sm border border-white/50 flex flex-col justify-center items-center">
+                        <!-- Populated dynamically by JS -->
+                    </div>
+
+                    <!-- Session Title Block -->
+                    <div class="px-2 mt-2">
+                        <h2 id="session-title" class="text-3xl font-bold text-brand-navy mb-2 tracking-tight">Sesi 1: Perkenalan GitHub & Markas Codespaces</h2>
+                        <div class="flex flex-wrap items-center gap-3 text-brand-textMuted font-medium text-sm">
+                            <span class="flex items-center gap-1.5 text-brand-red font-semibold"><i class="ph-bold ph-video-camera text-lg"></i> Recording Available</span>
+                            <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <span class="flex items-center gap-1.5"><i class="ph ph-clock text-lg"></i> Wednesday, 6:30 – 7:30 PM</span>
+                            <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                            <span class="text-slate-500">Asia/Jakarta</span>
+                        </div>
+                        <p id="session-desc" class="text-slate-600 text-sm mt-3 leading-relaxed">
+                            Membuat Repository di GitHub dan meluncurkan Codespaces. Pengenalan antarmuka IDE (Explorer, Editor, Terminal). Penjelasan konsep Server/Cloud dan menjalankan script print() pertama.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN (Course Timeline / Syllabus Overview) -->
+                <div class="lg:col-span-4 flex flex-col gap-6">
+                    
+                    <!-- Course Section Tracker (Syllabus Overview - Column L) -->
+                    <div class="bg-white rounded-[32px] p-6 shadow-card border border-transparent">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-bold text-brand-navy text-lg flex items-center gap-2">
+                                <i class="ph-bold ph-[#F4554C] ph-timer text-brand-red"></i>
+                                <span>Syllabus Overview</span>
+                            </h3>
+                            <span id="session-fase-badge" class="text-xs font-bold text-brand-red bg-brand-red/10 px-2.5 py-1 rounded-full">FASE 1</span>
+                        </div>
+
+                        <!-- Timeline Wrapper for Video Timestamps (Column L) -->
+                        <div id="timeline-container" class="relative pl-4 border-l-2 border-gray-100 flex flex-col gap-4 ml-2 mt-2 max-h-[420px] overflow-y-auto custom-scrollbar">
+                            <!-- Timeline Items populated dynamically from Column L -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- SECTION 2: PRESENTATION SLIDES & BOOKMARKS -->
+            <div class="pt-8 border-t border-gray-300/60 pb-12 w-full">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full">
+                    
+                    <!-- LEFT COLUMN (Presentation Slides Deck - Column J Link) -->
+                    <div class="lg:col-span-8 flex flex-col gap-4">
+                        <div class="flex items-center justify-between px-2">
+                            <h3 class="text-xl font-bold text-brand-navy">Presentation Slides & Slide Deck</h3>
+                            <a id="open-tab-link" href="materi-smt2/pertemuan-01.html" target="_blank" class="text-sm font-semibold text-brand-red hover:text-red-600 transition-colors flex items-center gap-1">
+                                Open in new tab <i class="ph-bold ph-arrow-up-right"></i>
+                            </a>
+                        </div>
+                        
+                        <!-- Presentation Slide Deck Iframe Sandbox -->
+                        <div class="w-full aspect-video bg-white rounded-[32px] p-2 shadow-sm border border-gray-100 flex flex-col relative overflow-hidden">
+                            <iframe 
+                                id="material-iframe"
+                                src="materi-smt2/pertemuan-01.html" 
+                                class="flex-1 w-full bg-gray-50 rounded-2xl border-none"
+                                title="Presentation Materials Sandbox">
+                            </iframe>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN (Slide Bookmarks - Column M) -->
+                    <div class="lg:col-span-4 flex flex-col justify-start">
+                        <!-- Bookmarks Section -->
+                        <div class="bg-white rounded-[32px] p-6 shadow-card border border-transparent">
+                            <div class="flex items-center gap-2 mb-5">
+                                <i class="ph-fill ph-bookmarks text-brand-red text-xl"></i>
+                                <h3 class="font-bold text-brand-navy text-lg">Interactive Slide Bookmarks</h3>
+                            </div>
+
+                            <div id="bookmarks-container" class="flex flex-col gap-3 max-h-[440px] overflow-y-auto custom-scrollbar">
+                                <!-- Dynamically populated from Column M -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECTION 3: TAMBAHAN MATERI (FULL WIDTH - Column H) -->
+            <div class="pt-8 border-t border-gray-300/60 pb-16 w-full">
+                <div class="flex flex-col gap-4 w-full">
+                    <div class="flex items-center justify-between px-2">
+                        <h3 class="text-xl font-bold text-brand-navy flex items-center gap-2">
+                            <i class="ph-bold ph-article text-brand-red"></i>
+                            <span>Materi Tambahan & Notes</span>
+                        </h3>
+                    </div>
+                    
+                    <!-- Full Width Iframe Sandbox for Additional Material (Column H) -->
+                    <div class="w-full min-h-[480px] bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 flex flex-col relative overflow-hidden">
+                        <iframe 
+                            id="tambahan-materi-iframe" 
+                            class="w-full h-full min-h-[440px] bg-transparent border-none"
+                            title="Materi Tambahan Sandbox"
+                            sandbox="allow-scripts allow-same-origin">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        let currentRecordingUrl = '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const sessId = params.get('sessionId') || 'SESS01';
+
+            // Fetch session details from Apps Script / Mock API
+            const res = await fetchAPI('getSessionDetail', { sessionId: sessId });
+            const data = res && res.data ? res.data : null;
+            const sess = data ? data.session : (window.MOCK_DATA.sessions.find(s => s.id === sessId) || window.MOCK_DATA.sessions[0]);
+
+            if (sess) {
+                const titleEl = document.getElementById('session-title');
+                const descEl = document.getElementById('session-desc');
+                const badgeEl = document.getElementById('session-fase-badge');
+                const materialIframe = document.getElementById('material-iframe');
+                const openTabBtn = document.getElementById('open-tab-link');
+                const recordingContainer = document.getElementById('recording-container');
+                const tambahanIframe = document.getElementById('tambahan-materi-iframe');
+
+                if (titleEl) titleEl.innerText = sess.title;
+                if (descEl) descEl.innerText = sess.description || ('Materi ' + sess.pertemuan + ': ' + sess.title);
+                if (badgeEl) badgeEl.innerText = sess.fase || 'Syllabus';
+                
+                // 1. Recording Player (Column G)
+                if (recordingContainer) {
+                    if (sess.recording_url && sess.recording_url.trim() !== '') {
+                        let recUrl = sess.recording_url.trim();
+                        if (recUrl.includes('drive.google.com/file/d/')) {
+                            recUrl = recUrl.replace(/\/view(\?.*)?$/, '/preview');
+                            if (!recUrl.endsWith('/preview')) {
+                                recUrl = recUrl.split('?')[0].replace(/\/view$/, '') + '/preview';
+                            }
+                        }
+                        currentRecordingUrl = recUrl;
+
+                        if (recUrl.startsWith('http') && (recUrl.includes('embed') || recUrl.includes('youtube') || recUrl.includes('drive.google.com'))) {
+                            recordingContainer.innerHTML = `<iframe id="main-recording-iframe" src="${recUrl}" class="w-full h-full rounded-[32px] border-none" allowfullscreen title="Session Recording" allow="autoplay"></iframe>`;
+                        } else {
+                            recordingContainer.innerHTML = `
+                                <div class="flex flex-col items-center justify-center p-8 text-center text-white gap-4">
+                                    <div class="w-20 h-20 bg-brand-red text-white rounded-full flex items-center justify-center shadow-play">
+                                        <i class="ph-fill ph-play-circle text-4xl"></i>
+                                    </div>
+                                    <h3 class="font-bold text-xl">${sess.title}</h3>
+                                    <p class="text-sm text-white/80 max-w-md">Klik tombol di bawah ini untuk mengunduh/menonton rekaman sesi.</p>
+                                    <a href="${recUrl}" target="_blank" class="px-6 py-3 bg-brand-red text-white font-bold rounded-full shadow-lg hover:scale-105 transition-transform flex items-center gap-2">
+                                        <i class="ph-bold ph-video-camera text-lg"></i>
+                                        <span>Tonton Rekaman Sesi</span>
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        recordingContainer.innerHTML = `
+                            <div class="flex flex-col items-center justify-center p-8 text-center text-white">
+                                <div class="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-3">
+                                    <i class="ph-bold ph-video-camera-slash text-2xl text-brand-red"></i>
+                                </div>
+                                <h4 class="font-bold text-lg mb-1">Rekaman Belum Tersedia</h4>
+                                <p class="text-xs text-white/70">Video rekaman untuk ${sess.pertemuan || 'sesi ini'} akan diunggah ke Google Sheet kolom G.</p>
+                            </div>
+                        `;
+                    }
+                }
+
+                // 2. Material Slide Deck (Column J)
+                if (materialIframe && sess.material_embed_url) {
+                    materialIframe.src = sess.material_embed_url;
+                }
+                if (openTabBtn && sess.material_embed_url) {
+                    openTabBtn.href = sess.material_embed_url;
+                }
+
+                // 3. Tambahan Materi Section (Column H)
+                if (tambahanIframe) {
+                    const tambahanContent = sess.tambahan_materi || '<div style="font-family:sans-serif; text-align:center; padding:60px; color:#A0AEC0;"><h3 style="margin:0; font-size:18px;">Belum Ada Materi Tambahan</h3><p style="font-size:14px; margin-top:8px;">Materi tambahan dari sheet kolom H akan ditampilkan di sini.</p></div>';
+                    if (tambahanContent.trim().startsWith('<')) {
+                        tambahanIframe.srcdoc = tambahanContent;
+                    } else if (tambahanContent.trim().startsWith('http')) {
+                        tambahanIframe.src = tambahanContent;
+                    } else {
+                        tambahanIframe.srcdoc = `<div style="font-family:sans-serif; padding:24px; color:#2D3748; line-height:1.6;">${tambahanContent}</div>`;
+                    }
+                }
+
+                // 4. Render Syllabus Overview Video Timestamps (Column L)
+                const timelineContainer = document.getElementById('timeline-container');
+                if (timelineContainer) {
+                    const timelineItems = parseSyllabusOverview(sess.syllabus_overview);
+                    if (timelineItems.length > 0) {
+                        timelineContainer.innerHTML = timelineItems.map((item, idx) => `
+                            <div onclick="jumpToVideoTime(${item.seconds})" class="relative cursor-pointer group block">
+                                <div class="absolute -left-[21px] top-3.5 w-3.5 h-3.5 rounded-full bg-white border-[3px] border-brand-red shadow-sm z-10 group-hover:bg-brand-red transition-colors"></div>
+                                <div class="bg-gray-50 border border-transparent rounded-2xl p-3.5 ml-3 group-hover:bg-white group-hover:border-gray-100 group-hover:shadow-sm transition-all">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-[11px] font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                            <i class="ph-bold ph-play-circle"></i> ${item.timeRange}
+                                        </span>
+                                    </div>
+                                    <h4 class="font-bold text-brand-navy text-sm group-hover:text-brand-red transition-colors">${item.title}</h4>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        timelineContainer.innerHTML = `
+                            <div class="text-xs text-slate-400 py-4 text-center">
+                                Belum ada timestamps video di Kolom L.
+                            </div>
+                        `;
+                    }
+                }
+
+                // 5. Render Interactive Slide Bookmarks (Column M)
+                const bookmarksContainer = document.getElementById('bookmarks-container');
+                if (bookmarksContainer) {
+                    const slideBookmarks = parseMaterialBookmarks(sess.material_bookmark);
+                    if (slideBookmarks.length > 0) {
+                        bookmarksContainer.innerHTML = slideBookmarks.map((bm, index) => `
+                            <button onclick="jumpToSlide(${bm.startSlide})" class="w-full flex items-center justify-between p-3.5 rounded-2xl border border-gray-100 hover:border-brand-red/30 hover:bg-brand-red/5 transition-all group text-left cursor-pointer">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-brand-main group-hover:bg-white flex items-center justify-center text-brand-navy font-bold text-xs shadow-sm flex-shrink-0">${index + 1}</div>
+                                    <div>
+                                        <span class="font-semibold text-brand-textMain text-xs block group-hover:text-brand-red transition-colors">${bm.title}</span>
+                                        <span class="text-[10px] text-brand-red font-bold block">Slide ${bm.slideRange}</span>
+                                    </div>
+                                </div>
+                                <i class="ph-bold ph-caret-right text-gray-300 group-hover:text-brand-red text-sm flex-shrink-0"></i>
+                            </button>
+                        `).join('');
+                    } else {
+                        bookmarksContainer.innerHTML = `
+                            <p class="text-xs text-slate-400 text-center py-4">Belum ada slide bookmark di Kolom M. Silakan buka materi langsung.</p>
+                        `;
+                    }
+                }
+            }
+        });
+
+        // Helper parser for Column L (Syllabus Overview - Video Timestamps)
+        // Format: "02:00 - 13:23 = Pengenalan Cloud"
+        function parseSyllabusOverview(rawText) {
+            if (!rawText || !rawText.trim()) return [];
+            const lines = rawText.split('\n');
+            const items = [];
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+
+                // Match: "02:00 - 13:23 = Title" or "02:00 = Title"
+                const parts = trimmed.split('=');
+                if (parts.length >= 2) {
+                    const timeRange = parts[0].trim();
+                    const title = parts.slice(1).join('=').trim();
+                    
+                    // Parse start time to seconds
+                    const startTimeStr = timeRange.split('-')[0].trim();
+                    const seconds = timeToSeconds(startTimeStr);
+
+                    items.push({
+                        timeRange: timeRange,
+                        seconds: seconds,
+                        title: title
+                    });
+                }
+            });
+
+            return items;
+        }
+
+        // Helper parser for Column M (Material Bookmark - Slide Bookmarks)
+        // Format: "1 - 5 = Pengenalan Cloud"
+        function parseMaterialBookmarks(rawText) {
+            if (!rawText || !rawText.trim()) return [];
+            const lines = rawText.split('\n');
+            const items = [];
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (!trimmed) return;
+
+                // Match: "1 - 5 = Title" or "6 = Title"
+                const parts = trimmed.split('=');
+                if (parts.length >= 2) {
+                    const slideRange = parts[0].trim();
+                    const title = parts.slice(1).join('=').trim();
+                    
+                    const startSlide = parseInt(slideRange.split('-')[0].trim(), 10) || 1;
+
+                    items.push({
+                        slideRange: slideRange,
+                        startSlide: startSlide,
+                        title: title
+                    });
+                }
+            });
+
+            return items;
+        }
+
+        // Convert "02:00" or "01:13:25" to seconds
+        function timeToSeconds(timeStr) {
+            if (!timeStr) return 0;
+            const parts = timeStr.split(':').map(p => parseInt(p, 10) || 0);
+            if (parts.length === 3) {
+                return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
+            } else if (parts.length === 2) {
+                return (parts[0] * 60) + parts[1];
+            } else if (parts.length === 1) {
+                return parts[0];
+            }
+            return 0;
+        }
+
+        // Jump video recording player to specific timestamp in seconds
+        function jumpToVideoTime(seconds) {
+            const recordingIframe = document.getElementById('main-recording-iframe');
+            if (recordingIframe && currentRecordingUrl) {
+                let baseUrl = currentRecordingUrl.split('?')[0].split('#')[0];
+                if (baseUrl.includes('youtube.com') || baseUrl.includes('youtu.be')) {
+                    recordingIframe.src = `${baseUrl}?autoplay=1&start=${seconds}`;
+                } else if (baseUrl.includes('drive.google.com')) {
+                    recordingIframe.src = `${baseUrl}?start=${seconds}`;
+                } else {
+                    recordingIframe.src = `${baseUrl}#t=${seconds}`;
+                }
+            }
+        }
+
+        // Jump presentation slide iframe to specific slide number
+        function jumpToSlide(slideNum) {
+            const iframe = document.getElementById('material-iframe');
+            if (iframe) {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'GOTO_SLIDE', slideIndex: slideNum, page: slideNum }, '*');
+                }
+                const baseSrc = iframe.src.split('#')[0];
+                iframe.src = `${baseSrc}#page=${slideNum}`;
+            }
+        }
+    </script>
+</body>
+</html>

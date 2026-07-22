@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Sessions - Alta Global School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            red: '#F4554C',     /* Main coral/red accent */
+                            navy: '#0B1B42',    /* Right panel dark blue */
+                            bg: '#F4F6F9',      /* Main background */
+                            sidebar: '#FFFFFF', /* White sidebar */
+                            main: '#F4F6F9',    /* Main content background */
+                            textMain: '#2D3748',
+                            textMuted: '#A0AEC0',
+                            card: '#FFFFFF'
+                        }
+                    },
+                    boxShadow: {
+                        'app': 'none',
+                        'card': '0 4px 20px -10px rgba(0, 0, 0, 0.05)',
+                        'date': '0 10px 20px -5px rgba(244, 85, 76, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #F4F6F9;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="w-screen h-screen m-0 p-0 overflow-hidden font-sans text-brand-textMain antialiased bg-brand-main">
+
+    <!-- Main App Container (Full Screen 100vw x 100vh) -->
+    <div class="w-full h-full bg-brand-main flex overflow-hidden relative">
+
+        <!-- LEFT SIDEBAR -->
+        <aside class="w-[90px] bg-white flex flex-col items-center py-8 flex-shrink-0 relative border-r border-gray-100 z-10">
+            
+            <!-- Logo -->
+            <a href="index.html" class="relative w-10 h-10 cursor-pointer mb-auto">
+                <div class="absolute inset-0 bg-brand-navy rounded-full scale-[0.65] -translate-y-2"></div>
+                <div class="absolute inset-0 bg-brand-red rounded-full scale-[0.65] translate-y-1"></div>
+            </a>
+
+            <!-- Centered Navigation -->
+            <nav class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full items-center">
+                
+                <!-- Home -->
+                <a href="index.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Home">
+                    <i class="ph ph-house text-[28px]"></i>
+                </a>
+
+                <!-- Class Sessions (Active) -->
+                <a href="class-sessions.html" class="relative group flex items-center justify-center w-12 h-12 text-brand-red" title="Class Sessions">
+                    <div class="absolute -left-[21px] top-1/2 -translate-y-1/2 w-1.5 h-6 bg-brand-red rounded-r-lg"></div>
+                    <i class="ph-fill ph-book-open text-[28px]"></i>
+                </a>
+                
+                <!-- Lesson Plans -->
+                <a href="lesson-plan.html" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12" title="Lesson Plans">
+                    <i class="ph ph-clipboard-text text-[28px]"></i>
+                </a>
+            </nav>
+
+            <!-- Exit/Logout -->
+            <a href="login.html" onclick="if(window.Auth) Auth.logout();" class="text-[#A0AEC0] hover:text-brand-navy transition-colors flex items-center justify-center w-12 h-12 mt-auto" title="Log Out">
+                <i class="ph ph-sign-out text-[28px]"></i>
+            </a>
+        </aside>
+
+        <!-- MAIN CENTER CONTENT -->
+        <main class="flex-1 flex flex-col h-full overflow-y-auto px-10 xl:px-14 py-10 relative">
+            
+            <!-- Header -->
+            <header class="flex items-center justify-between mb-8 w-full">
+                <!-- Title -->
+                <div>
+                    <h1 class="text-3xl font-bold text-brand-navy">Class Sessions</h1>
+                    <p class="text-slate-400 text-sm mt-1">Interactive modules, meeting recordings, and class materials</p>
+                </div>
+
+                <!-- Help Button (No Profile Avatar) -->
+                <div class="flex items-center gap-4">
+                    <button class="px-5 py-2.5 text-[14px] font-semibold text-brand-textMain bg-white rounded-full shadow-sm hover:shadow transition-all border border-gray-100">
+                        Help
+                    </button>
+                </div>
+            </header>
+
+            <div class="flex-1 w-full flex flex-col">
+                
+                <!-- Sessions Grid (Vertical Scroll, Responsive Columns) -->
+                <section class="mb-10 relative">
+                    <h2 class="text-xl font-bold text-brand-navy mb-4">All Sessions &bull; Python Telegram Bot (24 Sesi)</h2>
+                    
+                    <div id="sessions-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        
+                        <!-- Session 1: Active -->
+                        <a href="class-sessions-meet.html?sessionId=SESS01" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <!-- Thumbnail Art -->
+                            <div class="w-full h-40 bg-[#F3E8FF] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#E9D5FF] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#E9D5FF] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#A855F7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                                <div class="absolute w-8 h-8 rounded-full bg-[#FDE047] top-6 right-6"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 1: Perkenalan GitHub & Markas Codespaces</h3>
+                                <span class="text-brand-red text-xs font-bold uppercase tracking-wider">Session 1 &bull; Active</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 2: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS02" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#E0F2FE] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BAE6FD] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BAE6FD] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#38BDF8] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#7DD3FC] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#0284C7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 2: Ritual Sync (Save Game) & Variabel</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 2 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 3: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS03" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FEF3C7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FDE68A] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FDE68A] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F59E0B] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FBBF24] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#D97706] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 3: Kalkulator Server (Tipe Data & Math)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 3 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 4: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS04" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#DCFCE7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BBF7D0] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BBF7D0] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#22C55E] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#4ADE80] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#16A34A] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 4: Ngobrol Sama Komputer (User Input)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 4 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 5: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS05" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FCE7F3] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FBCFE8] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FBCFE8] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#EC4899] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#F472B6] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#DB2777] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 5: Logika Bercabang (If-Else Dasar)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 5 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 6: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS06" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FFEDD5] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FED7AA] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FED7AA] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F97316] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FB923C] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#EA580C] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 6: Review & Mini Project Python</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 6 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 7: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS07" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#F3E8FF] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#E9D5FF] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#E9D5FF] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#A855F7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 7: Lahirnya Sang Bot (BotFather & Token)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 7 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 8: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS08" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#E0F2FE] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BAE6FD] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BAE6FD] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#38BDF8] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#7DD3FC] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#0284C7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 8: Konsep Runtime & Bot Beo</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 8 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 9: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS09" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FEF3C7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FDE68A] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FDE68A] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F59E0B] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FBBF24] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#D97706] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 9: Bot Patuh Perintah (Command Handlers)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 9 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 10: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS10" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#DCFCE7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BBF7D0] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BBF7D0] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#22C55E] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#4ADE80] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#16A34A] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 10: Bot Paham Teks (Text Handlers & If-Else)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 10 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 11: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS11" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FCE7F3] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FBCFE8] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FBCFE8] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#EC4899] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#F472B6] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#DB2777] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 11: Bot Ngirim Gambar (Media Handling)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 11 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 12: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS12" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FFEDD5] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FED7AA] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FED7AA] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F97316] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FB923C] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#EA580C] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 12: Mini Project Bot Asisten (Evaluasi)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 12 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 13: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS13" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#F3E8FF] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#E9D5FF] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#E9D5FF] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#A855F7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 13: Rak Buku Server (List)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 13 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 14: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS14" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#E0F2FE] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BAE6FD] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BAE6FD] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#38BDF8] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#7DD3FC] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#0284C7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 14: Mesin Pengulang (For Loop)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 14 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 15: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS15" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FEF3C7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FDE68A] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FDE68A] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F59E0B] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FBBF24] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#D97706] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 15: Daftar Menu Telegram (List, Loop, Bot)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 15 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 16: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS16" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#DCFCE7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BBF7D0] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BBF7D0] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#22C55E] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#4ADE80] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#16A34A] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 16: Loker Laci Ganda (Dictionary)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 16 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 17: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS17" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FCE7F3] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FBCFE8] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FBCFE8] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#EC4899] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#F472B6] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#DB2777] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 17: Percakapan Berantai Part 1</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 17 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 18: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS18" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FFEDD5] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FED7AA] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FED7AA] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F97316] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FB923C] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#EA580C] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 18: Percakapan Berantai Part 2</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 18 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 19: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS19" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#F3E8FF] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#E9D5FF] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#E9D5FF] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#E9D5FF] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#A855F7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 19: Memori Bot (State & Skor Dictionary)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 19 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 20: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS20" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#E0F2FE] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BAE6FD] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BAE6FD] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#38BDF8] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#7DD3FC] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#0284C7] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 20: Merancang Pertanyaan Kuis</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 20 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 21: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS21" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FEF3C7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FDE68A] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FDE68A] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F59E0B] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FBBF24] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#D97706] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 21: Validasi Jawaban Kuis</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 21 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 22: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS22" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#DCFCE7] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#BBF7D0] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#BBF7D0] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#22C55E] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#4ADE80] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#16A34A] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 22: Upgrade Visual (Custom Keyboard)</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 22 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 23: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS23" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FCE7F3] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FBCFE8] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FBCFE8] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#EC4899] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#F472B6] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#DB2777] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 23: Final Debugging & Cleanup</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 23 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                        <!-- Session 24: Upcoming -->
+                        <a href="class-sessions-meet.html?sessionId=SESS24" class="bg-white rounded-3xl p-4 shadow-card flex flex-col gap-4 cursor-pointer hover:-translate-y-1 transition-transform border border-transparent hover:border-brand-red/20 group">
+                            <div class="w-full h-40 bg-[#FFEDD5] rounded-2xl relative overflow-hidden flex items-center justify-center">
+                                <div class="absolute w-28 h-18 bg-white rounded-lg shadow-sm top-4 left-4 border border-[#FED7AA] group-hover:scale-105 transition-transform">
+                                    <div class="w-full h-3 bg-[#FED7AA] rounded-t-lg flex items-center px-2 gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                        <div class="w-1 h-1 rounded-full bg-white"></div>
+                                    </div>
+                                    <div class="p-2 flex flex-col gap-1.5">
+                                        <div class="w-14 h-1.5 bg-[#F97316] rounded-full"></div>
+                                        <div class="w-10 h-1.5 bg-[#FB923C] rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="absolute w-12 h-12 bg-[#EA580C] rounded-xl -bottom-2 -right-2 shadow-lg transform rotate-12"></div>
+                            </div>
+                            <div class="px-1">
+                                <h3 class="font-bold text-brand-navy text-lg leading-tight mb-1">Sesi 24: Demo Day & Perayaan!</h3>
+                                <span class="text-slate-400 text-xs font-bold uppercase tracking-wider">Session 24 &bull; Upcoming</span>
+                            </div>
+                        </a>
+
+                    </div>
+                </section>
+
+                <!-- Bottom Action Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full pb-8 mt-auto">
+                    
+                    <!-- Go to Lesson Plan Card -->
+                    <a href="lesson-plan.html" class="bg-white rounded-3xl p-6 flex flex-col justify-center gap-4 shadow-card cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all group border border-transparent hover:border-brand-red/20">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 bg-[#FFF1F0] rounded-2xl relative overflow-hidden flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                                <div class="absolute top-2.5 left-2.5 right-2.5 bottom-2.5 bg-white rounded-lg shadow-sm border border-[#FECACA]"></div>
+                                <div class="absolute top-4.5 left-4 w-5 h-[3px] bg-[#F87171] rounded-full"></div>
+                                <div class="absolute top-7 left-4 w-3 h-[3px] bg-[#FCA5A5] rounded-full"></div>
+                                <div class="absolute top-9 left-4 w-4 h-[3px] bg-[#FCA5A5] rounded-full"></div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-brand-navy text-[18px] mb-1">Go to lesson plan</h3>
+                                <p class="text-slate-400 text-[11px] font-bold uppercase tracking-wider group-hover:text-brand-red transition-colors flex items-center gap-1.5">
+                                    Lesson plan <i class="ph-bold ph-arrow-right"></i>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+                    
+                    <!-- Go to Google Meet Card -->
+                    <a href="https://meet.google.com/pka-dbwt-tez" target="_blank" class="bg-white rounded-3xl p-6 flex flex-col justify-center gap-4 shadow-card cursor-pointer hover:shadow-lg hover:-translate-y-1 transition-all group border border-transparent hover:border-blue-500/20">
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 bg-[#DBEAFE] rounded-2xl relative overflow-hidden flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+                                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center">
+                                    <div class="w-5 h-4 bg-[#3B82F6] rounded-[4px]"></div>
+                                    <div class="w-0 h-0 border-t-[3.5px] border-t-transparent border-l-[5px] border-l-[#3B82F6] border-b-[3.5px] border-b-transparent ml-0.5"></div>
+                                </div>
+                                <div class="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-[#93C5FD] rounded-full"></div>
+                                <div class="absolute bottom-2.5 left-2.5 w-1.5 h-1.5 bg-[#93C5FD] rounded-full"></div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-brand-navy text-[18px] mb-1">Join Google Meet</h3>
+                                <p class="text-slate-400 text-[11px] font-bold uppercase tracking-wider group-hover:text-blue-500 transition-colors flex items-center gap-1.5">
+                                    https://meet.google.com/pka-dbwt-tez <i class="ph-bold ph-arrow-right"></i>
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+        </main>
+
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const res = await fetchAPI('getSessions');
+            const sessions = (res && res.data && res.data.length > 0) ? res.data : window.MOCK_DATA.sessions;
+
+            if (sessions && sessions.length > 0) {
+                sessions.forEach(sess => {
+                    const cards = document.querySelectorAll(`a[href*="sessionId=${sess.id}"]`);
+                    cards.forEach(card => {
+                        const isActive = (sess.status && (sess.status.toLowerCase() === 'active' || sess.status.toLowerCase() === 'live'));
+                        const badge = card.querySelector('span');
+
+                        if (!isActive) {
+                            // Non Active status logic
+                            card.classList.add('opacity-75');
+                            if (badge) {
+                                badge.className = "text-slate-400 text-xs font-bold uppercase tracking-wider flex items-center gap-1";
+                                badge.innerHTML = `<i class="ph-bold ph-lock-key"></i> Session ${sess.week_num} &bull; Non Active`;
+                            }
+                            card.onclick = (e) => {
+                                e.preventDefault();
+                                alert(`[Sesi ${sess.week_num} - Non Active]\nSesi ini belum aktif di Google Sheet (Status: ${sess.status || 'Non Active'}). Rekaman & materi baru dapat dibuka setelah status diubah menjadi Active di kolom E!`);
+                                return false;
+                            };
+                        } else {
+                            // Active status logic
+                            card.classList.remove('opacity-75');
+                            if (badge) {
+                                badge.className = "text-brand-red text-xs font-bold uppercase tracking-wider flex items-center gap-1";
+                                badge.innerHTML = `<i class="ph-bold ph-check-circle"></i> Session ${sess.week_num} &bull; Active`;
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
