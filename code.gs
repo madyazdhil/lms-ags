@@ -225,7 +225,7 @@ function getFallbackSessions() {
       tambahan_materi: '',
       material_embed_url: 'materi-smt2/pertemuan-' + (w < 10 ? '0' + w : w) + '.html',
       lesson_plan_link: 'materi-smt2/pertemuan-' + (w < 10 ? '0' + w : w) + '.html',
-      syllabus_overview: '00:00 - 10:00 = Pendahuluan Sesi ' + w + '\n10:00 - 45:00 = Pembahasan Utama',
+      syllabus_overview: '00:00 - 10:00 = Pendahuluan Sesi ' + w + '\n10:00 - 45:00 = Pembahasan Utama Sesi ' + w,
       material_bookmark: '1 - 5 = Cover & Pengenalan\n6 - 15 = Pembahasan Utama Sesi ' + w,
       status: w === 1 ? 'Active' : 'Non Active',
       teacher_absent_status: ''
