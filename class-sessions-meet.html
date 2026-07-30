@@ -120,12 +120,30 @@
                     
                     <!-- Video Recording Player Container -->
                     <div id="recording-container" class="relative w-full aspect-video bg-[#0B1B42] rounded-[32px] overflow-hidden shadow-sm border border-white/50 flex flex-col justify-center items-center">
-                        <!-- Populated dynamically by JS -->
+                        <div class="flex flex-col items-center gap-3 text-white/50 animate-pulse">
+                            <div class="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
+                                <i class="ph-bold ph-spinner animate-spin text-2xl text-brand-red"></i>
+                            </div>
+                            <p class="text-xs font-semibold tracking-wide">Loading Session Video...</p>
+                        </div>
                     </div>
 
-                    <!-- Session Title Block -->
-                    <div class="px-2 mt-2">
-                        <h2 id="session-title" class="text-3xl font-bold text-brand-navy mb-2 tracking-tight">Sesi 1: Perkenalan GitHub & Markas Codespaces</h2>
+                    <!-- Session Title Block (Skeleton & Content Container) -->
+                    <div id="session-info-skeleton" class="animate-pulse space-y-3 mt-2 px-2">
+                        <div class="h-8 bg-slate-200 rounded-xl w-3/4"></div>
+                        <div class="flex items-center gap-3">
+                            <div class="h-4 bg-slate-200 rounded-md w-32"></div>
+                            <div class="h-4 bg-slate-200 rounded-md w-24"></div>
+                            <div class="h-4 bg-slate-200 rounded-md w-20"></div>
+                        </div>
+                        <div class="space-y-2 pt-2">
+                            <div class="h-4 bg-slate-200/70 rounded-md w-full"></div>
+                            <div class="h-4 bg-slate-200/70 rounded-md w-4/5"></div>
+                        </div>
+                    </div>
+
+                    <div id="session-info-content" class="hidden px-2 mt-2">
+                        <h2 id="session-title" class="text-3xl font-bold text-brand-navy mb-2 tracking-tight"></h2>
                         <div class="flex flex-wrap items-center gap-3 text-brand-textMuted font-medium text-sm">
                             <span class="flex items-center gap-1.5 text-brand-red font-semibold"><i class="ph-bold ph-video-camera text-lg"></i> Recording Available</span>
                             <span class="w-1 h-1 rounded-full bg-gray-300"></span>
@@ -133,9 +151,7 @@
                             <span class="w-1 h-1 rounded-full bg-gray-300"></span>
                             <span class="text-slate-500">Asia/Jakarta</span>
                         </div>
-                        <p id="session-desc" class="text-slate-600 text-sm mt-3 leading-relaxed">
-                            Membuat Repository di GitHub dan meluncurkan Codespaces. Pengenalan antarmuka IDE (Explorer, Editor, Terminal). Penjelasan konsep Server/Cloud dan menjalankan script print() pertama.
-                        </p>
+                        <p id="session-desc" class="text-slate-600 text-sm mt-3 leading-relaxed"></p>
                     </div>
 
                 </div>
@@ -150,12 +166,16 @@
                                 <i class="ph-bold ph-[#F4554C] ph-timer text-brand-red"></i>
                                 <span>Syllabus Overview</span>
                             </h3>
-                            <span id="session-fase-badge" class="text-xs font-bold text-brand-red bg-brand-red/10 px-2.5 py-1 rounded-full">FASE 1</span>
+                            <span id="session-fase-badge" class="text-xs font-bold text-brand-red bg-brand-red/10 px-2.5 py-1 rounded-full animate-pulse">FASE ...</span>
                         </div>
 
                         <!-- Timeline Wrapper for Video Timestamps (Column L) -->
                         <div id="timeline-container" class="relative pl-4 border-l-2 border-gray-100 flex flex-col gap-4 ml-2 mt-2 max-h-[420px] overflow-y-auto custom-scrollbar">
-                            <!-- Timeline Items populated dynamically from Column L -->
+                            <div class="animate-pulse flex flex-col gap-3">
+                                <div class="h-14 bg-slate-100 rounded-2xl w-full"></div>
+                                <div class="h-14 bg-slate-100 rounded-2xl w-full"></div>
+                                <div class="h-14 bg-slate-100 rounded-2xl w-full"></div>
+                            </div>
                         </div>
                     </div>
 
@@ -171,16 +191,19 @@
                     <div class="lg:col-span-8 flex flex-col gap-4">
                         <div class="flex items-center justify-between px-2">
                             <h3 class="text-xl font-bold text-brand-navy">Presentation Slides & Slide Deck</h3>
-                            <a id="open-tab-link" href="materi-smt2/pertemuan-01.html" target="_blank" class="text-sm font-semibold text-brand-red hover:text-red-600 transition-colors flex items-center gap-1">
+                            <a id="open-tab-link" href="#" target="_blank" class="text-sm font-semibold text-brand-red hover:text-red-600 transition-colors flex items-center gap-1">
                                 Open in new tab <i class="ph-bold ph-arrow-up-right"></i>
                             </a>
                         </div>
                         
                         <!-- Presentation Slide Deck Iframe Sandbox -->
                         <div class="w-full aspect-video bg-white rounded-[32px] p-2 shadow-sm border border-gray-100 flex flex-col relative overflow-hidden">
+                            <div id="material-skeleton" class="absolute inset-0 bg-slate-100 rounded-[32px] animate-pulse flex flex-col items-center justify-center gap-2 z-10">
+                                <i class="ph-bold ph-spinner animate-spin text-3xl text-brand-red"></i>
+                                <p class="text-xs font-bold text-slate-400">Loading Presentation Slide Deck...</p>
+                            </div>
                             <iframe 
                                 id="material-iframe"
-                                src="materi-smt2/pertemuan-01.html" 
                                 class="flex-1 w-full bg-gray-50 rounded-2xl border-none"
                                 title="Presentation Materials Sandbox">
                             </iframe>
@@ -197,7 +220,11 @@
                             </div>
 
                             <div id="bookmarks-container" class="flex flex-col gap-3 max-h-[440px] overflow-y-auto custom-scrollbar">
-                                <!-- Dynamically populated from Column M -->
+                                <div class="animate-pulse flex flex-col gap-3">
+                                    <div class="h-12 bg-slate-100 rounded-2xl w-full"></div>
+                                    <div class="h-12 bg-slate-100 rounded-2xl w-full"></div>
+                                    <div class="h-12 bg-slate-100 rounded-2xl w-full"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -217,6 +244,10 @@
                     
                     <!-- Full Width Iframe Sandbox for Additional Material (Column H) -->
                     <div class="w-full min-h-[480px] bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 flex flex-col relative overflow-hidden">
+                        <div id="tambahan-skeleton" class="absolute inset-0 bg-slate-50 rounded-[32px] animate-pulse flex flex-col items-center justify-center gap-2 z-10">
+                            <i class="ph-bold ph-spinner animate-spin text-3xl text-brand-red"></i>
+                            <p class="text-xs font-bold text-slate-400">Loading Additional Notes...</p>
+                        </div>
                         <iframe 
                             id="tambahan-materi-iframe" 
                             class="w-full h-full min-h-[440px] bg-transparent border-none"
@@ -245,6 +276,19 @@
             const sess = data ? data.session : (window.MOCK_DATA.sessions.find(s => s.id === sessId) || window.MOCK_DATA.sessions[0]);
 
             if (sess) {
+                // Reveal title content & hide title skeleton
+                const infoSkeleton = document.getElementById('session-info-skeleton');
+                const infoContent = document.getElementById('session-info-content');
+                if (infoSkeleton) infoSkeleton.classList.add('hidden');
+                if (infoContent) infoContent.classList.remove('hidden');
+
+                // Hide material & tambahan skeletons
+                const materialSkeleton = document.getElementById('material-skeleton');
+                if (materialSkeleton) materialSkeleton.classList.add('hidden');
+
+                const tambahanSkeleton = document.getElementById('tambahan-skeleton');
+                if (tambahanSkeleton) tambahanSkeleton.classList.add('hidden');
+
                 const titleEl = document.getElementById('session-title');
                 const descEl = document.getElementById('session-desc');
                 const badgeEl = document.getElementById('session-fase-badge');
@@ -255,7 +299,10 @@
 
                 if (titleEl) titleEl.innerText = sess.title;
                 if (descEl) descEl.innerText = sess.description || ('Materi ' + sess.pertemuan + ': ' + sess.title);
-                if (badgeEl) badgeEl.innerText = sess.fase || 'Syllabus';
+                if (badgeEl) {
+                    badgeEl.innerText = sess.fase || 'Syllabus';
+                    badgeEl.classList.remove('animate-pulse');
+                }';
                 
                 // 1. Recording Player (Column G)
                 if (recordingContainer) {
