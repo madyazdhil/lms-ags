@@ -393,8 +393,12 @@
                     const parts = trimmed.split('=');
                     timeRange = parts[0].trim();
                     title = parts.slice(1).join('=').trim();
+                } else if (trimmed.includes(' : ')) {
+                    const parts = trimmed.split(' : ');
+                    timeRange = parts[0].trim();
+                    title = parts.slice(1).join(' : ').trim();
                 } else {
-                    const match = trimmed.match(/^(\d{1,2}:\d{2}(?:\s*-\s*\d{1,2}:\d{2})?)\s*[:\-=]?\s*(.+)$/);
+                    const match = trimmed.match(/^((?:\d{1,2}:)?\d{1,2}[:.]\d{2}(?:\s*-\s*(?:\d{1,2}:)?\d{1,2}[:.]\d{2})?)\s*[:\-=]?\s*(.+)$/);
                     if (match) {
                         timeRange = match[1].trim();
                         title = match[2].trim();
@@ -449,10 +453,11 @@
             return items;
         }
 
-        // Convert "02:00" or "01:13:25" to seconds
+        // Convert "02:00", "03.50", "3:50", or "01:13:25" to seconds
         function timeToSeconds(timeStr) {
             if (!timeStr) return 0;
-            const parts = timeStr.split(':').map(p => parseInt(p, 10) || 0);
+            const normalized = timeStr.trim().replace(/\./g, ':');
+            const parts = normalized.split(':').map(p => parseInt(p, 10) || 0);
             if (parts.length === 3) {
                 return (parts[0] * 3600) + (parts[1] * 60) + parts[2];
             } else if (parts.length === 2) {
@@ -487,15 +492,20 @@
                 }
             }
 
+            // 1. Direct HTML5 <video> element
             const videoEl = document.getElementById('main-recording-video') || document.querySelector('#recording-container video');
             if (videoEl) {
                 videoEl.currentTime = seconds;
-                videoEl.play();
+                videoEl.play().catch(() => {});
                 return;
             }
 
+            // 2. Iframe player (Google Drive / YouTube / Direct URL)
             const recordingIframe = document.getElementById('main-recording-iframe');
             if (recordingIframe && currentRecordingUrl) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                const timeStr = `${mins}m${secs}s`; // Format: "3m50s"
                 let baseUrl = currentRecordingUrl.split('?')[0].split('#')[0];
 
                 if (baseUrl.includes('youtube.com') || baseUrl.includes('youtu.be')) {
@@ -507,7 +517,7 @@
                         baseUrl = `https://www.youtube.com/embed/${vId}`;
                     }
 
-                    // Send postMessage for seamless seek if player iframe is ready
+                    // Send postMessage for seamless seek if YouTube iframe API is ready
                     try {
                         recordingIframe.contentWindow.postMessage(JSON.stringify({
                             event: 'command',
@@ -521,14 +531,18 @@
                         }), '*');
                     } catch (e) {}
 
-                    // Update iframe src with start time & autoplay
-                    recordingIframe.src = `${baseUrl}?autoplay=1&start=${seconds}&enablejsapi=1`;
+                    recordingIframe.src = `${baseUrl}?autoplay=1&start=${seconds}&enablejsapi=1&t=${seconds}`;
                 } else if (baseUrl.includes('drive.google.com')) {
-                    const mins = Math.floor(seconds / 60);
-                    const secs = seconds % 60;
-                    recordingIframe.src = `${baseUrl}?autoplay=1&start=${seconds}#t=${mins}m${secs}s`;
+                    if (baseUrl.includes('/file/d/')) {
+                        baseUrl = baseUrl.replace(/\/view(\?.*)?$/, '/preview');
+                        if (!baseUrl.endsWith('/preview')) {
+                            baseUrl = baseUrl.split('?')[0].replace(/\/view$/, '') + '/preview';
+                        }
+                    }
+                    // Force Google Drive preview iframe to seek and play at timestamp
+                    recordingIframe.src = `${baseUrl}?t=${timeStr}&start=${seconds}&autoplay=1#t=${timeStr}`;
                 } else {
-                    recordingIframe.src = `${baseUrl}?autoplay=1#t=${seconds}`;
+                    recordingIframe.src = `${baseUrl}?autoplay=1&start=${seconds}#t=${seconds}`;
                 }
             }
         }
