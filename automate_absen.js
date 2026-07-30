@@ -1,11 +1,54 @@
 const { chromium } = require('playwright');
-const path = require('path');
-const fs = require('fs');
+const https = require('https');
 
 const AIRTABLE_FORM_URL = 'https://airtable.com/appZWFkgIQZR6Mz86/shrq4Fdq0W7tCRgHG';
-const GAS_API_URL = 'https://script.google.com/macros/s/AKfycbzQ_FIXME_YOUR_DEPLOYED_ID/exec'; // Replace with deployed Web App URL if fetching dynamically
-const DEFAULT_CLASS_CODE = 'Extracurricular - Coding TA 2026/2027';
-const DEFAULT_TEACHER_NAME = 'Yazid Hilmi';
+const GAS_API_URL = process.env.GAS_WEB_APP_URL || 'https://script.google.com/macros/s/AKfycbxSze-Gb7Sz7RPb9t-a_1WW887-iVee-hho6bGQ_Tv2zGWsUxiZdPKK4W7TkC7pY1rZ/exec';
+const DEFAULT_CLASS_CODE = process.env.CLASS_CODE || 'Extracurricular - Coding TA 2026/2027';
+const DEFAULT_TEACHER_NAME = process.env.TEACHER_NAME || 'Yazid Hilmi';
+
+// Helper to fetch JSON from HTTPS with redirect support
+function fetchJson(urlStr) {
+  return new Promise((resolve, reject) => {
+    function get(u) {
+      https.get(u, res => {
+        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+          return get(res.headers.location);
+        }
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      }).on('error', reject);
+    }
+    get(urlStr);
+  });
+}
+
+// Format raw date string to MM/DD/YYYY
+function formatDate(dateStr) {
+  if (!dateStr || dateStr === '2026') return '07/29/2026';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${month}/${day}/${year}`;
+}
+
+async function markSubmittedInGAS(sessionId) {
+  try {
+    const markUrl = `${GAS_API_URL}?action=markAttendanceSubmitted&sessionId=${sessionId}`;
+    const res = await fetchJson(markUrl);
+    console.log(`📌 Marked ${sessionId} as Submitted in GAS:`, res);
+  } catch (err) {
+    console.error(`⚠️ Failed to mark ${sessionId} in GAS:`, err.message);
+  }
+}
 
 async function submitAttendance(sessionData) {
   console.log(`\n🚀 Starting submission for Sesi ${sessionData.week_num} (${sessionData.date})...`);
@@ -13,8 +56,8 @@ async function submitAttendance(sessionData) {
   const page = await browser.newPage({ viewport: { width: 1280, height: 2600 } });
 
   try {
-    await page.goto(AIRTABLE_FORM_URL, { waitUntil: 'networkidle' });
-    await page.waitForTimeout(2500);
+    await page.goto(AIRTABLE_FORM_URL, { waitUntil: 'domcontentloaded' });
+    await page.waitForTimeout(3500);
 
     // Cookie Banner
     const rejectCookie = page.locator('button:has-text("Reject All"), button:has-text("Agree")');
@@ -112,10 +155,12 @@ async function submitAttendance(sessionData) {
 
     // 12. Student's Concern *
     console.log(`[12] Student Concern (-)`);
-    const concernContainer = page.locator('.sharedFormField').filter({ hasText: "Student's Concern" }).first();
-    const textarea = concernContainer.locator('textarea, input, [contenteditable="true"]').first();
-    if (await textarea.isVisible()) {
-      await textarea.fill(sessionData.concern || '-');
+    const concernBox = page.locator('div[aria-label="Student\'s Concern"], div.contentEditableTextbox, .sharedFormField:has-text("Student\'s Concern") div[contenteditable]').first();
+    if (await concernBox.isVisible()) {
+      await concernBox.click();
+      await page.waitForTimeout(300);
+      await page.keyboard.type(sessionData.concern || '-');
+      await page.waitForTimeout(500);
     }
 
     await page.waitForTimeout(1500);
@@ -141,21 +186,57 @@ async function submitAttendance(sessionData) {
   return false;
 }
 
-// Standalone execution entry point (Local or GitHub Action)
+// Execution entry point (Local or GitHub Action)
 if (require.main === module) {
   (async () => {
-    const targetWeek = process.env.TARGET_WEEK || '1';
-    console.log(`🤖 Auto Attendance Runner starting for Week: ${targetWeek}`);
-    
-    // Sample data structure for target session
-    const sampleSession = {
-      date: '07/22/2026',
-      week_num: targetWeek,
-      title: 'Pertemuan 1: Perkenalan Markas Coding di Cloud (GitHub Codespaces)',
-      concern: '-'
-    };
+    const targetWeek = process.env.TARGET_WEEK;
+    console.log(`🤖 Auto Attendance Runner starting... Target Week: ${targetWeek || 'All Active Pending Sessions'}`);
 
-    await submitAttendance(sampleSession);
+    try {
+      let pendingSessions = [];
+      const gasResponse = await fetchJson(`${GAS_API_URL}?action=getPendingAttendance`);
+      if (gasResponse && gasResponse.data) {
+        pendingSessions = gasResponse.data;
+      }
+
+      if (targetWeek) {
+        let matched = pendingSessions.filter(s => String(s.week_num) === String(targetWeek));
+        if (matched.length === 0) {
+          console.log(`ℹ️ Week ${targetWeek} not found in pending list. Checking all sessions...`);
+          const allGasResponse = await fetchJson(`${GAS_API_URL}?action=getSessions`);
+          if (allGasResponse && allGasResponse.data) {
+            matched = allGasResponse.data.filter(s => String(s.week_num) === String(targetWeek));
+          }
+        }
+        pendingSessions = matched;
+      }
+
+      if (pendingSessions.length === 0) {
+        console.log(`✅ No pending sessions found to submit.`);
+        return;
+      }
+
+      console.log(`📋 Found ${pendingSessions.length} session(s) to process.`);
+
+      for (const session of pendingSessions) {
+        const formattedDate = formatDate(session.date);
+        const sessionPayload = {
+          id: session.id,
+          week_num: session.week_num,
+          date: formattedDate,
+          title: session.title || `Sesi ${session.week_num}`,
+          concern: '-'
+        };
+
+        console.log(`\n⏳ Processing: Sesi ${sessionPayload.week_num} | Date: ${sessionPayload.date} | Title: ${sessionPayload.title}`);
+        const success = await submitAttendance(sessionPayload);
+        if (success) {
+          await markSubmittedInGAS(session.id || `SESS${session.week_num < 10 ? '0' + session.week_num : session.week_num}`);
+        }
+      }
+    } catch (err) {
+      console.error(`❌ Auto Attendance Execution Error:`, err);
+    }
   })();
 }
 
