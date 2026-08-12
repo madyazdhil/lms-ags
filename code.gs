@@ -139,7 +139,8 @@ function getExcSmt2Data(ss) {
     else if (val.indexOf('lesson plan') >= 0 || val.indexOf('lesson_plan') >= 0) colMap.lesson_plan_link = j;
     else if (val.indexOf('syllabus') >= 0 || val.indexOf('overview') >= 0) colMap.syllabus_overview = j;
     else if (val.indexOf('bookmark') >= 0) colMap.material_bookmark = j;
-    else if (val.indexOf('teacher') >= 0 || val.indexOf('absent') >= 0 || val.indexOf('attendance') >= 0) colMap.teacher_absent_status = j;
+    else if (val.indexOf('teacher') >= 0 || val.indexOf('absent') >= 0 ||
+             (val.indexOf('attendance') >= 0 && val.indexOf('student') < 0)) colMap.teacher_absent_status = j;
   }
   
   var result = [];
@@ -257,15 +258,7 @@ function markAttendanceStatusInSheet(ss, sessionId, statusValue) {
   
   var headerRowIdx = 13;
   var headers = data[headerRowIdx];
-  var colAbsentIdx = 13; // Default Col N (0-indexed 13)
-  
-  for (var j = 0; j < headers.length; j++) {
-    var val = headers[j] ? headers[j].toString().trim().toLowerCase() : '';
-    if (val.indexOf('teacher') >= 0 || val.indexOf('absent') >= 0 || val.indexOf('attendance') >= 0) {
-      colAbsentIdx = j;
-      break;
-    }
-  }
+  var colAbsentIdx = findAttendanceStatusColumn(headers);
   
   var cleanTarget = String(sessionId || '').trim().toLowerCase();
   var targetMatch = cleanTarget.match(/\d+/);
@@ -361,15 +354,16 @@ function releaseAttendanceClaim(ss, sessionId) {
 }
 
 function findAttendanceStatusColumn(headers) {
-  var colAbsentIdx = 13;
+  var fallbackAttendanceIdx = 13;
+  // Prefer the teacher-specific status field. The sheet also has a
+  // Student Attendance column, which must never be used as the submission
+  // lock/status column.
   for (var j = 0; j < headers.length; j++) {
     var val = headers[j] ? headers[j].toString().trim().toLowerCase() : '';
-    if (val.indexOf('teacher') >= 0 || val.indexOf('absent') >= 0 || val.indexOf('attendance') >= 0) {
-      colAbsentIdx = j;
-      break;
-    }
+    if (val.indexOf('teacher') >= 0 || val.indexOf('absent') >= 0) return j;
+    if (val.indexOf('attendance') >= 0 && val.indexOf('student') < 0) fallbackAttendanceIdx = j;
   }
-  return colAbsentIdx;
+  return fallbackAttendanceIdx;
 }
 
 function findSessionRowIndex(data, headerRowIdx, sessionId) {
