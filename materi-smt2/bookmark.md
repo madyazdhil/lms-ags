@@ -41,3 +41,27 @@
 21 - 29 = Converting Input
 30 - 36 = f-string
 37 - 46 = Mini Project, Challenges, and Closing
+
+# Meeting 05
+
+[Open pertemuan-05.html](pertemuan-05.html)
+
+1 - 4 = Introduction and Learning Goals
+5 - 11 = Boolean Values
+12 - 21 = Comparison Operators
+22 - 30 = The if Statement and Indentation
+31 - 38 = elif, else, and Interactive Practice
+39 - 45 = Number Guessing Game
+46 - 54 = Mini Project, Challenges, and Closing
+
+# Meeting 06
+
+[Open pertemuan-06.html](pertemuan-06.html)
+
+1 - 4 = Introduction and Learning Goals
+5 - 12 = Phase 1 Python Review
+13 - 20 = Adventure Planning and Pseudocode
+21 - 28 = Building the Opening Branches
+29 - 37 = Nested Decisions and Game State
+38 - 42 = Interactive Game, Debugging, and Review
+43 - 52 = Mini Project, Sync, Challenges, and Closing
