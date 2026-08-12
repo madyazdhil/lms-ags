@@ -11,7 +11,7 @@
 function doGet(e) {
   var action = e && e.parameter && e.parameter.action ? e.parameter.action : 'ping';
   var sessionId = e && e.parameter && e.parameter.sessionId ? e.parameter.sessionId : '';
-  
+
   var response = { status: 'error', message: 'Unknown action' };
   
   try {
@@ -58,10 +58,21 @@ function doGet(e) {
         var pending = allSessions.filter(function(s) {
           var isStatusActive = (s.status === 'Active');
           var hasDate = (s.date && s.date !== '2026' && s.date.trim() !== '');
-          var notSubmitted = (!s.teacher_absent_status || s.teacher_absent_status.toLowerCase().indexOf('submitted') === -1);
-          return isStatusActive && hasDate && notSubmitted;
+          var attendanceStatus = String(s.teacher_absent_status || '').trim().toLowerCase();
+          // Only blank/ready rows are eligible. Processing rows are claims held by
+          // another runner and must not be submitted again on the next cron tick.
+          var isPending = attendanceStatus === '' || attendanceStatus === 'ready for auto-absen';
+          return isStatusActive && hasDate && isPending;
         });
         response = { status: 'success', data: pending };
+        break;
+
+      case 'claimAttendance':
+        response = claimAttendanceForSession(ss, sessionId);
+        break;
+
+      case 'releaseAttendance':
+        response = releaseAttendanceClaim(ss, sessionId);
         break;
         
       case 'markAttendanceSubmitted':
@@ -256,6 +267,10 @@ function markAttendanceStatusInSheet(ss, sessionId, statusValue) {
     }
   }
   
+  var cleanTarget = String(sessionId || '').trim().toLowerCase();
+  var targetMatch = cleanTarget.match(/\d+/);
+  var targetWeekNum = targetMatch ? parseInt(targetMatch[0], 10) : null;
+
   for (var i = headerRowIdx + 1; i < data.length; i++) {
     var row = data[i];
     var pertemuanStr = String(row[1] || '').trim();
@@ -263,13 +278,114 @@ function markAttendanceStatusInSheet(ss, sessionId, statusValue) {
     var weekNum = weekMatch ? parseInt(weekMatch[0], 10) : (i - headerRowIdx);
     var sessId = 'SESS' + (weekNum < 10 ? '0' + weekNum : weekNum);
     
-    if (sessId === sessionId || pertemuanStr === sessionId) {
+    var isMatch = (sessId.toLowerCase() === cleanTarget) ||
+                  (pertemuanStr.toLowerCase() === cleanTarget) ||
+                  (targetWeekNum !== null && weekNum === targetWeekNum);
+
+    if (isMatch) {
       var dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
       sheet.getRange(i + 1, colAbsentIdx + 1).setValue(statusValue + ' (' + dateStr + ')');
       return true;
     }
   }
   return false;
+}
+
+/**
+ * Atomically claims a pending session before opening Airtable. This is the
+ * idempotency guard for the hourly GitHub Action: only one runner can own a
+ * session at a time, so a slow/overlapping run cannot create duplicate rows.
+ */
+function claimAttendanceForSession(ss, sessionId) {
+  if (!sessionId) return { status: 'error', message: 'Missing sessionId parameter' };
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+    var sheet = ss.getSheetByName('EXC-SMT2');
+    if (!sheet) return { status: 'error', message: 'EXC-SMT2 sheet not found' };
+    var data = sheet.getDataRange().getValues();
+    if (data.length < 14) return { status: 'error', message: 'Attendance sheet has no data' };
+    var headerRowIdx = 13;
+    var headers = data[headerRowIdx];
+    var colAbsentIdx = findAttendanceStatusColumn(headers);
+    var rowIndex = findSessionRowIndex(data, headerRowIdx, sessionId);
+    if (rowIndex < 0) return { status: 'error', message: 'Session ID not found: ' + sessionId };
+
+    var current = String(data[rowIndex][colAbsentIdx] || '').trim();
+    var lower = current.toLowerCase();
+    if (lower.indexOf('submitted') >= 0) {
+      return { status: 'success', claimed: false, alreadySubmitted: true, message: 'Already Submitted' };
+    }
+    if (lower.indexOf('processing') === 0) {
+      return { status: 'success', claimed: false, alreadyProcessing: true, message: current };
+    }
+    if (current && lower !== 'ready for auto-absen') {
+      return { status: 'success', claimed: false, message: 'Not pending: ' + current };
+    }
+
+    var stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm:ss');
+    sheet.getRange(rowIndex + 1, colAbsentIdx + 1).setValue('Processing (' + stamp + ')');
+    SpreadsheetApp.flush();
+    return { status: 'success', claimed: true, message: 'Claimed ' + sessionId };
+  } catch (err) {
+    return { status: 'error', message: err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (ignore) {}
+  }
+}
+
+/** Release a claim only when the browser failed before Airtable was submitted. */
+function releaseAttendanceClaim(ss, sessionId) {
+  if (!sessionId) return { status: 'error', message: 'Missing sessionId parameter' };
+  var lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(10000);
+    var sheet = ss.getSheetByName('EXC-SMT2');
+    if (!sheet) return { status: 'error', message: 'EXC-SMT2 sheet not found' };
+    var data = sheet.getDataRange().getValues();
+    var rowIndex = findSessionRowIndex(data, 13, sessionId);
+    if (rowIndex < 0) return { status: 'error', message: 'Session ID not found: ' + sessionId };
+    var colAbsentIdx = findAttendanceStatusColumn(data[13]);
+    var current = String(data[rowIndex][colAbsentIdx] || '').trim();
+    if (current.toLowerCase().indexOf('processing') === 0) {
+      sheet.getRange(rowIndex + 1, colAbsentIdx + 1).setValue('Ready for Auto-Absen');
+      SpreadsheetApp.flush();
+      return { status: 'success', released: true, message: 'Released ' + sessionId };
+    }
+    return { status: 'success', released: false, message: 'Claim is no longer processing' };
+  } catch (err) {
+    return { status: 'error', message: err.toString() };
+  } finally {
+    try { lock.releaseLock(); } catch (ignore) {}
+  }
+}
+
+function findAttendanceStatusColumn(headers) {
+  var colAbsentIdx = 13;
+  for (var j = 0; j < headers.length; j++) {
+    var val = headers[j] ? headers[j].toString().trim().toLowerCase() : '';
+    if (val.indexOf('teacher') >= 0 || val.indexOf('absent') >= 0 || val.indexOf('attendance') >= 0) {
+      colAbsentIdx = j;
+      break;
+    }
+  }
+  return colAbsentIdx;
+}
+
+function findSessionRowIndex(data, headerRowIdx, sessionId) {
+  var cleanTarget = String(sessionId || '').trim().toLowerCase();
+  var targetMatch = cleanTarget.match(/\d+/);
+  var targetWeekNum = targetMatch ? parseInt(targetMatch[0], 10) : null;
+  for (var i = headerRowIdx + 1; i < data.length; i++) {
+    var pertemuanStr = String(data[i][1] || '').trim();
+    var weekMatch = pertemuanStr.match(/\d+/);
+    var weekNum = weekMatch ? parseInt(weekMatch[0], 10) : (i - headerRowIdx);
+    var sessId = 'SESS' + (weekNum < 10 ? '0' + weekNum : weekNum);
+    if (sessId.toLowerCase() === cleanTarget ||
+        pertemuanStr.toLowerCase() === cleanTarget ||
+        (targetWeekNum !== null && weekNum === targetWeekNum)) return i;
+  }
+  return -1;
 }
 
 /**
@@ -318,6 +434,3 @@ function autoProcessPendingAttendanceDirect(sheet, row) {
     Logger.log('Error in autoProcessPendingAttendanceDirect: ' + err.toString());
   }
 }
-
-
-

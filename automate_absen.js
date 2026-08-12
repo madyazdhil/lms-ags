@@ -42,11 +42,45 @@ function formatDate(dateStr) {
 
 async function markSubmittedInGAS(sessionId) {
   try {
-    const markUrl = `${GAS_API_URL}?action=markAttendanceSubmitted&sessionId=${sessionId}`;
+    const markUrl = `${GAS_API_URL}?action=markAttendanceSubmitted&sessionId=${encodeURIComponent(sessionId)}`;
     const res = await fetchJson(markUrl);
     console.log(`📌 Marked ${sessionId} as Submitted in GAS:`, res);
+    if (!res || res.status !== 'success') {
+      console.warn(`⚠️ GAS returned non-success response when marking ${sessionId}:`, res);
+      return false;
+    }
+    return true;
   } catch (err) {
     console.error(`⚠️ Failed to mark ${sessionId} in GAS:`, err.message);
+    return false;
+  }
+}
+
+/**
+ * Claim the session in Sheets before opening Airtable. This makes the
+ * submission idempotent across overlapping/manual GitHub Actions runs.
+ */
+async function claimAttendanceInGAS(sessionId) {
+  const claimUrl = `${GAS_API_URL}?action=claimAttendance&sessionId=${encodeURIComponent(sessionId)}`;
+  const res = await fetchJson(claimUrl);
+  if (!res || res.status !== 'success') {
+    throw new Error(`GAS claim failed for ${sessionId}: ${res && res.message ? res.message : 'unknown response'}`);
+  }
+  if (!res.claimed) {
+    console.log(`⏭️ Skipping ${sessionId}: ${res.message || 'already submitted or being processed'}`);
+    return false;
+  }
+  console.log(`🔒 Claimed ${sessionId} in GAS before Airtable submission.`);
+  return true;
+}
+
+async function releaseAttendanceInGAS(sessionId) {
+  try {
+    const releaseUrl = `${GAS_API_URL}?action=releaseAttendance&sessionId=${encodeURIComponent(sessionId)}`;
+    const res = await fetchJson(releaseUrl);
+    console.log(`↩️ Released ${sessionId} after a pre-submit failure:`, res);
+  } catch (err) {
+    console.error(`⚠️ Failed to release ${sessionId}:`, err.message);
   }
 }
 
@@ -54,6 +88,7 @@ async function submitAttendance(sessionData) {
   console.log(`\n🚀 Starting submission for Sesi ${sessionData.week_num} (${sessionData.date})...`);
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ viewport: { width: 1280, height: 2600 } });
+  let submittedToAirtable = false;
 
   try {
     await page.goto(AIRTABLE_FORM_URL, { waitUntil: 'domcontentloaded' });
@@ -171,19 +206,22 @@ async function submitAttendance(sessionData) {
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
       await page.waitForTimeout(5000);
+      // Once clicked, a timeout or screenshot error must not cause a retry:
+      // Airtable may already have accepted the record.
+      submittedToAirtable = true;
       
       const ssPath = `absen_session_${sessionData.week_num}_confirmation.png`;
       await page.screenshot({ path: ssPath, fullPage: true });
       console.log(`🎉 Session ${sessionData.week_num} attendance successfully submitted to Airtable! Screenshot: ${ssPath}`);
-      return true;
+      return { success: true, submitted: true };
     }
   } catch (err) {
     console.error(`❌ Error submitting session ${sessionData.week_num}:`, err);
-    return false;
+    return { success: false, submitted: submittedToAirtable };
   } finally {
     await browser.close();
   }
-  return false;
+  return { success: false, submitted: submittedToAirtable };
 }
 
 // Execution entry point (Local or GitHub Action)
@@ -229,9 +267,31 @@ if (require.main === module) {
         };
 
         console.log(`\n⏳ Processing: Sesi ${sessionPayload.week_num} | Date: ${sessionPayload.date} | Title: ${sessionPayload.title}`);
-        const success = await submitAttendance(sessionPayload);
-        if (success) {
-          await markSubmittedInGAS(session.id || `SESS${session.week_num < 10 ? '0' + session.week_num : session.week_num}`);
+        const sessionId = session.id || `SESS${session.week_num < 10 ? '0' + session.week_num : session.week_num}`;
+        let claimed = false;
+        try {
+          claimed = await claimAttendanceInGAS(sessionId);
+        } catch (err) {
+          // Never submit when the claim cannot be confirmed. A network error
+          // must fail closed, otherwise two runners can both create a record.
+          console.error(`⚠️ Could not claim ${sessionId}; skipping to avoid a duplicate:`, err.message);
+        }
+        if (!claimed) continue;
+
+        const result = await submitAttendance(sessionPayload);
+        if (result.success) {
+          const marked = await markSubmittedInGAS(sessionId);
+          if (!marked) {
+            // Keep Processing in the sheet. Retrying blindly is more dangerous
+            // than requiring manual verification of the Airtable row.
+            console.error(`⚠️ ${sessionId} was submitted but could not be marked; leaving the Processing lock in place.`);
+          }
+        } else if (!result.submitted) {
+          await releaseAttendanceInGAS(sessionId);
+        } else {
+          // Submit was clicked but the browser failed afterward. Do not release
+          // the claim, because Airtable may already contain the record.
+          console.error(`⚠️ ${sessionId} may have reached Airtable; leaving Processing lock for manual verification.`);
         }
       }
     } catch (err) {

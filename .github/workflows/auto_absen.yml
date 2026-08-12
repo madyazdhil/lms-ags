@@ -11,6 +11,12 @@ on:
         required: false
         default: ''
 
+# Never let a manual run overlap the scheduled run. The GAS claim is the
+# source-of-truth guard, while this prevents unnecessary duplicate runners.
+concurrency:
+  group: auto-attendance
+  cancel-in-progress: false
+
 jobs:
   auto-absen:
     runs-on: ubuntu-latest
