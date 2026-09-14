@@ -82,10 +82,12 @@ deployment. The workflow fails fast if that secret is missing or the endpoint
 does not answer `action=ping`; it no longer silently uses a stale hardcoded URL.
 
 To publish `code.gs` from GitHub, run the manual
-`.github/workflows/deploy_apps_script.yml` workflow with repository secrets
-`CLASP_SCRIPT_ID` and `CLASP_TOKEN`. The Apps Script project ID must be the
-actual LMS-AGS project (do not use an unrelated project returned by `clasp
-list`).
+`.github/workflows/deploy_apps_script.yml` workflow with the repository secret
+`CLASP_TOKEN`. This repository is configured for the LMS-AGS Apps Script
+project `1kF8OzohSX_X7_-XwnUkDfkLfSyR2xLd5cawvU2oLMmYyu5dssYhYsASA`.
+Set `CLASP_DEPLOYMENT_ID` to
+`AKfycbxSze-Gb7Sz7RPb9t-a_1WW887-iVee-hho6bGQ_Tv2zGWsUxiZdPKK4W7TkC7pY1rZ`
+to update the existing `/exec` URL instead of creating another deployment.
 
 ---
 

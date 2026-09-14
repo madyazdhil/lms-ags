@@ -4,7 +4,10 @@ node_modules/**
 *.md
 *.html
 *.css
-*.js
+# Apps Script entrypoint is generated from code.gs by the deploy workflow.
+app.js
+automate_absen.js
+code.gs
 package*.json
 README.md
 checklist.md

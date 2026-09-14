@@ -156,6 +156,19 @@ async function submitAttendance(sessionData) {
     await page.click('text="Ekskul"');
     await page.click('text="Master Teacher"');
 
+    // 6.5 Online/Branch
+    console.log(`[6.5] Online/Branch: Online`);
+    const branchContainer = page.locator('.sharedFormField').filter({ hasText: 'Online/Branch' }).first();
+    const branchCombobox = branchContainer.locator('div[role="combobox"]').first();
+    if (await branchCombobox.isVisible()) {
+      await branchCombobox.click();
+      await page.waitForTimeout(600);
+      await page.keyboard.type('Online');
+      await page.waitForTimeout(600);
+      await page.keyboard.press('Enter');
+      await page.waitForTimeout(500);
+    }
+
     // 7. Did you attend the session?
     console.log(`[7] Did you attend (Yes)`);
     await page.click('text="Yes"');

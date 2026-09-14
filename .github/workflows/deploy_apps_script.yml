@@ -16,14 +16,19 @@ jobs:
           node-version: 20
       - name: Install clasp
         run: npm install --global @google/clasp
-      - name: Configure clasp project
+      - name: Configure clasp credentials
         env:
-          CLASP_SCRIPT_ID: ${{ secrets.CLASP_SCRIPT_ID }}
           CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
         run: |
-          test -n "$CLASP_SCRIPT_ID" || { echo "::error::Missing CLASP_SCRIPT_ID"; exit 1; }
           test -n "$CLASP_TOKEN" || { echo "::error::Missing CLASP_TOKEN"; exit 1; }
           printf '%s' "$CLASP_TOKEN" > "$HOME/.clasprc.json"
-          printf '{"scriptId":"%s","rootDir":"%s"}\n' "$CLASP_SCRIPT_ID" "$GITHUB_WORKSPACE" > .clasp.json
-      - name: Push code.gs
+      - name: Prepare Apps Script entrypoint
+        run: cp code.gs Code.js
+      - name: Push Apps Script source
         run: clasp push --force
+      - name: Update web app deployment
+        env:
+          CLASP_DEPLOYMENT_ID: ${{ secrets.CLASP_DEPLOYMENT_ID }}
+        run: |
+          test -n "$CLASP_DEPLOYMENT_ID" || { echo "::error::Missing CLASP_DEPLOYMENT_ID"; exit 1; }
+          clasp deploy --deploymentId "$CLASP_DEPLOYMENT_ID" --description "LMS-AGS attendance backend"
