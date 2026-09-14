@@ -2,8 +2,9 @@ name: Auto Attendance Submission (Airtable)
 
 on:
   schedule:
-    # Runs every Wednesday at 13:00 UTC (20:00 WIB) after class
-    - cron: '0 13 * * 3'
+    # Poll hourly; GAS only returns rows where E=Active and F has a date.
+    # The claim lock makes this safe and idempotent.
+    - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       session_week:
