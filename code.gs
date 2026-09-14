@@ -169,7 +169,10 @@ function getExcSmt2Data(ss) {
       status = rawStatus;
     }
     
-    var date = colMap.date !== undefined ? String(row[colMap.date] || '').trim() : '';
+    // Keep the value from Column F as a date (not the Airtable submission
+    // timestamp).  Formatting it here also avoids locale-dependent parsing in
+    // the Playwright runner.
+    var date = colMap.date !== undefined ? formatSessionDate(row[colMap.date]) : '';
     var recording_url = colMap.recording_url !== undefined ? String(row[colMap.recording_url] || '').trim() : '';
     var tambahan_materi = colMap.tambahan_materi !== undefined ? String(row[colMap.tambahan_materi] || '').trim() : '';
     var materi_link = colMap.materi_link !== undefined ? String(row[colMap.materi_link] || '').trim() : '';
@@ -198,6 +201,19 @@ function getExcSmt2Data(ss) {
   }
   
   return result.length > 0 ? result : getFallbackSessions();
+}
+
+function formatSessionDate(value) {
+  if (value === null || value === undefined || value === '') return '';
+  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value.getTime())) {
+    return Utilities.formatDate(value, Session.getScriptTimeZone(), 'MM/dd/yyyy');
+  }
+  var text = String(value).trim();
+  if (!text || text === '2026') return '';
+  var parsed = new Date(text);
+  return isNaN(parsed.getTime())
+    ? text
+    : Utilities.formatDate(parsed, Session.getScriptTimeZone(), 'MM/dd/yyyy');
 }
 
 function getBookmarksForSession(ss, sessionId) {
@@ -304,6 +320,13 @@ function claimAttendanceForSession(ss, sessionId) {
     var rowIndex = findSessionRowIndex(data, headerRowIdx, sessionId);
     if (rowIndex < 0) return { status: 'error', message: 'Session ID not found: ' + sessionId };
 
+    var statusCol = findHeaderColumn(headers, ['status'], ['teacher', 'absent', 'attendance']);
+    var dateCol = findHeaderColumn(headers, ['held', 'date', 'tanggal'], []);
+    var statusValue = statusCol >= 0 ? String(data[rowIndex][statusCol] || '').trim().toLowerCase() : '';
+    var dateValue = dateCol >= 0 ? data[rowIndex][dateCol] : '';
+    if (statusValue !== 'active' || !formatSessionDate(dateValue)) {
+      return { status: 'success', claimed: false, message: 'Not eligible: Status must be Active and Column F must contain a date' };
+    }
     var current = String(data[rowIndex][colAbsentIdx] || '').trim();
     var lower = current.toLowerCase();
     if (lower.indexOf('submitted') >= 0) {
@@ -366,12 +389,25 @@ function findAttendanceStatusColumn(headers) {
   return fallbackAttendanceIdx;
 }
 
+function findHeaderColumn(headers, include, exclude) {
+  for (var j = 0; j < headers.length; j++) {
+    var val = String(headers[j] || '').trim().toLowerCase();
+    var matches = include.some(function(token) { return val.indexOf(token) >= 0; });
+    var blocked = exclude.some(function(token) { return val.indexOf(token) >= 0; });
+    if (matches && !blocked) return j;
+  }
+  return -1;
+}
+
 function findSessionRowIndex(data, headerRowIdx, sessionId) {
   var cleanTarget = String(sessionId || '').trim().toLowerCase();
   var targetMatch = cleanTarget.match(/\d+/);
   var targetWeekNum = targetMatch ? parseInt(targetMatch[0], 10) : null;
+  var headers = data[headerRowIdx] || [];
+  var pertemuanCol = findHeaderColumn(headers, ['pertemuan'], []);
+  if (pertemuanCol < 0) pertemuanCol = 1;
   for (var i = headerRowIdx + 1; i < data.length; i++) {
-    var pertemuanStr = String(data[i][1] || '').trim();
+    var pertemuanStr = String(data[i][pertemuanCol] || '').trim();
     var weekMatch = pertemuanStr.match(/\d+/);
     var weekNum = weekMatch ? parseInt(weekMatch[0], 10) : (i - headerRowIdx);
     var sessId = 'SESS' + (weekNum < 10 ? '0' + weekNum : weekNum);
@@ -396,14 +432,14 @@ function onEdit(e) {
   
   // Row 15 onwards, Column 5 (E - Status) or Column 6 (F - Date/Held On)
   if (row >= 15 && (col === 5 || col === 6)) {
-    var statusVal = String(sheet.getRange(row, 5).getValue() || '').trim();
-    var dateVal = String(sheet.getRange(row, 6).getValue() || '').trim();
-    var currentAbsentStatus = String(sheet.getRange(row, 14).getValue() || '').trim();
+    var statusVal = String(sheet.getRange(row, 5).getDisplayValue() || '').trim();
+    var dateVal = String(sheet.getRange(row, 6).getDisplayValue() || '').trim();
+    var currentAbsentStatus = String(sheet.getRange(row, 14).getDisplayValue() || '').trim();
     
+    // Never overwrite Processing/Submitted.  This makes edits and repeated
+    // triggers idempotent and prevents a second Airtable submission.
     if (statusVal.toLowerCase() === 'active' && dateVal !== '' && !currentAbsentStatus) {
       sheet.getRange(row, 14).setValue('Ready for Auto-Absen');
-      // Automatically attempt direct Cloud submission or GitHub Action trigger
-      autoProcessPendingAttendanceDirect(sheet, row);
     }
   }
 }
@@ -421,7 +457,7 @@ function autoProcessPendingAttendanceDirect(sheet, row) {
     var dateVal = String(targetSheet.getRange(row, 6).getValue() || '').trim();
     var currentAbsentStatus = String(targetSheet.getRange(row, 14).getValue() || '').trim();
     
-    if (statusVal.toLowerCase() === 'active' && dateVal !== '' && (currentAbsentStatus === '' || currentAbsentStatus === 'Ready for Auto-Absen')) {
+    if (statusVal.toLowerCase() === 'active' && dateVal !== '' && currentAbsentStatus === '') {
       targetSheet.getRange(row, 14).setValue('Ready for Auto-Absen');
     }
   } catch (err) {

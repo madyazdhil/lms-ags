@@ -61,7 +61,9 @@ LMS-ags/
 ### 1. Google Apps Script (`code.gs`)
 - Open your Google Spreadsheet containing the `EXC-SMT2` tab.
 - Copy the code from [`code.gs`](code.gs) into your Google Apps Script editor.
-- Deploy as **Web App** (*Execute as: Me*, *Access: Anyone*).
+- Deploy as **Web App** (*Execute as: Me*, *Access: Anyone*). After changing
+  `code.gs`, create a new deployment/version; an old deployment keeps running
+  the old code.
 - When you set **Column E** to `Active` and fill in **Column F** with the class date, Apps Script will flag the session as `Ready for Auto-Absen` and update Column N upon submission.
 
 ### 2. Playwright Automation (`automate_absen.js`)
@@ -73,7 +75,17 @@ npm run absen
 ```
 
 ### 3. GitHub Actions (100% Cloud Execution)
-The included workflow in `.github/workflows/auto-absen.yml` automatically executes every hour on GitHub servers, reading pending sessions from the Apps Script Web App URL and submitting Airtable forms headlessly in the cloud.
+The workflow in `.github/workflows/auto-absen.yml` runs on the configured
+schedule and reads pending sessions from the Apps Script Web App URL. Set the
+repository secret `GAS_WEB_APP_URL` to the **current `/exec` URL** of the
+deployment. The workflow fails fast if that secret is missing or the endpoint
+does not answer `action=ping`; it no longer silently uses a stale hardcoded URL.
+
+To publish `code.gs` from GitHub, run the manual
+`.github/workflows/deploy_apps_script.yml` workflow with repository secrets
+`CLASP_SCRIPT_ID` and `CLASP_TOKEN`. The Apps Script project ID must be the
+actual LMS-AGS project (do not use an unrelated project returned by `clasp
+list`).
 
 ---
 

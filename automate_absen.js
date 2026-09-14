@@ -2,7 +2,7 @@ const { chromium } = require('playwright');
 const https = require('https');
 
 const AIRTABLE_FORM_URL = 'https://airtable.com/appZWFkgIQZR6Mz86/shrq4Fdq0W7tCRgHG';
-const GAS_API_URL = process.env.GAS_WEB_APP_URL || 'https://script.google.com/macros/s/AKfycbxSze-Gb7Sz7RPb9t-a_1WW887-iVee-hho6bGQ_Tv2zGWsUxiZdPKK4W7TkC7pY1rZ/exec';
+const GAS_API_URL = process.env.GAS_WEB_APP_URL;
 const DEFAULT_CLASS_CODE = process.env.CLASS_CODE || 'Extracurricular - Coding TA 2026/2027';
 const DEFAULT_TEACHER_NAME = process.env.TEACHER_NAME || 'Yazid Hilmi';
 
@@ -31,8 +31,15 @@ function fetchJson(urlStr) {
 
 // Format raw date string to MM/DD/YYYY
 function formatDate(dateStr) {
-  if (!dateStr || dateStr === '2026') return '07/29/2026';
-  const d = new Date(dateStr);
+  if (!dateStr || dateStr === '2026') return '';
+  // GAS now returns MM/DD/YYYY.  Do not reinterpret an already-normalized
+  // date through the runner's local timezone.
+  const normalized = String(dateStr).trim();
+  const direct = normalized.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (direct) {
+    return `${direct[1].padStart(2, '0')}/${direct[2].padStart(2, '0')}/${direct[3]}`;
+  }
+  const d = new Date(normalized);
   if (isNaN(d.getTime())) return dateStr;
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
@@ -205,10 +212,10 @@ async function submitAttendance(sessionData) {
     const submitBtn = page.locator('button').filter({ hasText: /^Submit$/ }).first();
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
-      await page.waitForTimeout(5000);
-      // Once clicked, a timeout or screenshot error must not cause a retry:
-      // Airtable may already have accepted the record.
+      // From this point onward Airtable may already have accepted the record.
+      // Never release the GAS claim if a post-click wait/screenshot fails.
       submittedToAirtable = true;
+      await page.waitForTimeout(5000);
       
       const ssPath = `absen_session_${sessionData.week_num}_confirmation.png`;
       await page.screenshot({ path: ssPath, fullPage: true });
@@ -227,6 +234,11 @@ async function submitAttendance(sessionData) {
 // Execution entry point (Local or GitHub Action)
 if (require.main === module) {
   (async () => {
+    if (!GAS_API_URL) {
+      console.error('❌ GAS_WEB_APP_URL is required. Configure it as a GitHub Actions secret.');
+      process.exitCode = 1;
+      return;
+    }
     const targetWeek = process.env.TARGET_WEEK;
     console.log(`🤖 Auto Attendance Runner starting... Target Week: ${targetWeek || 'All Active Pending Sessions'}`);
 
@@ -258,6 +270,10 @@ if (require.main === module) {
 
       for (const session of pendingSessions) {
         const formattedDate = formatDate(session.date);
+        if (!formattedDate) {
+          console.warn(`⏭️ Skipping ${session.id}: Column F has no valid date.`);
+          continue;
+        }
         const sessionPayload = {
           id: session.id,
           week_num: session.week_num,

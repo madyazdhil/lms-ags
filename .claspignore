@@ -1,0 +1,10 @@
+node_modules/**
+.github/**
+*.png
+*.md
+*.html
+*.css
+*.js
+package*.json
+README.md
+checklist.md

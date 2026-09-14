@@ -20,6 +20,7 @@ concurrency:
 jobs:
   auto-absen:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: 📥 Checkout Repository
@@ -32,11 +33,25 @@ jobs:
 
       - name: 📦 Install Playwright & Dependencies
         run: |
-          npm install playwright
+          npm ci
           npx playwright install chromium --with-deps
+
+      - name: 🔎 Validate Apps Script endpoint
+        env:
+          GAS_WEB_APP_URL: ${{ secrets.GAS_WEB_APP_URL }}
+        run: |
+          test -n "$GAS_WEB_APP_URL" || { echo "::error::Missing GAS_WEB_APP_URL repository secret"; exit 1; }
+          curl --fail --silent --show-error --location \
+            "$GAS_WEB_APP_URL?action=ping" | grep -q '"status":"success"' \
+            || { echo "::error::Apps Script endpoint did not return success"; exit 1; }
 
       - name: 🚀 Run Auto Attendance Script
         env:
+          # Keep the deployed URL in GitHub Secrets; never silently fall back
+          # to an old deployment URL.
+          GAS_WEB_APP_URL: ${{ secrets.GAS_WEB_APP_URL }}
+          CLASS_CODE: ${{ secrets.CLASS_CODE }}
+          TEACHER_NAME: ${{ secrets.TEACHER_NAME }}
           TARGET_WEEK: ${{ github.event.inputs.session_week }}
         run: |
           node automate_absen.js

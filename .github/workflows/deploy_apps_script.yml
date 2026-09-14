@@ -1,0 +1,29 @@
+name: Deploy Apps Script backend
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install clasp
+        run: npm install --global @google/clasp
+      - name: Configure clasp project
+        env:
+          CLASP_SCRIPT_ID: ${{ secrets.CLASP_SCRIPT_ID }}
+          CLASP_TOKEN: ${{ secrets.CLASP_TOKEN }}
+        run: |
+          test -n "$CLASP_SCRIPT_ID" || { echo "::error::Missing CLASP_SCRIPT_ID"; exit 1; }
+          test -n "$CLASP_TOKEN" || { echo "::error::Missing CLASP_TOKEN"; exit 1; }
+          printf '%s' "$CLASP_TOKEN" > "$HOME/.clasprc.json"
+          printf '{"scriptId":"%s","rootDir":"%s"}\n' "$CLASP_SCRIPT_ID" "$GITHUB_WORKSPACE" > .clasp.json
+      - name: Push code.gs
+        run: clasp push --force
