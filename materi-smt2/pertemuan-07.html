@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Meeting 07 — Birth of the Bot: BotFather & Telegram Setup</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;500;600;800&family=Fira+Code:wght@500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+    <style>
+        :root {
+            --bg: #F3EFE9;
+            --slide: #FFFDF9;
+            --yellow: #E8AA24;
+            --orange: #EF6C35;
+            --pink: #E0356D;
+            --purple: #9A53E0;
+            --blue: #447EE0;
+            --sky: #4AB2D9;
+            --green: #48A850;
+            --telegram: #24A1DE;
+            --dark: #2A2A35;
+            --muted: #6C6C82;
+            --ide: #1E1E2E
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        body {
+            font-family: Poppins, sans-serif;
+            background: var(--bg);
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden
+        }
+
+        #app {
+            width: 96vw;
+            max-width: 1600px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px
+        }
+
+        #deck {
+            height: 82vh;
+            background: var(--slide);
+            border-radius: 40px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px #2A2A3514
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            padding: clamp(34px, 5vw, 70px);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(.95) translateY(20px);
+            transition: opacity .6s, transform .6s cubic-bezier(.34, 1.56, .64, 1);
+            overflow: auto
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: none;
+            z-index: 2
+        }
+
+        .slide::-webkit-scrollbar {
+            width: 16px
+        }
+
+        .slide::-webkit-scrollbar-thumb {
+            background: #D8D8E5;
+            border: 5px solid var(--slide);
+            border-radius: 20px
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: Fredoka, sans-serif;
+            font-weight: 700
+        }
+
+        h1 {
+            font-size: clamp(2.8rem, 4.8vw, 4.8rem);
+            line-height: 1.05
+        }
+
+        h2 {
+            font-size: clamp(2.2rem, 3.7vw, 3.8rem);
+            line-height: 1.12;
+            margin-bottom: 22px
+        }
+
+        h3 {
+            font-size: 1.65rem;
+            margin-bottom: 10px
+        }
+
+        p,
+        li,
+        label {
+            font-size: clamp(1rem, 1.3vw, 1.24rem);
+            line-height: 1.7;
+            color: var(--muted);
+            font-weight: 500
+        }
+
+        .lead {
+            font-size: clamp(1.15rem, 1.6vw, 1.45rem)
+        }
+
+        strong {
+            color: var(--dark)
+        }
+
+        code {
+            font-family: 'Fira Code';
+            color: var(--purple)
+        }
+
+        .row {
+            display: flex
+        }
+
+        .col {
+            display: flex;
+            flex-direction: column
+        }
+
+        .center {
+            align-items: center;
+            justify-content: center
+        }
+
+        .half {
+            width: 50%
+        }
+
+        .full {
+            min-height: 100%
+        }
+
+        .gap {
+            gap: clamp(25px, 4vw, 60px)
+        }
+
+        .text-center {
+            text-align: center
+        }
+
+        .tag {
+            align-self: flex-start;
+            padding: 9px 22px;
+            border-radius: 30px;
+            font: 700 1rem Fredoka;
+            text-transform: uppercase;
+            letter-spacing: .8px;
+            margin-bottom: 18px
+        }
+
+        .blue {
+            background: #447EE01A;
+            color: var(--blue)
+        }
+
+        .pink {
+            background: #E0356D1A;
+            color: var(--pink)
+        }
+
+        .purple {
+            background: #9A53E01A;
+            color: var(--purple)
+        }
+
+        .green {
+            background: #48A8501A;
+            color: var(--green)
+        }
+
+        .orange {
+            background: #EF6C351A;
+            color: var(--orange)
+        }
+
+        .yellow {
+            background: #E8AA241A;
+            color: #A56E00
+        }
+
+        .tg-tag {
+            background: #24A1DE1A;
+            color: var(--telegram)
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 18px
+        }
+
+        .cards.two {
+            grid-template-columns: repeat(2, 1fr)
+        }
+
+        .card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 32px;
+            box-shadow: 0 15px 40px #0000000A;
+            transition: .3s
+        }
+
+        .card:hover {
+            transform: translateY(-7px)
+        }
+
+        .icon {
+            width: 74px;
+            height: 74px;
+            border-radius: 24px;
+            display: grid;
+            place-items: center;
+            font-size: 2.2rem;
+            margin-bottom: 18px
+        }
+
+        .scene {
+            position: relative;
+            min-height: 350px;
+            display: grid;
+            place-items: center
+        }
+
+        .blob {
+            width: min(320px, 80%);
+            animation: float 6s ease-in-out infinite;
+            filter: drop-shadow(0 18px 18px #2A2A351A)
+        }
+
+        @keyframes float {
+            50% {
+                transform: translateY(-15px) rotate(2deg)
+            }
+        }
+
+        .bubble {
+            position: absolute;
+            background: #fff;
+            padding: 18px 24px;
+            border-radius: 26px;
+            box-shadow: 0 15px 35px #00000012;
+            font-weight: 700;
+            max-width: 285px
+        }
+
+        .top {
+            top: 2%;
+            right: 0
+        }
+
+        .bottom {
+            bottom: 2%;
+            left: 0
+        }
+
+        .code {
+            background: var(--ide);
+            color: #F8F8F2;
+            border-radius: 24px;
+            padding: 24px;
+            font: 500 1.02rem/1.68 'Fira Code';
+            white-space: pre-wrap;
+            box-shadow: 0 16px 36px #1E1E2E29
+        }
+
+        .fn {
+            color: #50FA7B
+        }
+
+        .str {
+            color: #F1FA8C
+        }
+
+        .var {
+            color: #8BE9FD
+        }
+
+        .numc {
+            color: #BD93F9
+        }
+
+        .kw {
+            color: #FF79C6
+        }
+
+        .comment {
+            color: #8D93B8
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 15px
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: #fff;
+            padding: 18px 24px;
+            border-radius: 50px;
+            box-shadow: 0 12px 30px #0000000A
+        }
+
+        .n {
+            flex: 0 0 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font: 700 1.2rem Fredoka
+        }
+
+        .callout {
+            padding: 22px 27px;
+            border-radius: 25px;
+            background: #E8AA241A;
+            border-left: 8px solid var(--yellow);
+            margin-top: 22px
+        }
+
+        .check {
+            list-style: none
+        }
+
+        .check li {
+            margin: 12px 0;
+            padding-left: 34px;
+            position: relative
+        }
+
+        .check li:before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--green);
+            font-weight: 800
+        }
+
+        .ide-wrap {
+            display: flex;
+            gap: 20px;
+            min-height: 285px;
+            flex: 1
+        }
+
+        .ide-window {
+            flex: 1;
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 15px 40px #00000014
+        }
+
+        .ide-head {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            padding: 0 18px;
+            gap: 8px;
+            font-weight: 600;
+            background: #2D2D44;
+            color: #fff
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%
+        }
+
+        .editor {
+            background: var(--ide);
+            color: #A6E22E;
+            padding: 20px;
+            font: 500 .88rem/1.45 'Fira Code';
+            flex: 1;
+            border: 0;
+            outline: 0;
+            resize: none
+        }
+
+        .output {
+            background: #F8F9FA;
+            border: 4px dashed #E2E8F0;
+            padding: 20px;
+            font: 500 .9rem/1.5 'Fira Code';
+            flex: 1;
+            color: #334155;
+            overflow: auto;
+            white-space: pre-wrap
+        }
+
+        .run {
+            align-self: center;
+            margin-top: 12px;
+            background: var(--green);
+            color: #fff;
+            border: 0;
+            padding: 13px 32px;
+            border-radius: 50px;
+            font: 700 1.15rem Fredoka;
+            cursor: pointer;
+            box-shadow: 0 10px 25px #48A85055
+        }
+
+        .run:disabled {
+            background: #CBD5E1;
+            cursor: wait;
+            box-shadow: none
+        }
+
+        #bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 36px
+        }
+
+        .indicator {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            font: 700 1.15rem Fredoka
+        }
+
+        .logo {
+            width: 34px;
+            height: 34px;
+            background: var(--pink);
+            border-radius: 12px;
+            transform: rotate(15deg)
+        }
+
+        .nav {
+            display: flex;
+            gap: 14px
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 50px;
+            padding: 13px 34px;
+            background: var(--dark);
+            color: #fff;
+            font: 600 1.15rem Fredoka;
+            cursor: pointer;
+            box-shadow: 0 10px 20px #2A2A3526
+        }
+
+        .primary {
+            background: var(--blue)
+        }
+
+        .btn:disabled {
+            background: #D8D8E5;
+            color: #A0A0B5;
+            box-shadow: none
+        }
+
+        .track {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 7px;
+            background: #EEEAF0;
+            z-index: 5
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--pink), var(--telegram));
+            transition: .35s
+        }
+
+        .badge {
+            display: grid;
+            place-items: center;
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
+            background: var(--purple);
+            color: #fff;
+            font: 700 1.6rem Fredoka;
+            margin-bottom: 16px
+        }
+    </style>
+</head>
+
+<body>
+    <main id="app">
+        <section id="deck">
+            <div id="root"></div>
+            <div class="track">
+                <div id="progress" class="progress"></div>
+            </div>
+        </section>
+        <nav id="bar" aria-label="Slide navigation">
+            <div class="indicator"><a href="../index.html"
+                    style="display:inline-flex;align-items:center;text-decoration:none;"><span
+                        class="logo"></span></a>Page <span id="page">1</span> / <span id="total">38</span></div>
+            <div class="nav"><a href="../index.html" class="btn"
+                    style="text-decoration:none;background:#E2E8F0;color:#334155;">🏠 Dashboard</a><button id="prev"
+                    class="btn">Back</button><button id="next" class="btn primary">Next ➞</button></div>
+        </nav>
+    </main>
+    <script>
+        const blob = (c = 'var(--telegram)') => `<svg class="blob" viewBox="0 0 320 320" aria-label="Friendly Bot character"><path d="M65 82C103 25 225 30 266 88c35 49 23 153-30 190-48 34-154 23-190-28C10 200 27 139 65 82Z" fill="${c}"/><ellipse cx="125" cy="145" rx="24" ry="35" fill="white"/><ellipse cx="205" cy="145" rx="24" ry="35" fill="white"/><circle cx="132" cy="151" r="14" fill="#20202A"/><circle cx="198" cy="151" r="14" fill="#20202A"/><circle cx="127" cy="145" r="4" fill="white"/><circle cx="193" cy="145" r="4" fill="white"/><rect x="145" y="60" width="30" height="15" rx="7" fill="var(--yellow)"/><line x1="160" y1="75" x2="160" y2="105" stroke="#20202A" stroke-width="8" stroke-linecap="round"/><path d="M135 211q25 22 50 0" fill="none" stroke="#20202A" stroke-width="9" stroke-linecap="round"/></svg>`;
+        const split = (tag, title, text, art, c = 'var(--telegram)') => `<div class="row center full gap"><div class="half col"><span class="tag ${tag}">${tag}</span><h2>${title}</h2><p class="lead">${text}</p></div><div class="half scene">${art || blob(c)}</div></div>`;
+        const cards = (tag, title, intro, items) => `<span class="tag ${tag}">${tag}</span><h2>${title}</h2><p class="lead">${intro}</p><div class="cards">${items.map(x => `<article class="card"><div class="icon" style="background:${x[2]}1A;color:${x[2]}">${x[0]}</div><h3>${x[1]}</h3><p>${x[3]}</p></article>`).join('')}</div>`;
+        const code = (tag, title, body, note) => `<span class="tag ${tag}">Python Code</span><h2>${title}</h2><div class="code">${body}</div><div class="callout"><p>${note}</p></div>`;
+
+        const slides = [
+            // Slide 1
+            `<div class="row center full gap"><div class="half"><span class="tag tg-tag">Meeting 07 • Phase 2 Kickoff</span><h1>Birth of the <br><span style="color:var(--telegram)">Telegram Bot</span></h1><p class="lead" style="margin-top:22px">Connect Python to the cloud, talk to BotFather, and bring your first real chatbot to life!</p></div><div class="half scene">${blob('var(--telegram)')}<div class="bubble top">I am ready to learn! 🤖</div><div class="bubble bottom">Powered by Python & Telebot 🚀</div></div></div>`,
+
+            // Slide 2: Mission of the Day
+            cards('blue', 'Today’s Mission', 'We are entering Phase 2: Building Real-World Telegram Bots.', [['🤖', 'BotFather', 'var(--telegram)', 'Register your new bot and get its Secret API Token.'], ['📦', 'telebot Library', 'var(--orange)', 'Install pyTelegramBotAPI in GitHub Codespaces.'], ['💬', 'First Commands', 'var(--green)', 'Handle /start and /about with formatted responses.']]),
+
+            // Slide 3: 90-Min Scaffolding
+            `<span class="tag yellow">Lesson Flow</span><h2>90-Minute Scaffolding Plan ⏱️</h2><div class="cards"><div class="card"><div class="icon" style="background:#EBF3FF;color:var(--blue)">👀</div><h3>15' • I Do</h3><p>Live Demo of an active Telegram Bot + Token Security concept.</p></div><div class="card"><div class="icon" style="background:#FFF4EE;color:var(--orange)">🤝</div><h3>35' • We Do</h3><p>Hands-on setup: BotFather, requirements.txt, and <code>bot.py</code>.</p></div><div class="card"><div class="icon" style="background:#EFFFEE;color:var(--green)">🚀</div><h3>30' • You Do</h3><p>Custom <code>/about</code> command & formatted markdown messages.</p></div></div><div class="callout"><p><strong>Final 10 Minutes:</strong> Git Commit, push to GitHub, and live test on your mobile phone!</p></div>`,
+
+            // Slide 4: What is a Telegram Bot?
+            split('tg-tag', 'How Does a Bot Work?', 'A Telegram Bot is an automated account controlled by your Python server. When a user sends a message, Telegram forwards it to your script, and your script sends back a reply!', `<div style="font-size:7rem">📱 ⇄ ☁️ ⇄ 🐍</div>`),
+
+            // Slide 5: The Master: BotFather
+            cards('purple', 'Meet BotFather', 'The official Telegram bot that creates and manages all other bots.', [['👑', 'King of Bots', 'var(--purple)', 'Search for @BotFather inside Telegram.'], ['✨', '/newbot', 'var(--blue)', 'The magic command to spawn a fresh bot.'], ['🔑', 'HTTP API Token', 'var(--yellow)', 'The secret key that allows Python to control your bot.']]),
+
+            // Slide 6: Steps with BotFather
+            `<span class="tag tg-tag">Step-by-Step</span><h2>Creating Your Bot in 3 Steps</h2><div class="steps"><div class="step"><span class="n" style="background:var(--telegram)">1</span><p>Open Telegram and message <strong>@BotFather</strong>. Click <strong>Start</strong> and send <code>/newbot</code>.</p></div><div class="step"><span class="n" style="background:var(--purple)">2</span><p>Choose a <strong>Display Name</strong> (e.g., <code>Budi Super Assistant</code>).</p></div><div class="step"><span class="n" style="background:var(--green)">3</span><p>Choose a unique <strong>Username</strong> ending in <code>bot</code> (e.g., <code>budi_assistant_bot</code>).</p></div></div>`,
+
+            // Slide 7: The Secret Token
+            `<span class="tag pink">Security Rule #1</span><h2>Protect Your API Token! 🔐</h2><div class="code"><span class="comment"># Example Token (NEVER SHARE YOUR REAL TOKEN!):</span><br><span class="var">TOKEN</span> = <span class="str">"7182938491:AAHkL910_xyzTuv1234abcdEFGH"</span></div><div class="callout" style="border-left-color:var(--pink);background:#E0356D1A"><p><strong>Warning:</strong> Anyone with your token has 100% control over your bot. Never post your token in public chats or public social media!</p></div>`,
+
+            // Slide 8: Preparing Codespaces
+            cards('orange', 'Setting Up Codespaces', 'Install the official Telegram library for Python.', [['📄', 'requirements.txt', 'var(--blue)', 'List all third-party libraries needed.'], ['⚡', 'pip install', 'var(--green)', 'Download and install pyTelegramBotAPI.'], ['📁', 'bot.py', 'var(--purple)', 'Our main script where the bot logic lives.']]),
+
+            // Slide 9: Terminal Command
+            code('orange', 'Installing the Library', `<span class="comment"># Write inside requirements.txt:</span><br>pyTelegramBotAPI==4.14.0<br><br><span class="comment"># Run in Codespaces Terminal:</span><br>pip install -r requirements.txt`, 'pyTelegramBotAPI gives us the easy "telebot" module to communicate with Telegram.'),
+
+            // Slide 10: The Python Skeleton
+            code('blue', 'The Basic Bot Skeleton (bot.py)', `<span class="kw">import</span> <span class="var">telebot</span><br><br><span class="var">BOT_TOKEN</span> = <span class="str">"YOUR_SECRET_TOKEN_HERE"</span><br><span class="var">bot</span> = <span class="var">telebot</span>.<span class="fn">TeleBot</span>(<span class="var">BOT_TOKEN</span>)<br><br><span class="fn">print</span>(<span class="str">"🤖 Bot is starting up..."</span>)<br><br><span class="comment"># Keep the bot listening forever:</span><br><span class="var">bot</span>.<span class="fn">infinity_polling</span>()`, 'infinity_polling() keeps your script running non-stop in the cloud, listening for messages.'),
+
+            // Slide 11: Command Handlers
+            split('purple', 'What is a Command Handler?', 'In Telegram, commands start with a slash <code>/</code> (like <code>/start</code> or <code>/help</code>). We tell Python how to respond using Python Decorators.', `<div style="font-size:7.5rem">🎯 ⚡ 💬</div>`),
+
+            // Slide 12: Writing /start Handler
+            code('purple', 'Responding to /start', `<span class="kw">@bot.message_handler</span>(<span class="var">commands</span>=[<span class="str">'start'</span>])<br><span class="kw">def</span> <span class="fn">send_welcome</span>(<span class="var">message</span>):<br>    <span class="var">user_name</span> = <span class="var">message</span>.<span class="var">from_user</span>.<span class="var">first_name</span><br>    <span class="var">bot</span>.<span class="fn">reply_to</span>(<span class="var">message</span>, <span class="str">f"👋 Hello {user_name}! I am your AI assistant!"</span>)`, '@bot.message_handler intercepts the /start command and triggers our send_welcome function!'),
+
+            // Slide 13: Interactive Simulation Slide
+            `<span class="tag green">Interactive Bot Simulation</span><h2>Test Command Logic in Python</h2><div class="ide-wrap"><div class="ide-window"><div class="ide-head"><i class="dot" style="background:#FF5F56"></i><i class="dot" style="background:#FFBD2E"></i><i class="dot" style="background:#27C93F"></i><span>simulated_bot.py</span></div><textarea id="python-code" class="editor" spellcheck="false"># Simulation of Telegram Command Dispatcher
+def handle_command(cmd, user_name):
+    if cmd == "/start":
+        return f"👋 Welcome, {user_name}! Bot is online & ready."
+    elif cmd == "/help":
+        return "📖 Available commands: /start, /help, /about"
+    elif cmd == "/about":
+        return f"🤖 Created by: {user_name}\n🚀 Powered by Python 3 & Telebot!"
+    else:
+        return "❓ Unknown command. Type /help."
+
+user = "Alex"
+print(handle_command("/start", user))
+print("\n" + handle_command("/help", user))
+print("\n" + handle_command("/about", user))</textarea></div><div class="ide-window"><div class="ide-head" style="background:#E2E8F0;color:#475569">Terminal Output</div><div id="python-output" class="output">Click 'Run Simulation' to test command handler…</div></div></div><button id="run-btn" class="run" disabled>Loading Python… ⏳</button>`,
+
+            // Slide 14: Adding Multiple Commands
+            code('blue', 'Multiple Commands in One Handler', `<span class="kw">@bot.message_handler</span>(<span class="var">commands</span>=[<span class="str">'help'</span>, <span class="str">'bantuan'</span>])<br><span class="kw">def</span> <span class="fn">send_help</span>(<span class="var">message</span>):<br>    <span class="var">help_text</span> = <span class="str">"""📖 **Available Commands:**<br>/start - Start the bot<br>/help - View instruction guide<br>/about - Creator bio & version"""</span><br>    <span class="var">bot</span>.<span class="fn">send_message</span>(<span class="var">message</span>.<span class="var">chat</span>.<span class="var">id</span>, <span class="var">help_text</span>, <span class="var">parse_mode</span>=<span class="str">"Markdown"</span>)`, 'parse_mode="Markdown" allows bold (**text**), italics (*text*), and code format in replies!'),
+
+            // Slide 15: reply_to vs send_message
+            cards('yellow', 'reply_to vs send_message', 'Two ways your bot can send messages back to the chat.', [['↩️', 'bot.reply_to', 'var(--purple)', 'Quotes the user’s original message when answering.'], ['📨', 'bot.send_message', 'var(--blue)', 'Sends a fresh new message directly into the chat room.'], ['🎯', 'chat.id', 'var(--green)', 'The unique room number where the message should go.']]),
+
+            // Slide 16: You Do - Challenge Time
+            `<span class="tag purple">Hands-on Mission (30 Mins)</span><h2>Build Your Custom Profile Command 🚀</h2><div class="cards"><div class="card"><h3>Level 1: /about</h3><p>Create <code>/about</code> displaying your name, school, favorite hobby, and bot version.</p></div><div class="card"><h3>Level 2: Markdown</h3><p>Use <strong>Bold</strong>, <em>Italics</em>, and <code>code tags</code> to make the layout look professional.</p></div><div class="card"><h3>Level 3: /social</h3><p>Add <code>/social</code> or <code>/github</code> with links to your GitHub profile!</p></div></div>`,
+
+            // Slide 17: Save Game Ritual
+            `<span class="tag blue">Save Game Ritual</span><h2>Commit & Sync to Cloud</h2><div class="steps"><div class="step"><span class="n" style="background:var(--pink)">1</span><p>Go to the <strong>Source Control</strong> tab in Codespaces.</p></div><div class="step"><span class="n" style="background:var(--purple)">2</span><p>Type commit message: <code>feat: initialize telegram bot with start and about commands</code></p></div><div class="step"><span class="n" style="background:var(--blue)">3</span><p>Click <strong>Commit & Sync</strong>. Verify on GitHub!</p></div></div>`,
+
+            // Slide 18: Next Meeting Preview
+            `<div class="col center full text-center"><span class="tag green" style="align-self:center">Meeting 08 Preview</span><h2>The Echo Bot & Smart Text Filters 💬</h2><p class="lead">Next meeting, we will teach our bot to read normal conversational chat, respond to emotions, and build an Anti-Toxic shield!</p><div style="font-size:7rem;margin-top:28px">👂 ➜ 🧠 ➜ 💬</div></div>`
+        ];
+
+        const root = document.getElementById('root'); root.innerHTML = slides.map((x, i) => `<section class="slide${i === 0 ? ' active' : ''}" id="slide-${i + 1}">${x}</section>`).join('');
+        const all = [...document.querySelectorAll('.slide')], prev = document.getElementById('prev'), next = document.getElementById('next'), page = document.getElementById('page'), total = document.getElementById('total'), progress = document.getElementById('progress'); let current = 0; total.textContent = all.length;
+        function indexFromHash() { const match = location.hash.match(/^#slide-(\d+)$/); if (!match) return 0; const index = Number(match[1]) - 1; return index >= 0 && index < all.length ? index : 0 }
+        function update(syncHash = true) { all.forEach((x, i) => x.classList.toggle('active', i === current)); page.textContent = current + 1; progress.style.width = `${(current + 1) / all.length * 100}%`; prev.disabled = current === 0; const done = current === all.length - 1; next.disabled = done; next.textContent = done ? 'Finish' : 'Next ➞'; next.classList.toggle('primary', !done); if (syncHash && location.hash !== `#slide-${current + 1}`) history.replaceState(null, '', `#slide-${current + 1}`) }
+        function move(d) { if (current + d >= 0 && current + d < all.length) { current += d; update() } } prev.onclick = () => move(-1); next.onclick = () => move(1); document.addEventListener('keydown', e => { if (e.target.matches('textarea,input')) return; if (e.key === 'ArrowRight' || e.key === 'PageDown') move(1); if (e.key === 'ArrowLeft' || e.key === 'PageUp') move(-1) }); window.addEventListener('hashchange', () => { current = indexFromHash(); update(false) }); current = indexFromHash(); update();
+
+        const run = document.getElementById('run-btn'), out = document.getElementById('python-output'), editor = document.getElementById('python-code'); let ready = init(); async function init() { try { const p = await loadPyodide(); run.disabled = false; run.textContent = 'Run Simulation ▶'; out.textContent = 'Python engine ready! Click the button above to execute.'; return p } catch (e) { run.textContent = 'Failed to load Python'; out.textContent = 'Check internet connection.'; out.style.color = 'var(--pink)'; throw e } }
+        async function execute() { run.disabled = true; run.textContent = 'Running…'; out.textContent = ''; try { const p = await ready, lines = []; p.setStdout({ batched: m => lines.push(m) }); await p.runPythonAsync(editor.value); out.textContent = lines.join('\n') || 'Code ran with no output.'; out.style.color = '#334155' } catch (e) { out.textContent = `Oops, found a bug 🐛\n\n${e.message}`; out.style.color = 'var(--pink)' } finally { run.disabled = false; run.textContent = 'Run Simulation ▶' } } run.onclick = execute;
+    </script>
+</body>
+
+</html>

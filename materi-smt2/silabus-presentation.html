@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syllabus 24 Sessions - Python Telegram Bot for Kids</title>
+    <title>Syllabus 24 Sessions - Python Telegram Bot for Kids & Teens</title>
     
     <!-- Google Fonts: Fredoka untuk judul ceria, Poppins untuk teks, Fira Code untuk IDE -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;500;600;700;800&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet">
@@ -110,10 +110,10 @@
             color: var(--text-dark); 
             font-weight: 700;
         }
-        h1 { font-size: 3.6rem; line-height: 1.1; margin-bottom: 15px;}
-        h2 { font-size: 2.4rem; margin-bottom: 15px; }
-        h3 { font-size: 1.5rem; }
-        p { font-size: 1rem; line-height: 1.5; font-weight: 500; color: var(--text-muted);}
+        h1 { font-size: 3.4rem; line-height: 1.1; margin-bottom: 12px;}
+        h2 { font-size: 2.2rem; margin-bottom: 12px; }
+        h3 { font-size: 1.35rem; }
+        p { font-size: 0.95rem; line-height: 1.5; font-weight: 500; color: var(--text-muted);}
 
         /* Layout Helpers */
         .row { display: flex; flex-direction: row; }
@@ -196,8 +196,9 @@
         
         /* Grids & Cards */
         .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.9rem; }
         
         .card { 
             padding: 20px 18px; border-radius: 24px;
@@ -213,9 +214,9 @@
 
         .session-card {
             background: white;
-            border-radius: 18px;
-            padding: 14px 16px;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+            border-radius: 16px;
+            padding: 12px 14px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -226,7 +227,7 @@
 
         .session-badge {
             font-family: 'Fredoka', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
             padding: 3px 10px;
             border-radius: 16px;
@@ -235,9 +236,10 @@
         }
 
         .badge-fase1 { background: rgba(68, 126, 224, 0.12); color: var(--c-blue); }
-        .badge-fase2 { background: rgba(239, 108, 53, 0.12); color: var(--c-orange); }
-        .badge-fase3 { background: rgba(154, 83, 224, 0.12); color: var(--c-purple); }
+        .badge-fase2 { background: rgba(232, 170, 36, 0.15); color: #B37B00; }
+        .badge-fase3 { background: rgba(239, 108, 53, 0.12); color: var(--c-orange); }
         .badge-fase4 { background: rgba(72, 168, 80, 0.12); color: var(--c-green); }
+        .badge-fase5 { background: rgba(154, 83, 224, 0.12); color: var(--c-purple); }
 
         /* Telegram Mockup UI */
         .tg-mockup {
@@ -265,7 +267,7 @@
         }
         .msg-bubble {
             max-width: 85%; padding: 8px 12px; border-radius: 14px;
-            font-size: 0.88rem; line-height: 1.4;
+            font-size: 0.85rem; line-height: 1.4;
         }
         .msg-in {
             background: white; color: var(--text-dark);
@@ -281,7 +283,7 @@
         }
         .tg-btn {
             background: white; border: none; padding: 6px; border-radius: 6px;
-            font-family: 'Fredoka', sans-serif; font-size: 0.85rem; font-weight: 600;
+            font-family: 'Fredoka', sans-serif; font-size: 0.82rem; font-weight: 600;
             color: #334155; text-align: center; cursor: pointer;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
@@ -316,14 +318,14 @@
         .ide-editor {
             background-color: var(--ide-bg);
             color: var(--ide-text);
-            padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.9rem;
+            padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.88rem;
             flex-grow: 1; border: none; outline: none; resize: none;
             line-height: 1.45; white-space: pre; overflow-x: auto;
         }
         
         .ide-output-container {
             background-color: #F8F9FA; border: 2px dashed #CBD5E1;
-            padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.9rem;
+            padding: 14px; font-family: 'Fira Code', monospace; font-size: 0.88rem;
             flex-grow: 1; color: #334155; overflow-y: auto; white-space: pre-wrap;
         }
 
@@ -348,9 +350,9 @@
             <div class="slide active" id="slide-1">
                 <div class="row h-full align-center justify-between">
                     <div class="col w-half" style="z-index: 2;">
-                        <span class="tag-pill" style="background: rgba(36, 161, 222, 0.12); color: var(--c-telegram);">🤖 Syllabus 24 Pertemuan</span>
-                        <h1>Python <span style="color: var(--c-telegram);">Telegram Bot</span><br>For Kids & Teens</h1>
-                        <p style="margin-top: 8px; font-size: 1.15rem;">Perjalanan seru dari pemula hingga bisa membuat Bot Telegram Interaktif milikmu sendiri di Server Cloud (GitHub Codespaces)!</p>
+                        <span class="tag-pill" style="background: rgba(36, 161, 222, 0.12); color: var(--c-telegram);">🤖 Syllabus 24 Pertemuan @ 90 Menit</span>
+                        <h1>Python <span style="color: var(--c-telegram);">Telegram Bot</span><br>Student Assistant</h1>
+                        <p style="margin-top: 8px; font-size: 1.1rem;">Perjalanan membangun 3 Bot Nyata (Study Timer, To-Do PR, & Money Tracker) hingga Capstone Project Asisten Pelajar di Cloud GitHub Codespaces!</p>
                         
                         <div class="row gap-md" style="margin-top: 20px;">
                             <div style="background: white; padding: 10px 18px; border-radius: 14px; box-shadow: 0 6px 15px rgba(0,0,0,0.04);">
@@ -359,7 +361,7 @@
                             </div>
                             <div style="background: white; padding: 10px 18px; border-radius: 14px; box-shadow: 0 6px 15px rgba(0,0,0,0.04);">
                                 <strong style="color: var(--c-orange); font-size: 1rem; display: block;">⏱️ Durasi Belajar</strong>
-                                <span style="font-size: 0.9rem;">24 Sesi @ 1 Jam (Online)</span>
+                                <span style="font-size: 0.9rem;">24 Sesi @ 90 Menit (Scaffolding)</span>
                             </div>
                         </div>
                     </div>
@@ -381,85 +383,94 @@
                 </div>
             </div>
 
-            <!-- SLIDE 2: Methodology & Modern Tools -->
+            <!-- SLIDE 2: Methodology & Scaffolding 90 Menit -->
             <div class="slide" id="slide-2">
-                <h2 class="text-center">Keunggulan & Tools Pembelajaran 🛠️</h2>
-                <p class="text-center" style="margin-bottom: 25px;">Anak-anak belajar menggunakan standar alat developer profesional modern namun mudah diakses!</p>
+                <h2 class="text-center">Metodologi Scaffolding 90 Menit 🛠️</h2>
+                <p class="text-center" style="margin-bottom: 25px;">Setiap pertemuan dirancang padat, runtut, dan terukur agar siswa tidak bingung!</p>
                 
                 <div class="grid-4 h-full">
                     <div class="card align-center text-center justify-center">
-                        <div style="width: 60px; height: 60px; background: rgba(36, 161, 222, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
-                            <span style="font-size: 2rem;">☁️</span>
+                        <div style="width: 55px; height: 55px; background: rgba(68, 126, 224, 0.15); border-radius: 18px; margin-bottom: 12px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 1.8rem;">👀</span>
                         </div>
-                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">GitHub Codespaces</h3>
-                        <p style="font-size: 0.9rem;">Coding langsung di Cloud Server via browser! Tanpa perlu ribet install Python di laptop local.</p>
+                        <h3 style="font-size: 1.15rem; color: var(--c-blue); margin-bottom: 4px;">15' — I Do (Concept)</h3>
+                        <p style="font-size: 0.85rem;">Guru mendemokan hasil akhir bot & menjelaskan konsep logika di balik layar.</p>
                     </div>
                     
                     <div class="card align-center text-center justify-center">
-                        <div style="width: 60px; height: 60px; background: rgba(232, 170, 36, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
-                            <span style="font-size: 2rem;">🐍</span>
+                        <div style="width: 55px; height: 55px; background: rgba(232, 170, 36, 0.15); border-radius: 18px; margin-bottom: 12px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 1.8rem;">🤝</span>
                         </div>
-                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">Python 3 & Telebot</h3>
-                        <p style="font-size: 0.9rem;">Bahasa pemrograman terpopuler di dunia yang ramah pemula untuk membangun kecerdasan bot.</p>
+                        <h3 style="font-size: 1.15rem; color: #B37B00; margin-bottom: 4px;">35' — We Do (Live Code)</h3>
+                        <p style="font-size: 0.85rem;">Siswa mengetik kode bersama guru baris demi baris secara interaktif.</p>
                     </div>
 
                     <div class="card align-center text-center justify-center">
-                        <div style="width: 60px; height: 60px; background: rgba(154, 83, 224, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
-                            <span style="font-size: 2rem;">🎮</span>
+                        <div style="width: 55px; height: 55px; background: rgba(72, 168, 80, 0.15); border-radius: 18px; margin-bottom: 12px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 1.8rem;">🚀</span>
                         </div>
-                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">Ritual "Save Game"</h3>
-                        <p style="font-size: 0.9rem;">Belajar Git Commit & Sync dengan cara sederhana seperti menyimpan level game favorit mereka!</p>
+                        <h3 style="font-size: 1.15rem; color: var(--c-green); margin-bottom: 4px;">30' — You Do (Mission)</h3>
+                        <p style="font-size: 0.85rem;">Tantangan mandiri: Siswa memodifikasi fitur baru sesuai kreativitasnya.</p>
                     </div>
 
                     <div class="card align-center text-center justify-center">
-                        <div style="width: 60px; height: 60px; background: rgba(72, 168, 80, 0.15); border-radius: 18px; margin-bottom: 15px; display:flex; justify-content:center; align-items:center;">
-                            <span style="font-size: 2rem;">🚀</span>
+                        <div style="width: 55px; height: 55px; background: rgba(154, 83, 224, 0.15); border-radius: 18px; margin-bottom: 12px; display:flex; justify-content:center; align-items:center;">
+                            <span style="font-size: 1.8rem;">💾</span>
                         </div>
-                        <h3 style="font-size: 1.3rem; margin-bottom: 6px;">Real Bot Telegram</h3>
-                        <p style="font-size: 0.9rem;">Bot ciptaan siswa langsung live & bisa di-chat oleh teman maupun orang tua di HP masing-masing.</p>
+                        <h3 style="font-size: 1.15rem; color: var(--c-purple); margin-bottom: 4px;">10' — Wrap-up & Sync</h3>
+                        <p style="font-size: 0.85rem;">Bug check bersama dan ritual Commit & Sync kode ke GitHub repository.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- SLIDE 3: Roadmap 4 Fase Utama -->
+            <!-- SLIDE 3: Roadmap 5 Blok Utama -->
             <div class="slide" id="slide-3">
-                <h2 class="text-center">Roadmap 4 Fase Pembelajaran 🗺️</h2>
-                <p class="text-center" style="margin-bottom: 25px;">24 Pertemuan dirancang secara bertahap dari pemahaman dasar hingga proyek aplikasi utuh.</p>
+                <h2 class="text-center">Roadmap 24 Sesi Pembelajaran 🗺️</h2>
+                <p class="text-center" style="margin-bottom: 25px;">Kurikulum berjenjang dari dasar Python hingga Super Bot Asisten Pelajar utuh.</p>
                 
-                <div class="grid-4 h-full">
+                <div class="grid-5 h-full">
                     <div class="card" style="border-top: 6px solid var(--c-blue);">
-                        <div class="session-badge badge-fase1" style="margin-bottom: 10px;">FASE 1 • Sesi 1-6</div>
-                        <h3 style="font-size: 1.25rem; color: var(--c-blue); margin-bottom: 6px;">Fondasi Cloud & Python</h3>
-                        <p style="font-size: 0.88rem; margin-bottom: 12px;">Mengenal Codespaces, ritual Commit/Sync, Variabel, Tipe Data, Input, dan Logika If-Else.</p>
-                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
-                            🏆 Output: Text Adventure Game
+                        <div class="session-badge badge-fase1" style="margin-bottom: 8px;">BLOK 1 • Sesi 1-6</div>
+                        <h3 style="font-size: 1.1rem; color: var(--c-blue); margin-bottom: 6px;">Fondasi Python</h3>
+                        <p style="font-size: 0.8rem; margin-bottom: 10px;">Codespaces, Git Sync, Variabel, Matematika, Input, & If-Else.</p>
+                        <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; margin-top: auto;">
+                            🏆 Text Adventure Game
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 6px solid #E8AA24;">
+                        <div class="session-badge badge-fase2" style="margin-bottom: 8px;">BLOK 2 • Sesi 7-9</div>
+                        <h3 style="font-size: 1.1rem; color: #B37B00; margin-bottom: 6px;">Bot & Kalkulator</h3>
+                        <p style="font-size: 0.8rem; margin-bottom: 10px;">BotFather, Polling runtime, Command Handlers, & <b>Bot 0: Kalkulator</b>.</p>
+                        <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; margin-top: auto;">
+                            🏆 Bot Kalkulator Pintar
                         </div>
                     </div>
 
                     <div class="card" style="border-top: 6px solid var(--c-orange);">
-                        <div class="session-badge badge-fase2" style="margin-bottom: 10px;">FASE 2 • Sesi 7-12</div>
-                        <h3 style="font-size: 1.25rem; color: var(--c-orange); margin-bottom: 6px;">Bot & Runtime Telegram</h3>
-                        <p style="font-size: 0.88rem; margin-bottom: 12px;">BotFather token, Telegram Polling, Command Handlers (/start), Text Handlers & Media Gambar.</p>
-                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
-                            🏆 Output: Bot Asisten Pribadi
-                        </div>
-                    </div>
-
-                    <div class="card" style="border-top: 6px solid var(--c-purple);">
-                        <div class="session-badge badge-fase3" style="margin-bottom: 10px;">FASE 3 • Sesi 13-18</div>
-                        <h3 style="font-size: 1.25rem; color: var(--c-purple); margin-bottom: 6px;">Data & Alur Percakapan</h3>
-                        <p style="font-size: 0.88rem; margin-bottom: 12px;">List, For Loop, Dictionary (Key-Value), dan Next Step Handler untuk percakapan bertahap.</p>
-                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
-                            🏆 Output: Multi-step Dialog Bot
+                        <div class="session-badge badge-fase3" style="margin-bottom: 8px;">BLOK 3 • Sesi 10-11</div>
+                        <h3 style="font-size: 1.1rem; color: var(--c-orange); margin-bottom: 6px;">Timer & Pomodoro</h3>
+                        <p style="font-size: 0.8rem; margin-bottom: 10px;"><b>Bot 1: Study Buddy</b>, time & threading timer, preset & streak belajar.</p>
+                        <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; margin-top: auto;">
+                            🏆 Bot Timer Fokus
                         </div>
                     </div>
 
                     <div class="card" style="border-top: 6px solid var(--c-green);">
-                        <div class="session-badge badge-fase4" style="margin-bottom: 10px;">FASE 4 • Sesi 19-24</div>
-                        <h3 style="font-size: 1.25rem; color: var(--c-green); margin-bottom: 6px;">Proyek Akhir & Demo</h3>
-                        <p style="font-size: 0.88rem; margin-bottom: 12px;">User State Memory (Skor), Reply Keyboard Buttons, Answer Validation, Debugging & Demo Day.</p>
-                        <div style="background: var(--bg-workspace); padding: 8px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: var(--text-dark); margin-top: auto;">
-                            🏆 Output: Bot Kuis Interaktif Live!
+                        <div class="session-badge badge-fase4" style="margin-bottom: 8px;">BLOK 4 • Sesi 12-14</div>
+                        <h3 style="font-size: 1.1rem; color: var(--c-green); margin-bottom: 6px;">To-Do List PR</h3>
+                        <p style="font-size: 0.8rem; margin-bottom: 10px;"><b>Bot 2: PR Manager</b>, List & Loop, checklist rapi, coret & hapus tugas.</p>
+                        <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; margin-top: auto;">
+                            🏆 Bot To-Do List Pelajar
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 6px solid var(--c-purple);">
+                        <div class="session-badge badge-fase5" style="margin-bottom: 8px;">BLOK 5 • Sesi 15-24</div>
+                        <h3 style="font-size: 1.1rem; color: var(--c-purple); margin-bottom: 6px;">Money & Capstone</h3>
+                        <p style="font-size: 0.8rem; margin-bottom: 10px;"><b>Bot 3: Money Tracker</b>, JSON, Keyboard UI, & 4 Sesi Final Project.</p>
+                        <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600; margin-top: auto;">
+                            🏆 Super Bot Asisten
                         </div>
                     </div>
                 </div>
@@ -539,7 +550,7 @@
                         <span class="session-badge badge-fase1">Mini Project Sesi 6</span>
                         <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Game "Pilih Jalan Cerita" 📖</h2>
                     </div>
-                    <p style="font-size: 0.9rem;">Coba jalankan simulasi kode proyek Sesi 6 di bawah ini!</p>
+                    <p style="font-size: 0.9rem;">Simulasi logika CLI Python dasar sebelum masuk ke ekosistem Bot Telegram!</p>
                 </div>
 
                 <div class="row justify-between align-center" style="gap: 20px;">
@@ -596,81 +607,81 @@ else:
                 </div>
             </div>
 
-            <!-- SLIDE 6: Fase 2 Details (Sessions 7 - 12) -->
+            <!-- SLIDE 6: Fase 2 & 3 Details (Sessions 7 - 11) -->
             <div class="slide" id="slide-6">
-                <div class="row align-center justify-between" style="margin-bottom: 15px;">
+                <div class="row align-center justify-between" style="margin-bottom: 12px;">
                     <div>
-                        <span class="session-badge badge-fase2">FASE 2 (Sesi 7-12)</span>
-                        <h2>Membangkitkan Bot & Telegram Runtime 🤖</h2>
+                        <span class="session-badge badge-fase2">SESI 7 - 11</span>
+                        <h2>Kelahiran Bot, Kalkulator & Pomodoro Timer ⏱️</h2>
                     </div>
-                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: Mengkoneksikan Python ke API Telegram, paham konsep polling, & penanganan media.</p>
+                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: API Telegram, Polling Runtime, Bot 0 (Kalkulator) & Bot 1 (Timer Fokus Belajar).</p>
                 </div>
 
                 <div class="grid-3 gap-md">
-                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                    <div class="session-card" style="border-left-color: #E8AA24;">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-orange);">Sesi 07</strong>
-                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Telegram Setup</span>
+                            <strong style="color: #B37B00;">Sesi 07</strong>
+                            <span style="font-size: 0.72rem; background: #FFF9E6; padding: 2px 8px; border-radius: 10px; font-weight:600;">BotFather</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Lahirnya Sang Bot</h4>
-                        <p style="font-size: 0.85rem;">Membuat Bot di BotFather, amankan Token, & install pyTelegramBotAPI.</p>
+                        <h4 style="font-size: 1rem;">Lahirnya Sang Bot</h4>
+                        <p style="font-size: 0.82rem;">Token BotFather, install pyTelegramBotAPI, command /start & /about.</p>
                     </div>
 
-                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                    <div class="session-card" style="border-left-color: #E8AA24;">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-orange);">Sesi 08</strong>
-                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Polling Concept</span>
+                            <strong style="color: #B37B00;">Sesi 08</strong>
+                            <span style="font-size: 0.72rem; background: #FFF9E6; padding: 2px 8px; border-radius: 10px; font-weight:600;">Polling & Text</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Konsep Runtime & Bot Beo</h4>
-                        <p style="font-size: 0.85rem;">Paham kenapa bot standby 24/7 (polling) dan membuat echo-bot pertama.</p>
+                        <h4 style="font-size: 1rem;">Bot Beo & Anti-Toxic</h4>
+                        <p style="font-size: 0.82rem;">Konsep infinite polling, filter pesan teks sapaan, respon kata motivasi "mager".</p>
                     </div>
 
-                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                    <div class="session-card" style="border-left-color: #E8AA24;">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-orange);">Sesi 09</strong>
-                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Commands</span>
+                            <strong style="color: #B37B00;">Sesi 09</strong>
+                            <span style="font-size: 0.72rem; background: #FFF9E6; padding: 2px 8px; border-radius: 10px; font-weight:600;">BOT 0</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Bot Patuh Perintah</h4>
-                        <p style="font-size: 0.85rem;">Decorator @bot.message_handler untuk respon /start, /help, dan /sosmed.</p>
+                        <h4 style="font-size: 1rem;">🧮 Bot Kalkulator Pintar</h4>
+                        <p style="font-size: 0.82rem;">Command /tambah, /kali, /diskon, split string & validasi pembagian nol.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-orange);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-orange);">Sesi 10</strong>
-                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Text Filtering</span>
+                            <span style="font-size: 0.72rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">BOT 1</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Bot Paham Teks & Anti-Toxic</h4>
-                        <p style="font-size: 0.85rem;">Membaca obrolan teks biasa dan memberi filter pintar untuk mendeteksi kata terlarang.</p>
+                        <h4 style="font-size: 1rem;">⏱️ Timer Pomodoro Belajar</h4>
+                        <p style="font-size: 0.82rem;">Background timer dengan threading.Timer, command /fokus & /pomodoro.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-orange);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-orange);">Sesi 11</strong>
-                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Media Handling</span>
+                            <span style="font-size: 0.72rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Robust Code</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Bot Ngirim Gambar & Stiker</h4>
-                        <p style="font-size: 0.85rem;">Mengirim foto dari URL internet via /foto dan mengirim stiker Telegram favorit.</p>
+                        <h4 style="font-size: 1rem;">Validasi & Streak Belajar</h4>
+                        <p style="font-size: 0.82rem;">Try-Except anti crash saat user salah input & counter streak sesi fokus.</p>
                     </div>
 
-                    <div class="session-card" style="border-left-color: var(--c-orange);">
+                    <div class="session-card" style="border-left-color: var(--c-green);">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-orange);">Sesi 12</strong>
-                            <span style="font-size: 0.75rem; background: #FFF4EE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Evaluation</span>
+                            <strong style="color: var(--c-green);">Sesi 12</strong>
+                            <span style="font-size: 0.72rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">BOT 2 Ready</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Mini Project Bot Asisten</h4>
-                        <p style="font-size: 0.85rem;">Menggabungkan Sesi 7-11 menjadi satu Bot Asisten Pribadi yang responsif.</p>
+                        <h4 style="font-size: 1rem;">Fondasi List Tugas Sekolah</h4>
+                        <p style="font-size: 0.82rem;">Mengenal List di Python untuk menampung data dinamis PR siswa.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- SLIDE 7: Showcase Telegram Bot (WITH PYODIDE INTERACTIVE IDE) -->
+            <!-- SLIDE 7: Showcase Bot Kalkulator & Timer (WITH PYODIDE INTERACTIVE IDE) -->
             <div class="slide" id="slide-7">
                 <div class="row align-center justify-between" style="margin-bottom: 12px;">
                     <div>
-                        <span class="session-badge badge-fase2">Hasil Karya Sesi 7-12</span>
-                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Simulasi Bot Asisten Live 💬</h2>
+                        <span class="session-badge badge-fase2">Hasil Sesi 7 - 11</span>
+                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Simulasi Bot Kalkulator & Timer 🧮</h2>
                     </div>
-                    <p style="font-size: 0.9rem;">Lihat UI Telegram Chat & jalankan simulasi logika Botnya!</p>
+                    <p style="font-size: 0.9rem;">Uji coba parsing command matematika & logika timer pomodoro!</p>
                 </div>
 
                 <div class="row justify-between align-center" style="gap: 20px;">
@@ -678,17 +689,17 @@ else:
                     <div class="col" style="flex: 0.9;">
                         <div class="tg-mockup">
                             <div class="tg-header">
-                                <div class="tg-avatar">🤖</div>
+                                <div class="tg-avatar" style="background: #E8AA24; color: white;">⚡</div>
                                 <div>
-                                    <strong style="font-size: 0.95rem; display:block;">AsistenCilik_Bot</strong>
+                                    <strong style="font-size: 0.95rem; display:block;">StudyBuddy_Bot</strong>
                                     <span style="font-size: 0.72rem; opacity: 0.85;">bot • online</span>
                                 </div>
                             </div>
                             <div class="tg-chat-area">
-                                <div class="msg-bubble msg-out">/start</div>
-                                <div class="msg-bubble msg-in">Halo! Aku Bot Asisten buatan Budi. Ketik /foto untuk lihat gambar! 🎨</div>
-                                <div class="msg-bubble msg-out">/foto</div>
-                                <div class="msg-bubble msg-in">📸 Foto kucing dikirim dari cloud server!</div>
+                                <div class="msg-bubble msg-out">/hitung 25000 * 0.8</div>
+                                <div class="msg-bubble msg-in">💡 Hasil: Rp 20,000 (Diskon 20%!)</div>
+                                <div class="msg-bubble msg-out">/fokus 25</div>
+                                <div class="msg-bubble msg-in">⏱️ Mode fokus dimulai! Jangan buka sosmed ya! 🎯</div>
                             </div>
                         </div>
                     </div>
@@ -701,23 +712,22 @@ else:
                                     <div class="ide-dots dot-r"></div>
                                     <div class="ide-dots dot-y"></div>
                                     <div class="ide-dots dot-g"></div>
-                                    <span style="margin-left: 6px;">bot_asisten.py</span>
+                                    <span style="margin-left: 6px;">calc_timer_engine.py</span>
                                 </div>
                                 <textarea class="ide-editor" spellcheck="false">
-# Simulasi Logika Telebot Sesi 7-12
-def handle_command(cmd):
-    if cmd == "/start":
-        return "Halo! Aku Bot Asisten buatan Budi 🤖"
-    elif cmd == "/foto":
-        return "📸 [Mengirim foto dari URL cloud server]"
-    else:
-        return "Command tidak dikenal. Ketik /start"
+# Logika Sesi 9-11: Kalkulator & Timer Bot
+def hitung_diskon(harga, diskon):
+    potongan = harga * (diskon / 100)
+    total = harga - potongan
+    return f"Rp {total:,.0f} (Hemat Rp {potongan:,.0f})"
 
-# Uji coba command
-print("User: /start")
-print("Bot:", handle_command("/start"))
-print("\nUser: /foto")
-print("Bot:", handle_command("/foto"))
+print("=== TEST COMMAND KALKULATOR ===")
+print("Harga Rp 50.000, Diskon 20%:")
+print("Bot:", hitung_diskon(50000, 20))
+
+print("\n=== TEST TIMER PRESET ===")
+streak_belajar = 3
+print(f"🔥 Sesi Belajar Hari Ini: {streak_belajar} kali!")
                                 </textarea>
                             </div>
                             
@@ -726,7 +736,7 @@ print("Bot:", handle_command("/foto"))
                                     <span>Terminal Output</span>
                                 </div>
                                 <div class="ide-output-container">
-                                    (Klik 'Jalankan Kode' untuk tes bot...)
+                                    (Klik 'Jalankan Kode' untuk tes kalkulator...)
                                 </div>
                             </div>
                         </div>
@@ -735,81 +745,81 @@ print("Bot:", handle_command("/foto"))
                 </div>
             </div>
 
-            <!-- SLIDE 8: Fase 3 Details (Sessions 13 - 18) -->
+            <!-- SLIDE 8: Fase 4 Details (Sessions 12 - 17) -->
             <div class="slide" id="slide-8">
-                <div class="row align-center justify-between" style="margin-bottom: 15px;">
+                <div class="row align-center justify-between" style="margin-bottom: 12px;">
                     <div>
-                        <span class="session-badge badge-fase3">FASE 3 (Sesi 13-18)</span>
-                        <h2>Struktur Data & Alur Percakapan 📚</h2>
+                        <span class="session-badge badge-fase4">SESI 12 - 17</span>
+                        <h2>To-Do List PR & Money Tracker 📋💰</h2>
                     </div>
-                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: Mengolah data majemuk (List & Dictionary) dan membuat percakapan bertahap.</p>
+                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: List & CRUD Tugas, Dictionary State per User, dan Percakapan Berantai.</p>
                 </div>
 
                 <div class="grid-3 gap-md">
-                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                    <div class="session-card" style="border-left-color: var(--c-green);">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-purple);">Sesi 13</strong>
-                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Data Structure</span>
+                            <strong style="color: var(--c-green);">Sesi 13</strong>
+                            <span style="font-size: 0.72rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">For Loop List</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Rak Buku Server (List)</h4>
-                        <p style="font-size: 0.85rem;">Menyimpan kumpulan data dalam List, serta memanipulasinya (append, remove).</p>
+                        <h4 style="font-size: 1rem;">📋 Tampilan Checklist PR</h4>
+                        <p style="font-size: 0.82rem;">Command /cek_pr me-looping list tugas dengan emoji checklist & nomor urut.</p>
                     </div>
 
-                    <div class="session-card" style="border-left-color: var(--c-purple);">
+                    <div class="session-card" style="border-left-color: var(--c-green);">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-purple);">Sesi 14</strong>
-                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Iteration</span>
+                            <strong style="color: var(--c-green);">Sesi 14</strong>
+                            <span style="font-size: 0.72rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">CRUD Delete</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Mesin Pengulang (For Loop)</h4>
-                        <p style="font-size: 0.85rem;">Melakukan perulangan otomatis untuk membaca seluruh isi List secara efisien.</p>
+                        <h4 style="font-size: 1rem;">✂️ Coret & Hapus PR Selesai</h4>
+                        <p style="font-size: 0.82rem;">Command /selesai [no] menghapus tugas dari list dengan indexing aman.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-purple);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-purple);">Sesi 15</strong>
-                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Bot Integration</span>
+                            <span style="font-size: 0.72rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">BOT 3</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Daftar Menu Telegram</h4>
-                        <p style="font-size: 0.85rem;">Menggabungkan List & Loop ke dalam command /menu bot dengan emoji bullet point.</p>
+                        <h4 style="font-size: 1rem;">💰 Dictionary & Saldo User</h4>
+                        <p style="font-size: 0.82rem;">Menyimpan saldo uang saku per User ID agar data antar siswa tidak tertukar.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-purple);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-purple);">Sesi 16</strong>
-                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Key-Value</span>
+                            <span style="font-size: 0.72rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Money Math</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Loker Laci Ganda (Dictionary)</h4>
-                        <p style="font-size: 0.85rem;">Konsep Key-Value di Dictionary sebagai fondasi menyimpan skor dan data user.</p>
+                        <h4 style="font-size: 1rem;">💸 Catat Jajan & Validasi</h4>
+                        <p style="font-size: 0.82rem;">Command /jajan [nominal] memotong saldo & validasi jika saldo tidak cukup.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-purple);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-purple);">Sesi 17</strong>
-                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Dialog Flow</span>
+                            <span style="font-size: 0.72rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Multi-Step</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Percakapan Berantai (Part 1)</h4>
-                        <p style="font-size: 0.85rem;">register_next_step_handler() agar bot ingat pesan selanjutnya adalah jawaban user.</p>
+                        <h4 style="font-size: 1rem;">💬 Percakapan Form Interaktif</h4>
+                        <p style="font-size: 0.82rem;">next_step_handler: Bot tanya belanjaan $\rightarrow$ user jawab $\rightarrow$ bot potong saldo.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-purple);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-purple);">Sesi 18</strong>
-                            <span style="font-size: 0.75rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Multi-step</span>
+                            <span style="font-size: 0.72rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Visual Progress</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Percakapan Berantai (Part 2)</h4>
-                        <p style="font-size: 0.85rem;">Menyatukan alur percakapan bertahap (Nama -> Umur -> Hobi) & merangkum hasilnya.</p>
+                        <h4 style="font-size: 1rem;">🎯 Target Tabungan Impian</h4>
+                        <p style="font-size: 0.82rem;">Progress bar teks (████░░ 60%) untuk menghitung target beli barang impian.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- SLIDE 9: Showcase Multi-Step Dialogue (WITH PYODIDE INTERACTIVE IDE) -->
+            <!-- SLIDE 9: Showcase To-Do PR & Money Tracker (WITH PYODIDE INTERACTIVE IDE) -->
             <div class="slide" id="slide-9">
                 <div class="row align-center justify-between" style="margin-bottom: 12px;">
                     <div>
-                        <span class="session-badge badge-fase3">Teknologi Sesi 17-18</span>
-                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Dialog Interaktif Multi-Step 🔄</h2>
+                        <span class="session-badge badge-fase4">Teknologi Sesi 13-18</span>
+                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Logika CRUD PR & Money Tracker 📊</h2>
                     </div>
-                    <p style="font-size: 0.9rem;">Bot mengingat konteks dialog bertahap menggunakan Dictionary & Next Step Handler!</p>
+                    <p style="font-size: 0.9rem;">Uji coba struktur data List tugas & Dictionary saldo per-user!</p>
                 </div>
 
                 <div class="row justify-between align-center" style="gap: 20px;">
@@ -817,19 +827,17 @@ print("Bot:", handle_command("/foto"))
                     <div class="col" style="flex: 0.85;">
                         <div class="tg-mockup">
                             <div class="tg-header">
-                                <div class="tg-avatar" style="background: var(--c-purple); color: white;">📝</div>
+                                <div class="tg-avatar" style="background: var(--c-purple); color: white;">💰</div>
                                 <div>
-                                    <strong style="font-size: 0.95rem; display:block;">Survey_Bot</strong>
+                                    <strong style="font-size: 0.95rem; display:block;">SchoolAssistant_Bot</strong>
                                     <span style="font-size: 0.72rem; opacity: 0.85;">bot • online</span>
                                 </div>
                             </div>
                             <div class="tg-chat-area">
-                                <div class="msg-bubble msg-out">/daftar</div>
-                                <div class="msg-bubble msg-in">Halo! Siapa namamu? 🤔</div>
-                                <div class="msg-bubble msg-out">Siti Nurhaliza</div>
-                                <div class="msg-bubble msg-in">Berapa usiamu, Siti? 🎂</div>
-                                <div class="msg-bubble msg-out">14</div>
-                                <div class="msg-bubble msg-in">✅ Datamu (Siti, 14 thn) tersimpan!</div>
+                                <div class="msg-bubble msg-out">/cek_pr</div>
+                                <div class="msg-bubble msg-in">📋 1. PR Matematika hal 50<br>📋 2. Rangkum Biologi</div>
+                                <div class="msg-bubble msg-out">/jajan 15000 Boba</div>
+                                <div class="msg-bubble msg-in">💸 Dicatat! Sisa Uang Saku: Rp 35.000</div>
                             </div>
                         </div>
                     </div>
@@ -842,20 +850,24 @@ print("Bot:", handle_command("/foto"))
                                     <div class="ide-dots dot-r"></div>
                                     <div class="ide-dots dot-y"></div>
                                     <div class="ide-dots dot-g"></div>
-                                    <span style="margin-left: 6px;">user_data.py</span>
+                                    <span style="margin-left: 6px;">pr_money_tracker.py</span>
                                 </div>
                                 <textarea class="ide-editor" spellcheck="false">
-# Simulasi Data Dictionary & Loop Sesi 15-18
-menu_makanan = ["Nasi Goreng", "Mie Ayam", "Bakso Super"]
-user_profile = {"nama": "Siti", "umur": 14, "hobi": "Coding"}
+# Simulasi Sesi 13-18: List PR & Dict Uang Saku
+daftar_pr = ["PR Matematika hal 50", "Rangkum Biologi"]
+user_wallet = {101: 50000} # User ID -> Saldo
 
-print("=== DAFTAR MENU BOT ===")
-for i, item in enumerate(menu_makanan, 1):
-    print(f"{i}. 🍕 {item}")
+# Tambah pengeluaran
+user_id = 101
+pengeluaran = 15000
+user_wallet[user_id] -= pengeluaran
 
-print("\n=== RINGKASAN DATA USER ===")
-for key, val in user_profile.items():
-    print(f"• {key.capitalize()}: {val}")
+print("=== DAFTAR PR AKTIF ===")
+for i, tugas in enumerate(daftar_pr, 1):
+    print(f"📌 {i}. {tugas}")
+
+print("\n=== STATUS SALDO DOMPET ===")
+print(f"Sisa Saldo: Rp {user_wallet[user_id]:,.0f}")
                                 </textarea>
                             </div>
                             
@@ -864,7 +876,7 @@ for key, val in user_profile.items():
                                     <span>Terminal Output</span>
                                 </div>
                                 <div class="ide-output-container">
-                                    (Klik 'Jalankan Kode' untuk melihat output...)
+                                    (Klik 'Jalankan Kode' untuk simulasi...)
                                 </div>
                             </div>
                         </div>
@@ -873,81 +885,81 @@ for key, val in user_profile.items():
                 </div>
             </div>
 
-            <!-- SLIDE 10: Fase 4 Details (Sessions 19 - 24) -->
+            <!-- SLIDE 10: Fase 5 & Capstone Details (Sessions 19 - 24) -->
             <div class="slide" id="slide-10">
-                <div class="row align-center justify-between" style="margin-bottom: 15px;">
+                <div class="row align-center justify-between" style="margin-bottom: 12px;">
                     <div>
-                        <span class="session-badge badge-fase4">FASE 4 (Sesi 19-24)</span>
-                        <h2>Proyek Akhir: Bot Kuis Interaktif 🏆</h2>
+                        <span class="session-badge badge-fase5">SESI 19 - 24</span>
+                        <h2>JSON Storage, Custom UI & Capstone Project 🏆</h2>
                     </div>
-                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: User state memory, Reply Keyboards, validasi jawaban, & Demo Day.</p>
+                    <p style="max-width: 450px; font-size: 0.9rem;">Fokus: Simpan data permanen, menu tombol interaktif, dan 4 sesi pengerjaan Final Project!</p>
                 </div>
 
                 <div class="grid-3 gap-md">
-                    <div class="session-card" style="border-left-color: var(--c-green);">
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-green);">Sesi 19</strong>
-                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">State & Memory</span>
+                            <strong style="color: var(--c-purple);">Sesi 19</strong>
+                            <span style="font-size: 0.72rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Data Persistence</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Memori Bot & Skor User</h4>
-                        <p style="font-size: 0.85rem;">Menyimpan skor per-User ID Telegram dengan Dictionary agar data tidak tertukar.</p>
+                        <h4 style="font-size: 1rem;">💾 Simpan Data ke File JSON</h4>
+                        <p style="font-size: 0.82rem;">Mencegah data hilang saat bot restart menggunakan json.dump dan json.load.</p>
                     </div>
 
-                    <div class="session-card" style="border-left-color: var(--c-green);">
+                    <div class="session-card" style="border-left-color: var(--c-purple);">
                         <div class="row justify-between align-center">
-                            <strong style="color: var(--c-green);">Sesi 20</strong>
-                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Quiz Engine</span>
+                            <strong style="color: var(--c-purple);">Sesi 20</strong>
+                            <span style="font-size: 0.72rem; background: #F6EEFE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Telegram UI</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Merancang Pertanyaan Kuis</h4>
-                        <p style="font-size: 0.85rem;">Menyusun struktur soal & kunci jawaban kuis ke dalam Dictionary yang rapi.</p>
+                        <h4 style="font-size: 1rem;">🎛️ Custom Button Keyboard</h4>
+                        <p style="font-size: 0.82rem;">ReplyKeyboardMarkup: Tombol menu instan di bawah layar (Cek PR, Saldo, Timer).</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-green);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-green);">Sesi 21</strong>
-                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Validation</span>
+                            <span style="font-size: 0.72rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Capstone Day 1</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Validasi Jawaban Kuis</h4>
-                        <p style="font-size: 0.85rem;">Pengecekan jawaban anti-error (.lower()) & kalkulasi akumulasi skor akhir kuis.</p>
+                        <h4 style="font-size: 1rem;">Ideasi & Desain Arsitektur</h4>
+                        <p style="font-size: 0.82rem;">Merancang konsep bot impian, diagram flowchart fitur, & setup repo baru.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-green);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-green);">Sesi 22</strong>
-                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Custom UI</span>
+                            <span style="font-size: 0.72rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Capstone Day 2</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Upgrade Visual (Custom Keyboard)</h4>
-                        <p style="font-size: 0.85rem;">Membuat tombol Pilihan Ganda (ReplyKeyboardMarkup) di Telegram agar user tinggal klik.</p>
+                        <h4 style="font-size: 1rem;">Core Feature Development</h4>
+                        <p style="font-size: 0.82rem;">Siswa coding mandiri fitur utama dengan bimbingan one-on-one dari guru.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-green);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-green);">Sesi 23</strong>
-                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Code Cleanup</span>
+                            <span style="font-size: 0.72rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Capstone Day 3</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Final Debugging & Cleanup</h4>
-                        <p style="font-size: 0.85rem;">Merapikan struktur kode, membasmi bug, & memastikan perubahan tersimpan aman di GitHub.</p>
+                        <h4 style="font-size: 1rem;">Polish, UI & Bug Hunting</h4>
+                        <p style="font-size: 0.82rem;">Peer bug-hunting bersama teman, merapikan UI tombol, & membuat panduan README.</p>
                     </div>
 
                     <div class="session-card" style="border-left-color: var(--c-green);">
                         <div class="row justify-between align-center">
                             <strong style="color: var(--c-green);">Sesi 24</strong>
-                            <span style="font-size: 0.75rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Celebration</span>
+                            <span style="font-size: 0.72rem; background: #EFFFEE; padding: 2px 8px; border-radius: 10px; font-weight:600;">Graduation</span>
                         </div>
-                        <h4 style="font-size: 1.05rem;">Demo Day & Perayaan! 🎉</h4>
-                        <p style="font-size: 0.85rem;">Presentasi hasil karya, saling mencoba bot buatan teman, & selebrasi kelulusan.</p>
+                        <h4 style="font-size: 1rem;">Demo Day & Perayaan! 🎉</h4>
+                        <p style="font-size: 0.82rem;">Presentasi hasil karya bot live, saling coba antar siswa, & selebrasi kelulusan.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- SLIDE 11: Showcase Final Project (WITH PYODIDE INTERACTIVE IDE) -->
+            <!-- SLIDE 11: Showcase Custom Keyboard (WITH PYODIDE INTERACTIVE IDE) -->
             <div class="slide" id="slide-11">
                 <div class="row align-center justify-between" style="margin-bottom: 12px;">
                     <div>
-                        <span class="session-badge badge-fase4">Proyek Akhir Sesi 22-24</span>
-                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Bot Kuis dengan Tombol Pilihan 🎯</h2>
+                        <span class="session-badge badge-fase5">Proyek Capstone Sesi 20-24</span>
+                        <h2 style="font-size: 2.1rem; margin-bottom: 4px;">Super Bot Asisten dengan Menu Tombol 🎛️</h2>
                     </div>
-                    <p style="font-size: 0.9rem;">Uji coba logika kuis & skor individual pemain!</p>
+                    <p style="font-size: 0.9rem;">Antarmuka Telegram interaktif tanpa perlu menghafal command garis miring `/`!</p>
                 </div>
 
                 <div class="row justify-between align-center" style="gap: 20px;">
@@ -955,23 +967,24 @@ for key, val in user_profile.items():
                     <div class="col" style="flex: 0.85;">
                         <div class="tg-mockup">
                             <div class="tg-header">
-                                <div class="tg-avatar" style="background: var(--c-green); color: white;">🎯</div>
+                                <div class="tg-avatar" style="background: var(--c-green); color: white;">🎓</div>
                                 <div>
-                                    <strong style="font-size: 0.95rem; display:block;">KuisPintar_Bot</strong>
+                                    <strong style="font-size: 0.95rem; display:block;">SuperAsisten_Bot</strong>
                                     <span style="font-size: 0.72rem; opacity: 0.85;">bot • online</span>
                                 </div>
                             </div>
                             <div class="tg-chat-area">
                                 <div class="msg-bubble msg-in">
-                                    Soal 1/3: Ibukota Indonesia adalah?<br>
-                                    A. Bandung | B. Jakarta
+                                    Halo Budi! Pilih menu di bawah untuk mulai:
                                 </div>
-                                <div class="msg-bubble msg-out">B. Jakarta</div>
-                                <div class="msg-bubble msg-in">🎉 Jawaban BENAR! (+10 Poin)</div>
+                                <div class="msg-bubble msg-out">[ 📝 Cek PR ]</div>
+                                <div class="msg-bubble msg-in">📋 Kamu punya 2 PR aktif!</div>
                             </div>
                             <div class="tg-keyboard">
-                                <button class="tg-btn">A. Bandung</button>
-                                <button class="tg-btn">B. Jakarta</button>
+                                <button class="tg-btn">📝 Cek PR</button>
+                                <button class="tg-btn">➕ Tambah PR</button>
+                                <button class="tg-btn">💰 Cek Saldo</button>
+                                <button class="tg-btn">⏱️ Timer Fokus</button>
                             </div>
                         </div>
                     </div>
@@ -984,22 +997,24 @@ for key, val in user_profile.items():
                                     <div class="ide-dots dot-r"></div>
                                     <div class="ide-dots dot-y"></div>
                                     <div class="ide-dots dot-g"></div>
-                                    <span style="margin-left: 6px;">quiz_engine.py</span>
+                                    <span style="margin-left: 6px;">super_bot_engine.py</span>
                                 </div>
                                 <textarea class="ide-editor" spellcheck="false">
-# Logika Engine Skor Kuis Sesi 19-22
-user_scores = {}
-user_id = 987654
+# Integrasi Fitur Super Bot Asisten
+def handle_menu(button_clicked):
+    if button_clicked == "📝 Cek PR":
+        return "📋 PR: 1. Matematika hal 50 | 2. Biologi"
+    elif button_clicked == "💰 Cek Saldo":
+        return "💰 Saldo Uang Saku: Rp 35.000"
+    elif button_clicked == "⏱️ Timer Fokus":
+        return "⏱️ Pomodoro 25 menit dimulai!"
+    return "Menu tidak valid"
 
-def add_score(uid, points):
-    user_scores[uid] = user_scores.get(uid, 0) + points
-
-# Player menjawab kuis
-add_score(user_id, 10) # Soal 1 Benar
-add_score(user_id, 10) # Soal 2 Benar
-
-print(f"Pemain Telegram ID: {user_id}")
-print(f"Total Skor Akhir: {user_scores[user_id]} Poin 🏆")
+# Simulasi klik tombol UI
+print("User Klik: [ 📝 Cek PR ]")
+print("Bot:", handle_menu("📝 Cek PR"))
+print("\nUser Klik: [ 💰 Cek Saldo ]")
+print("Bot:", handle_menu("💰 Cek Saldo"))
                                 </textarea>
                             </div>
                             
@@ -1008,7 +1023,7 @@ print(f"Total Skor Akhir: {user_scores[user_id]} Poin 🏆")
                                     <span>Terminal Output</span>
                                 </div>
                                 <div class="ide-output-container">
-                                    (Klik 'Jalankan Kode' untuk menghitung skor...)
+                                    (Klik 'Jalankan Kode' untuk uji coba super bot...)
                                 </div>
                             </div>
                         </div>
@@ -1040,13 +1055,14 @@ print(f"Total Skor Akhir: {user_scores[user_id]} Poin 🏆")
 # Arena Bebas Coding Python
 print("🎉 Halo dari Kelas Python Telegram Bot!")
 
-# Coba perulangan & matematika
-total = 0
-for i in range(1, 6):
-    total += i
-    print(f"Langkah {i}: Total = {total}")
+# Coba perhitungan diskon & timer
+uang_saku = 50000
+harga_jajan = 15000
+sisa = uang_saku - harga_jajan
 
-print("\nHasil Akhir:", total)
+print(f"Uang Saku Awal: Rp {uang_saku:,}")
+print(f"Beli Boba: Rp {harga_jajan:,}")
+print(f"Sisa Sekarang: Rp {sisa:,} ✅")
                             </textarea>
                         </div>
                         
@@ -1080,8 +1096,8 @@ print("\nHasil Akhir:", total)
                                 <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Praktek Hands-On</p>
                             </div>
                             <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
-                                <h3 style="font-size: 2rem; color: var(--c-purple);">4</h3>
-                                <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Proyek Aplikasi</p>
+                                <h3 style="font-size: 2rem; color: var(--c-purple);">3+1</h3>
+                                <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Bot Proyek</p>
                             </div>
                             <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
                                 <h3 style="font-size: 2rem; color: var(--c-green);">1</h3>
