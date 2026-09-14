@@ -275,29 +275,21 @@ function markAttendanceStatusInSheet(ss, sessionId, statusValue) {
   var headerRowIdx = 13;
   var headers = data[headerRowIdx];
   var colAbsentIdx = findAttendanceStatusColumn(headers);
-  
-  var cleanTarget = String(sessionId || '').trim().toLowerCase();
-  var targetMatch = cleanTarget.match(/\d+/);
-  var targetWeekNum = targetMatch ? parseInt(targetMatch[0], 10) : null;
+  var rowIndex = findSessionRowIndex(data, headerRowIdx, sessionId);
+  if (rowIndex < 0) return false;
 
-  for (var i = headerRowIdx + 1; i < data.length; i++) {
-    var row = data[i];
-    var pertemuanStr = String(row[1] || '').trim();
-    var weekMatch = pertemuanStr.match(/\d+/);
-    var weekNum = weekMatch ? parseInt(weekMatch[0], 10) : (i - headerRowIdx);
-    var sessId = 'SESS' + (weekNum < 10 ? '0' + weekNum : weekNum);
-    
-    var isMatch = (sessId.toLowerCase() === cleanTarget) ||
-                  (pertemuanStr.toLowerCase() === cleanTarget) ||
-                  (targetWeekNum !== null && weekNum === targetWeekNum);
+  // A submit acknowledgement is only allowed to complete a claim that this
+  // runner actually acquired. Never turn a blank row into Submitted because
+  // of a stale/manual request.
+  var current = String(data[rowIndex][colAbsentIdx] || '').trim();
+  var lower = current.toLowerCase();
+  if (lower.indexOf('submitted') >= 0) return true;
+  if (lower.indexOf('processing') !== 0) return false;
 
-    if (isMatch) {
-      var dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
-      sheet.getRange(i + 1, colAbsentIdx + 1).setValue(statusValue + ' (' + dateStr + ')');
-      return true;
-    }
-  }
-  return false;
+  var dateStr = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+  sheet.getRange(rowIndex + 1, colAbsentIdx + 1).setValue(statusValue + ' (' + dateStr + ')');
+  SpreadsheetApp.flush();
+  return true;
 }
 
 /**

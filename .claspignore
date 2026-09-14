@@ -7,6 +7,7 @@ node_modules/**
 # Apps Script entrypoint is generated from code.gs by the deploy workflow.
 app.js
 automate_absen.js
+submit_requested_sessions.js
 code.gs
 package*.json
 README.md

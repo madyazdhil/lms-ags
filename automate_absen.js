@@ -14,6 +14,10 @@ function fetchJson(urlStr) {
         if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
           return get(res.headers.location);
         }
+        if (res.statusCode < 200 || res.statusCode >= 300) {
+          res.resume();
+          return reject(new Error(`HTTP ${res.statusCode} from ${u}`));
+        }
         let data = '';
         res.on('data', chunk => data += chunk);
         res.on('end', () => {
@@ -23,7 +27,9 @@ function fetchJson(urlStr) {
             reject(e);
           }
         });
-      }).on('error', reject);
+      }).on('error', reject).setTimeout(20000, () => {
+        reject(new Error(`Request timeout: ${u}`));
+      });
     }
     get(urlStr);
   });
@@ -79,16 +85,6 @@ async function claimAttendanceInGAS(sessionId) {
   }
   console.log(`🔒 Claimed ${sessionId} in GAS before Airtable submission.`);
   return true;
-}
-
-async function releaseAttendanceInGAS(sessionId) {
-  try {
-    const releaseUrl = `${GAS_API_URL}?action=releaseAttendance&sessionId=${encodeURIComponent(sessionId)}`;
-    const res = await fetchJson(releaseUrl);
-    console.log(`↩️ Released ${sessionId} after a pre-submit failure:`, res);
-  } catch (err) {
-    console.error(`⚠️ Failed to release ${sessionId}:`, err.message);
-  }
 }
 
 async function submitAttendance(sessionData) {
@@ -315,12 +311,13 @@ if (require.main === module) {
             // than requiring manual verification of the Airtable row.
             console.error(`⚠️ ${sessionId} was submitted but could not be marked; leaving the Processing lock in place.`);
           }
-        } else if (!result.submitted) {
-          await releaseAttendanceInGAS(sessionId);
         } else {
-          // Submit was clicked but the browser failed afterward. Do not release
-          // the claim, because Airtable may already contain the record.
-          console.error(`⚠️ ${sessionId} may have reached Airtable; leaving Processing lock for manual verification.`);
+          // Fail closed. Even a failure that appears to happen before the
+          // click can be ambiguous in a remote browser: Airtable may have
+          // accepted the request while Playwright timed out. Releasing here
+          // would let the hourly runner create duplicates. A human can inspect
+          // Airtable and explicitly reset the sheet claim if necessary.
+          console.error(`⚠️ ${sessionId} was not confirmed; leaving Processing lock to prevent duplicate submission.`);
         }
       }
     } catch (err) {
