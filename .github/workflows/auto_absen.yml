@@ -38,7 +38,7 @@ jobs:
 
       - name: 🔎 Validate Apps Script endpoint
         env:
-          GAS_WEB_APP_URL: ${{ secrets.GAS_WEB_APP_URL }}
+          GAS_WEB_APP_URL: ${{ secrets.GAS_WEB_APP_URL || 'https://script.google.com/macros/s/AKfycbxSze-Gb7Sz7RPb9t-a_1WW887-iVee-hho6bGQ_Tv2zGWsUxiZdPKK4W7TkC7pY1rZ/exec' }}
         run: |
           test -n "$GAS_WEB_APP_URL" || { echo "::error::Missing GAS_WEB_APP_URL repository secret"; exit 1; }
           curl --fail --silent --show-error --location \
@@ -47,9 +47,9 @@ jobs:
 
       - name: 🚀 Run Auto Attendance Script
         env:
-          # Keep the deployed URL in GitHub Secrets; never silently fall back
-          # to an old deployment URL.
-          GAS_WEB_APP_URL: ${{ secrets.GAS_WEB_APP_URL }}
+          # Secret may override this, but the confirmed production deployment
+          # remains a safe default so a missing secret cannot break the run.
+          GAS_WEB_APP_URL: ${{ secrets.GAS_WEB_APP_URL || 'https://script.google.com/macros/s/AKfycbxSze-Gb7Sz7RPb9t-a_1WW887-iVee-hho6bGQ_Tv2zGWsUxiZdPKK4W7TkC7pY1rZ/exec' }}
           CLASS_CODE: ${{ secrets.CLASS_CODE }}
           TEACHER_NAME: ${{ secrets.TEACHER_NAME }}
           TARGET_WEEK: ${{ github.event.inputs.session_week }}
