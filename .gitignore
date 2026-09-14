@@ -3,6 +3,7 @@ node_modules/
 *.log
 *.png
 .env
+Code.js
 
 # Scratch and debug test scripts
 test_*.js
