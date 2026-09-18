@@ -1,10 +1,10 @@
 name: Auto Attendance Submission (Airtable)
 
+# DISABLED SCHEDULE: Automatic submission disabled to prevent overwhelming Airtable form.
+# Use manual workflow_dispatch only when explicitly needed.
 on:
-  schedule:
-    # Poll hourly; GAS only returns rows where E=Active and F has a date.
-    # The claim lock makes this safe and idempotent.
-    - cron: '0 * * * *'
+  # schedule:
+  #   - cron: '0 * * * *'
   workflow_dispatch:
     inputs:
       session_week:
