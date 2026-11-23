@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syllabus Presentation — Python Foundations to Interactive Streamlit Web App (16 Sessions)</title>
+  
+  <!-- Google Fonts: Fredoka for cheerful & impactful headings, Poppins for clean prose, Fira Code for code -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&family=Fira+Code:wght@500;600&display=swap" rel="stylesheet">
+  
+  <!-- Pyodide: In-browser Python runtime -->
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+
+  <style>
+    :root {
+      /* Warm Modern Workspace Palette */
+      --bg-workspace: #F3EFE9;
+      --bg-slide: #FFFDF9;
+      
+      /* Vibrant Accent Colors */
+      --c-yellow: #E8AA24;
+      --c-orange: #EF6C35;
+      --c-pink: #E0356D;       
+      --c-light-pink: #F47C9E;
+      --c-purple: #9A53E0;
+      --c-blue: #447EE0;
+      --c-light-blue: #4AB2D9;
+      --c-green: #48A850;
+      --c-streamlit: #FF4B4B;
+      
+      /* Typography Colors */
+      --text-dark: #2A2A35;
+      --text-muted: #6C6C82;
+
+      /* Dark IDE Colors */
+      --ide-bg: #1A1A28;
+      --ide-text: #A6E22E;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-workspace);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #app-wrapper {
+      width: 96vw;
+      max-width: 1600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #presentation-container {
+      width: 100%;
+      height: 85vh;
+      background-color: var(--bg-slide);
+      position: relative;
+      box-shadow: 0 25px 50px -12px rgba(42, 42, 53, 0.08);
+      border-radius: 36px; 
+      overflow: hidden;
+      border: 2px solid #EBE6DF;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(28px, 3.8vw, 52px);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform: scale(0.97) translateY(12px);
+      overflow-y: auto; 
+      overflow-x: hidden;
+    }
+
+    .slide::-webkit-scrollbar { width: 8px; }
+    .slide::-webkit-scrollbar-thumb {
+      background: #D8D8E5;
+      border-radius: 20px;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1) translateY(0);
+      z-index: 10;
+    }
+
+    /* Headings & Text */
+    h1, h2, h3, h4 { font-family: 'Fredoka', sans-serif; font-weight: 700; color: var(--text-dark); }
+    h1 { font-size: clamp(2.5rem, 4.2vw, 4rem); line-height: 1.08; margin-bottom: 14px; }
+    h2 { font-size: clamp(1.9rem, 2.9vw, 2.5rem); line-height: 1.18; margin-bottom: 10px; }
+    h3 { font-size: clamp(1.2rem, 1.6vw, 1.45rem); margin-bottom: 6px; }
+    h4 { font-size: 1.05rem; }
+    p { font-size: clamp(0.94rem, 1.15vw, 1.05rem); line-height: 1.65; color: var(--text-muted); font-weight: 500; }
+    .lead { font-size: clamp(1.05rem, 1.35vw, 1.25rem); color: var(--text-muted); line-height: 1.6; }
+    strong { color: var(--text-dark); font-weight: 700; }
+
+    /* Layout Primitives */
+    .row { display: flex; flex-direction: row; }
+    .col { display: flex; flex-direction: column; }
+    .center { align-items: center; justify-content: center; }
+    .align-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .h-full { height: 100%; }
+    .w-full { width: 100%; }
+    .w-half { width: 50%; }
+    .w-60 { width: 58%; }
+    .w-40 { width: 42%; }
+    .gap-sm { gap: 10px; }
+    .gap-md { gap: 18px; }
+    .gap-lg { gap: 28px; }
+    .text-center { text-align: center; }
+
+    /* Badges & Tag Pills */
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+    .tag-blue { background: rgba(68, 126, 224, 0.12); color: var(--c-blue); }
+    .tag-pink { background: rgba(224, 53, 109, 0.12); color: var(--c-pink); }
+    .tag-purple { background: rgba(154, 83, 224, 0.12); color: var(--c-purple); }
+    .tag-green { background: rgba(72, 168, 80, 0.12); color: var(--c-green); }
+    .tag-orange { background: rgba(239, 108, 53, 0.12); color: var(--c-orange); }
+    .tag-yellow { background: rgba(232, 170, 36, 0.15); color: #B37B00; }
+    .tag-streamlit { background: rgba(255, 75, 75, 0.14); color: var(--c-streamlit); }
+
+    /* Grids & Cards */
+    .cards-grid { display: grid; gap: 18px; width: 100%; margin-top: 14px; }
+    .cards-2 { grid-template-columns: repeat(2, 1fr); }
+    .cards-3 { grid-template-columns: repeat(3, 1fr); }
+    .cards-4 { grid-template-columns: repeat(4, 1fr); }
+    .cards-5 { grid-template-columns: repeat(5, 1fr); }
+
+    .card {
+      background: #FFFFFF;
+      padding: 22px;
+      border-radius: 26px;
+      border: 1px solid #EFEAE3;
+      box-shadow: 0 10px 28px rgba(42, 42, 53, 0.04);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(42, 42, 53, 0.08);
+    }
+
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+
+    .callout {
+      padding: 16px 20px;
+      border-radius: 20px;
+      background: #F8FAFC;
+      border-left: 6px solid var(--c-blue);
+      margin-top: 14px;
+      font-size: 0.92rem;
+    }
+    .callout.green { background: #ECFDF5; border-left-color: var(--c-green); }
+    .callout.streamlit { background: #FFF5F5; border-left-color: var(--c-streamlit); }
+    .callout.orange { background: #FFF7ED; border-left-color: var(--c-orange); }
+
+    /* Timeline Stepper Component */
+    .timeline-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      width: 100%;
+      margin: 20px 0;
+      position: relative;
+    }
+    .timeline-step {
+      background: white;
+      border-radius: 22px;
+      padding: 18px 16px;
+      border: 1px solid #ECE7DF;
+      border-top: 6px solid var(--c-blue);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+      transition: all 0.2s ease;
+    }
+    .timeline-step:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 28px rgba(0,0,0,0.06);
+    }
+    .step-pill {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 14px;
+      width: fit-content;
+    }
+
+    /* Session Detailed Breakdown Card */
+    .session-item-card {
+      background: white;
+      border-radius: 20px;
+      padding: 16px 20px;
+      border: 1px solid #ECE7DF;
+      border-left: 6px solid var(--c-blue);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+    }
+    .session-badge {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+      width: fit-content;
+    }
+
+    /* Comparison Box */
+    .vs-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .vs-box {
+      background: white;
+      border-radius: 24px;
+      padding: 24px;
+      border: 2px solid #E2E8F0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .vs-box.highlight {
+      border-color: var(--c-streamlit);
+      background: #FFFDFC;
+      box-shadow: 0 12px 30px rgba(255, 75, 75, 0.08);
+    }
+
+    /* Mascot Scene */
+    .scene {
+      position: relative;
+      height: 100%;
+      min-height: 280px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .blob {
+      width: min(340px, 90%);
+      filter: drop-shadow(0 16px 25px rgba(42,42,53,0.12));
+      animation: float 6s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-12px) rotate(2deg); }
+    }
+    .bubble {
+      position: absolute;
+      background: white;
+      padding: 12px 18px;
+      border-radius: 22px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text-dark);
+      border: 1px solid #ECE7DF;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+      max-width: 250px;
+      z-index: 5;
+    }
+    .bubble.top-right { top: 6%; right: 6%; }
+    .bubble.bottom-left { bottom: 6%; left: 6%; }
+
+    /* Interactive IDE Container */
+    .ide-container {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      height: 270px;
+      margin-top: 10px;
+    }
+    .ide-window {
+      flex: 1;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #E2E8F0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    .ide-header {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #FF5F56; }
+    .dot-y { background: #FFBD2E; }
+    .dot-g { background: #27C93F; }
+
+    .ide-editor {
+      background: var(--ide-bg);
+      color: var(--ide-text);
+      padding: 14px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      resize: none;
+      white-space: pre;
+    }
+    .ide-output {
+      background: #F8FAFC;
+      border: 2px dashed #CBD5E1;
+      padding: 14px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.88rem;
+      color: #334155;
+      flex: 1;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    .btn-run {
+      align-self: flex-start;
+      margin-top: 10px;
+      background: var(--c-green);
+      color: white;
+      border: 0;
+      padding: 9px 24px;
+      border-radius: 50px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(72, 168, 80, 0.3);
+      transition: transform 0.15s;
+    }
+    .btn-run:hover { transform: translateY(-2px); }
+    .btn-run:disabled { background: #CBD5E1; cursor: wait; box-shadow: none; transform: none; }
+
+    /* Streamlit Realistic Browser Mockup */
+    .st-browser-frame {
+      background: white;
+      border-radius: 22px;
+      border: 2px solid #E2E8F0;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 320px;
+      position: relative;
+    }
+    .st-topbar {
+      height: 38px;
+      background: #F8FAFC;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 8px;
+      position: relative;
+    }
+    .st-red-line {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #FF4B4B, #FF9B9B, #FFAE42);
+    }
+    .st-url {
+      background: white;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 2px 12px;
+      font-size: 0.76rem;
+      font-family: 'Fira Code', monospace;
+      color: #64748B;
+      margin-left: 6px;
+      flex: 1;
+    }
+    .st-viewport {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+    .st-mockup-sidebar {
+      width: 32%;
+      background: #F8FAFC;
+      border-right: 1px solid #E2E8F0;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 0.8rem;
+    }
+    .st-mockup-main {
+      width: 68%;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+    .st-input-box {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      font-size: 0.82rem;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+    }
+    .st-input-box:focus { border-color: var(--c-streamlit); }
+    .st-action-btn {
+      background: var(--c-streamlit);
+      color: white;
+      border: 0;
+      padding: 7px 16px;
+      border-radius: 8px;
+      font-family: 'Fredoka', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255, 75, 75, 0.25);
+      align-self: flex-start;
+      transition: all 0.2s;
+    }
+    .st-action-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(255, 75, 75, 0.35); }
+    .st-alert-pill {
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      color: #065F46;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Floating Balloons for Streamlit */
+    .balloon-particle {
+      position: absolute;
+      font-size: 2.2rem;
+      animation: floatUp 3s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.6); }
+      100% { opacity: 0; transform: translateY(-220px) scale(1.2); }
+    }
+
+    /* Bottom Navigation Bar */
+    #bottom-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+    }
+    .slide-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--c-streamlit);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: white;
+      font-size: 1.1rem;
+      transform: rotate(10deg);
+    }
+    .nav-controls { display: flex; gap: 12px; }
+    .nav-btn {
+      border: none;
+      border-radius: 50px;
+      padding: 10px 26px;
+      background: var(--text-dark);
+      color: white;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(42,42,53,0.12);
+      transition: all 0.2s ease;
+    }
+    .nav-btn-primary {
+      background: var(--c-streamlit);
+      box-shadow: 0 6px 18px rgba(255, 75, 75, 0.3);
+    }
+    .nav-btn:hover:not(:disabled) { transform: translateY(-2px); }
+    .nav-btn:disabled { background: #D8D8E5; color: #A0A0B5; cursor: not-allowed; box-shadow: none; }
+
+    .progress-track {
+      position: absolute;
+      left: 0; bottom: 0; width: 100%;
+      height: 6px;
+      background: #EBE6DF;
+      z-index: 20;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--c-blue), var(--c-purple), var(--c-streamlit));
+      transition: width 0.35s ease;
+    }
+
+    @media (max-width: 1024px) {
+      .cards-4, .cards-5, .timeline-strip { grid-template-columns: repeat(2, 1fr); }
+      .vs-container { grid-template-columns: 1fr; }
+      .row { flex-direction: column; }
+      .w-half, .w-60, .w-40 { width: 100%; }
+      .ide-container { flex-direction: column; height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-wrapper">
+    <div id="presentation-container">
+      <div id="slides-root"></div>
+      <div class="progress-track"><div class="progress-bar" id="progress"></div></div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div id="bottom-bar">
+      <div class="slide-indicator">
+        <a href="../index.html" style="display:inline-flex; align-items:center; text-decoration:none;" title="To LMS Dashboard">
+          <div class="logo-mark">🚀</div>
+        </a>
+        <span>Slide <span id="current-page">1</span> / <span id="total-page">20</span></span>
+      </div>
+      <div class="nav-controls">
+        <a href="../index.html" class="nav-btn" style="text-decoration: none; background: #E2E8F0; color: #334155; display: inline-flex; align-items: center; gap: 6px;">🏠 Dashboard</a>
+        <button class="nav-btn" id="prev-btn" disabled>Back</button>
+        <button class="nav-btn nav-btn-primary" id="next-btn">Next ➞</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Helper Components ---
+    const mascot = (color = 'var(--c-blue)', crown = false) => `
+      <svg class="blob" viewBox="0 0 320 320" aria-hidden="true">
+        <circle cx="270" cy="50" r="24" fill="var(--c-yellow)" opacity="0.6"/>
+        <path d="M 65 82 C 103 25, 225 30, 266 88 C 301 137, 289 241, 236 278 C 188 312, 82 301, 46 250 C 10 200, 27 139, 65 82 Z" fill="${color}"/>
+        <ellipse cx="125" cy="145" rx="22" ry="32" fill="white"/>
+        <ellipse cx="205" cy="145" rx="22" ry="32" fill="white"/>
+        <circle cx="132" cy="151" r="13" fill="#20202A"/>
+        <circle cx="198" cy="151" r="13" fill="#20202A"/>
+        <circle cx="127" cy="145" r="4" fill="white"/>
+        <circle cx="193" cy="145" r="4" fill="white"/>
+        <path d="M 135 210 Q 165 235 195 210" fill="none" stroke="#20202A" stroke-width="8" stroke-linecap="round"/>
+        ${crown ? `
+          <!-- Streamlit Crown -->
+          <polygon points="165,30 205,95 240,55 250,115 125,115 140,70" fill="var(--c-streamlit)"/>
+          <circle cx="165" cy="26" r="6" fill="var(--c-yellow)"/>
+          <circle cx="240" cy="51" r="5" fill="var(--c-yellow)"/>
+        ` : ''}
+      </svg>`;
+
+    // --- 20 MASTER ENGLISH SLIDES ---
+    const slides = [
+      // 1. Cover Slide
+      `<div class="row h-full align-center justify-between">
+        <div class="col w-60">
+          <span class="tag-pill tag-streamlit">🚀 16-Session Complete Syllabus</span>
+          <h1>Python Foundations to <span style="color: var(--c-streamlit);">Streamlit</span> Web App</h1>
+          <p class="lead" style="margin-top: 10px;">
+            A structured, hands-on journey from zero coding experience to deploying real, interactive web applications in the cloud using pure Python and Streamlit.
+          </p>
+          <div class="row gap-md" style="margin-top: 26px;">
+            <div class="card" style="padding: 12px 18px; border-left: 5px solid var(--c-purple);">
+              <strong style="color: var(--c-purple); font-size: 0.95rem;">🎯 Target Audience</strong>
+              <span style="font-size: 0.88rem; font-weight: 600;">Middle & High School (Beginners)</span>
+            </div>
+            <div class="card" style="padding: 12px 18px; border-left: 5px solid var(--c-orange);">
+              <strong style="color: var(--c-orange); font-size: 0.95rem;">⏱️ Learning Model</strong>
+              <span style="font-size: 0.88rem; font-weight: 600;">16 Sessions @ 90 Mins (Scaffolding)</span>
+            </div>
+            <div class="card" style="padding: 12px 18px; border-left: 5px solid var(--c-streamlit);">
+              <strong style="color: var(--c-streamlit); font-size: 0.95rem;">🌐 Final Output</strong>
+              <span style="font-size: 0.88rem; font-weight: 600;">Live Interactive Web App</span>
+            </div>
+          </div>
+        </div>
+        <div class="w-40 scene">
+          ${mascot('var(--c-blue)', true)}
+          <div class="bubble top-right">Hi! I'm Byte! 🤖<br><small style="color:var(--text-muted)">Ready to build real web apps?</small></div>
+          <div class="bubble bottom-left">100% Cloud Coding in the Browser! ✨</div>
+        </div>
+      </div>`,
+
+      // 2. The Core Vision: Why Python + Streamlit?
+      `<div>
+        <span class="tag-pill tag-streamlit">Curriculum Innovation</span>
+        <h2>Why Bridge Python to Streamlit Web Apps? 💡</h2>
+        <p class="lead">Overcoming the traditional friction in introductory coding courses for young minds.</p>
+        <div class="vs-container">
+          <div class="vs-box">
+            <div class="row align-center gap-sm">
+              <span style="font-size: 2rem;">⬛</span>
+              <div>
+                <h3 style="color: #64748B;">Traditional Way (Terminal-Only CLI)</h3>
+                <span style="font-size: 0.8rem; color: #94A3B8;">16 Sessions restricted to black console screens</span>
+              </div>
+            </div>
+            <p style="font-size: 0.88rem;">
+              Students only see plain text printouts. After weeks of hard work, they cannot share their creations with family or friends in an engaging way, causing drop-offs in motivation.
+            </p>
+            <div class="callout" style="border-left-color: #94A3B8; margin-top: auto;">
+              <span style="font-size: 0.82rem; font-weight: 600; color: #64748B;">❌ Outcome: High cognitive effort, low visual satisfaction.</span>
+            </div>
+          </div>
+
+          <div class="vs-box highlight">
+            <div class="row align-center gap-sm">
+              <span style="font-size: 2rem;">🚀</span>
+              <div>
+                <h3 style="color: var(--c-streamlit);">The AGS Way (Python + Streamlit Web GUI)</h3>
+                <span style="font-size: 0.8rem; color: var(--c-streamlit); font-weight: 600;">Pure Python magically transformed into modern web pages</span>
+              </div>
+            </div>
+            <p style="font-size: 0.88rem;">
+              Students master the exact same foundational algorithms, but channel them into living web applications with interactive buttons, sliders, input forms, metric cards, and confetti celebrations!
+            </p>
+            <div class="callout streamlit" style="margin-top: auto;">
+              <span style="font-size: 0.82rem; font-weight: 700; color: var(--c-streamlit);">✅ Outcome: Tangible digital portfolio ready to be shown to the world!</span>
+            </div>
+          </div>
+        </div>
+      </div>`,
+
+      // 3. Master 16-Session Timeline
+      `<div>
+        <span class="tag-pill tag-blue">Curriculum Architecture</span>
+        <h2>Master 16-Session Timeline & Learning Journey 🗺️</h2>
+        <p class="lead">A progressive roadmap engineered across 5 core modules from day one to graduation.</p>
+        
+        <div class="timeline-strip">
+          <div class="timeline-step" style="border-top-color: var(--c-blue);">
+            <span class="step-pill tag-blue">WEEKS 1–3</span>
+            <h3 style="color: var(--c-blue); font-size: 1.05rem;">Cloud Setup & Foundations</h3>
+            <p style="font-size: 0.78rem;">GitHub, Codespaces cloud IDE, venv, Linux terminal, Git checkpoints & 4 core data types.</p>
+            <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 700; margin-top: auto;">
+              🏆 Milestone: Coder ID Sheet
+            </div>
+          </div>
+
+          <div class="timeline-step" style="border-top-color: #E8AA24;">
+            <span class="step-pill tag-yellow">WEEKS 4–7</span>
+            <h3 style="color: #B37B00; font-size: 1.05rem;">Math & Decision Logic</h3>
+            <p style="font-size: 0.78rem;">Arithmetic operators, modulo %, type casting, user input(), f-strings, if-else, & multi-branch elif.</p>
+            <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 700; margin-top: auto;">
+              🏆 Milestone: Split Bill & BMI
+            </div>
+          </div>
+
+          <div class="timeline-step" style="border-top-color: var(--c-orange);">
+            <span class="step-pill tag-orange">WEEKS 8–11</span>
+            <h3 style="color: var(--c-orange); font-size: 1.05rem;">Automation & Collections</h3>
+            <p style="font-size: 0.78rem;">While loops, loop counters, definite for loops, range(), List arrays, & key-value Dictionaries.</p>
+            <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 700; margin-top: auto;">
+              🏆 Milestone: RPG Inventory
+            </div>
+          </div>
+
+          <div class="timeline-step" style="border-top-color: var(--c-green);">
+            <span class="step-pill tag-green">WEEKS 12–14</span>
+            <h3 style="color: var(--c-green); font-size: 1.05rem;">Functions & Web GUI</h3>
+            <p style="font-size: 0.78rem;">Custom functions (def/return), random module, Streamlit setup, port 8501, & interactive widgets.</p>
+            <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 700; margin-top: auto;">
+              🏆 Milestone: Mini Web App
+            </div>
+          </div>
+
+          <div class="timeline-step" style="border-top-color: var(--c-streamlit);">
+            <span class="step-pill tag-streamlit">WEEKS 15–16</span>
+            <h3 style="color: var(--c-streamlit); font-size: 1.05rem;">Capstone & Demo Day</h3>
+            <p style="font-size: 0.78rem;">Multi-column layout, sidebar controls, anti-crash validation, README.md, & Live Demo Showcase!</p>
+            <div style="background: var(--bg-workspace); padding: 6px 10px; border-radius: 8px; font-size: 0.74rem; font-weight: 700; margin-top: auto;">
+              🏆 Milestone: Live Web App
+            </div>
+          </div>
+        </div>
+
+        <div class="callout green" style="margin-top: 10px;">
+          <strong>🎯 Continuous Scaffolding:</strong> Each block directly reinforces the previous one. Logic learned in Week 6 becomes the brain of the Web App in Week 15!
+        </div>
+      </div>`,
+
+      // 4. The 90-Minute Pedagogical Framework
+      `<div>
+        <span class="tag-pill tag-purple">Teaching Methodology</span>
+        <h2>The 90-Minute Scaffolding Learning Framework ⏱️</h2>
+        <p class="lead">Every single session is meticulously structured to prevent cognitive overload and maximize retention.</p>
+        <div class="cards-grid cards-4" style="margin-top: 20px;">
+          <div class="card align-center text-center justify-center">
+            <div class="icon-box" style="background: rgba(68,126,224,0.12); color: var(--c-blue);">👀</div>
+            <h3 style="color: var(--c-blue); font-size: 1.15rem;">15' — I Do</h3>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px;">Concept Hook & Analogy</span>
+            <p style="font-size: 0.84rem;">Mentor presents a captivating demo, bridges concepts with real-world analogies, and diagrams the logic.</p>
+          </div>
+
+          <div class="card align-center text-center justify-center">
+            <div class="icon-box" style="background: rgba(232,170,36,0.15); color: #B37B00;">🤝</div>
+            <h3 style="color: #B37B00; font-size: 1.15rem;">35' — We Do</h3>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px;">Guided Live Coding</span>
+            <p style="font-size: 0.84rem;">Students follow along line-by-line in GitHub Codespaces with immediate instructor guidance.</p>
+          </div>
+
+          <div class="card align-center text-center justify-center">
+            <div class="icon-box" style="background: rgba(72,168,80,0.12); color: var(--c-green);">🚀</div>
+            <h3 style="color: var(--c-green); font-size: 1.15rem;">30' — You Do</h3>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px;">Creative Challenge</span>
+            <p style="font-size: 0.84rem;">Independent missions where students personalize, expand, and solidify computational thinking.</p>
+          </div>
+
+          <div class="card align-center text-center justify-center">
+            <div class="icon-box" style="background: rgba(255,75,75,0.12); color: var(--c-streamlit);">💾</div>
+            <h3 style="color: var(--c-streamlit); font-size: 1.15rem;">10' — Git Sync</h3>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark); margin-bottom: 6px;">Checkpoint & Wrap-Up</span>
+            <p style="font-size: 0.84rem;">Git commit & push ritual ("Save Game"), collaborative bug troubleshooting, and reflection.</p>
+          </div>
+        </div>
+      </div>`,
+
+      // 5. Module 1 Overview
+      `<div class="row h-full align-center justify-between">
+        <div class="col w-60">
+          <span class="tag-pill tag-blue">MODULE 1 • SESSIONS 1–3</span>
+          <h2>Cloud Headquarters & Python Basics ☁️</h2>
+          <p class="lead" style="margin-top: 8px;">
+            Eliminating setup friction forever. Students are onboarded directly to professional cloud-native toolchains from day one, ensuring a reliable, identical environment for every student.
+          </p>
+          <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 12px;">
+            <div class="card" style="padding: 14px 18px; border-left: 5px solid var(--c-blue);">
+              <strong style="color: var(--c-blue);">☁️ GitHub Codespaces:</strong> Fast Linux virtual machines hosted in the cloud, accessible through any browser on Windows, Mac, or Chromebooks.
+            </div>
+            <div class="card" style="padding: 14px 18px; border-left: 5px solid var(--c-green);">
+              <strong style="color: var(--c-green);">🔒 Isolated Virtual Environments:</strong> Teaching <code>.venv</code> discipline early so code dependencies never conflict.
+            </div>
+            <div class="card" style="padding: 14px 18px; border-left: 5px solid var(--c-purple);">
+              <strong style="color: var(--c-purple);">💾 Git Version Control:</strong> The programmer's "Save Game" checkpoint system to revert mistakes effortlessly.
+            </div>
+          </div>
+        </div>
+        <div class="w-40 scene">
+          ${mascot('var(--c-blue)')}
+          <div class="bubble top-right">No more "It only works on my laptop!" issues! 💻✨</div>
+        </div>
+      </div>`,
+
+      // 6. Module 1 Timeline & Breakdown
+      `<div>
+        <span class="tag-pill tag-blue">Module 1 Breakdown</span>
+        <h2>Sessions 1 to 3: Cloud Setup & Core Data Types 🛠️</h2>
+        <div class="cards-grid cards-3" style="margin-top: 16px;">
+          <div class="session-item-card" style="border-left-color: var(--c-blue);">
+            <span class="session-badge tag-blue">Session 01</span>
+            <h3 style="font-size: 1.1rem;">Onboarding Cloud Coder</h3>
+            <p style="font-size: 0.84rem;">
+              Account verification, creating personal GitHub repository, launching Codespaces VM, configuring <code>.venv</code>, creating <code>main.py</code>, and printing first output.
+            </p>
+            <div style="margin-top: auto; font-size: 0.78rem; font-weight: 700; color: var(--c-blue);">
+              🎯 Mission: Coder Bio Card & Creative ASCII Art
+            </div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-blue);">
+            <span class="session-badge tag-blue">Session 02</span>
+            <h3 style="font-size: 1.1rem;">Terminal & Version Control</h3>
+            <p style="font-size: 0.84rem;">
+              Navigating Bash commands (<code>pwd</code>, <code>ls -la</code>, <code>mkdir</code>, <code>cd</code>, <code>clear</code>), VS Code Source Control UI, Git stage (<code>+</code>), commit messages, and cloud push sync.
+            </p>
+            <div style="margin-top: auto; font-size: 0.78rem; font-weight: 700; color: var(--c-blue);">
+              🎯 Mission: Project Directory Structure & Git Sync
+            </div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-blue);">
+            <span class="session-badge tag-blue">Session 03</span>
+            <h3 style="font-size: 1.1rem;">Memory RAM & 4 Data Types</h3>
+            <p style="font-size: 0.84rem;">
+              Variables as labeled RAM boxes, <code>snake_case</code> convention, 4 core types (<code>str</code>, <code>int</code>, <code>float</code>, <code>bool</code>), and type inspections with <code>type()</code>.
+            </p>
+            <div style="margin-top: auto; font-size: 0.78rem; font-weight: 700; color: var(--c-blue);">
+              🎯 Mission: RPG Superhero Character Sheet
+            </div>
+          </div>
+        </div>
+        <div class="callout green" style="margin-top: 16px;">
+          <strong>🏆 Milestone 1:</strong> Students independently launch their cloud IDE from any device and push code changes to GitHub with zero setup friction.
+        </div>
+      </div>`,
+
+      // 7. Module 2 Overview
+      `<div class="row h-full align-center justify-between">
+        <div class="col w-60">
+          <span class="tag-pill tag-yellow">MODULE 2 • SESSIONS 4–7</span>
+          <h2>Math, Interactions & Decision Logic ⚡</h2>
+          <p class="lead" style="margin-top: 8px;">
+            Giving programs a brain. We transition from static, linear scripts into reactive software that captures live user inputs, performs calculations, and evaluates dynamic conditions.
+          </p>
+          <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: #B37B00;">🧮 Math Engine & Modulo (%):</strong> Real-world calculations, discounts, and secret modulo powers for odd/even checks and timers.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-orange);">💬 Input & Template f-strings:</strong> Dynamic user dialogue with type casting to prevent program crashes.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-green);">🚦 Conditional Branching (If-Elif-Else):</strong> Teaching computers to make autonomous choices with boolean logic (<code>and</code>, <code>or</code>, <code>not</code>).
+            </div>
+          </div>
+        </div>
+        <div class="w-40 scene">
+          ${mascot('#E8AA24')}
+          <div class="bubble top-right">Now our code can think and choose! 🧠💡</div>
+        </div>
+      </div>`,
+
+      // 8. Module 2 Timeline & Breakdown
+      `<div>
+        <span class="tag-pill tag-yellow">Module 2 Breakdown</span>
+        <h2>Sessions 4 to 7: Computation & Conditional Branches 🧮</h2>
+        <div class="cards-grid cards-4" style="margin-top: 16px;">
+          <div class="session-item-card" style="border-left-color: #E8AA24;">
+            <span class="session-badge tag-yellow">Session 04</span>
+            <h4 style="font-size: 1rem;">Calculation Engine</h4>
+            <p style="font-size: 0.8rem;">Arithmetic operators (<code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>//</code>, <code>%</code>), modulo mechanics, and type casting (<code>int()</code>, <code>float()</code>).</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: #B37B00;">🎯 Cafe Split Bill Calculator</div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: #E8AA24;">
+            <span class="session-badge tag-yellow">Session 05</span>
+            <h4 style="font-size: 1rem;">User Dialogues & f-string</h4>
+            <p style="font-size: 0.8rem;">Capturing interactive input via <code>input()</code>, input sanitization, and modern multiline <code>f-string</code> formatting.</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: #B37B00;">🎯 Mad Libs Comedy Generator</div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: #E8AA24;">
+            <span class="session-badge tag-yellow">Session 06</span>
+            <h4 style="font-size: 1rem;">Decisions (If-Else)</h4>
+            <p style="font-size: 0.8rem;">Comparison operators (<code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>), Python's 4-space indentation rule, and single-branch branching.</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: #B37B00;">🎯 Roller Coaster Height Checker</div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: #E8AA24;">
+            <span class="session-badge tag-yellow">Session 07</span>
+            <h4 style="font-size: 1rem;">Multi-Tiered Logic (Elif)</h4>
+            <p style="font-size: 0.8rem;">Multi-branch <code>elif</code>, boolean operators (<code>and</code>, <code>or</code>, <code>not</code>), and multi-criteria evaluation.</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: #B37B00;">🎯 Health BMI Status Evaluator</div>
+          </div>
+        </div>
+        <div class="callout orange" style="margin-top: 16px;">
+          <strong>🏆 Milestone 2:</strong> Students construct interactive command-line tools capable of evaluating multi-criteria conditions without syntax errors.
+        </div>
+      </div>`,
+
+      // 9. Module 3 Overview
+      `<div class="row h-full align-center justify-between">
+        <div class="col w-60">
+          <span class="tag-pill tag-orange">MODULE 3 • SESSIONS 8–11</span>
+          <h2>Automation Loops & Structured Collections 🔄</h2>
+          <p class="lead" style="margin-top: 8px;">
+            Scaling software to handle massive data. Instead of writing hundreds of separate variables, students harness loops for infinite automated repetition and organize complex datasets in Lists and Dictionaries.
+          </p>
+          <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-orange);">🔁 While & For Loops:</strong> Automating repetitive execution without human fatigue, managing loop counters, and emergency <kbd class="kbd">Ctrl + C</kbd> stops.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-green);">🎒 List Collections:</strong> Zero-based indexing, negative indices, dynamic additions (<code>.append()</code>), removals, and length queries.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-purple);">📖 Labeled Dictionaries:</strong> Organizing real-world entities through Key-Value pairs <code>{key: value}</code> for instant lookup.
+            </div>
+          </div>
+        </div>
+        <div class="w-40 scene">
+          ${mascot('var(--c-orange)')}
+          <div class="bubble top-right">Never repeat code 1,000 times again! 🚀</div>
+        </div>
+      </div>`,
+
+      // 10. Module 3 Timeline & Breakdown
+      `<div>
+        <span class="tag-pill tag-orange">Module 3 Breakdown</span>
+        <h2>Sessions 8 to 11: Loops, Lists & Dictionaries 🎒</h2>
+        <div class="cards-grid cards-4" style="margin-top: 16px;">
+          <div class="session-item-card" style="border-left-color: var(--c-orange);">
+            <span class="session-badge tag-orange">Session 08</span>
+            <h4 style="font-size: 1rem;">While Loops & Break</h4>
+            <p style="font-size: 0.8rem;">Conditional repetition, counter variables (<code>i += 1</code>), infinite loop traps, <kbd>Ctrl+C</kbd>, and loop escape with <code>break</code>.</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: var(--c-orange);">🎯 Smart Number Guessing Game</div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-orange);">
+            <span class="session-badge tag-orange">Session 09</span>
+            <h4 style="font-size: 1rem;">For Loops & range()</h4>
+            <p style="font-size: 0.8rem;">Definite iterations, anatomy of <code>range(start, stop, step)</code>, accumulators, and visual ASCII geometric star pyramids.</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: var(--c-orange);">🎯 Multiplication Table Generator</div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-orange);">
+            <span class="session-badge tag-orange">Session 10</span>
+            <h4 style="font-size: 1rem;">List Data Structures</h4>
+            <p style="font-size: 0.8rem;">Zero-based indexing, negative indexing (<code>[-1]</code>), list mutation methods (<code>.append()</code>, <code>.pop()</code>), and <code>len()</code>.</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: var(--c-orange);">🎯 RPG Adventurer's Backpack</div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-orange);">
+            <span class="session-badge tag-orange">Session 11</span>
+            <h4 style="font-size: 1rem;">Dictionary Key-Values</h4>
+            <p style="font-size: 0.8rem;">Labeled key-value pairs <code>{}</code>, combining lists with dictionaries, loop enumeration, and membership check with <code>in</code>.</p>
+            <div style="margin-top: auto; font-size: 0.74rem; font-weight: 700; color: var(--c-orange);">🎯 Gamer Profile & Coder Slang Dict</div>
+          </div>
+        </div>
+        <div class="callout orange" style="margin-top: 16px;">
+          <strong>🏆 Milestone 3:</strong> Students organize, query, and mutate structured datasets consisting of hundreds of records with ease.
+        </div>
+      </div>`,
+
+      // 11. Module 4 Overview
+      `<div class="row h-full align-center justify-between">
+        <div class="col w-60">
+          <span class="tag-pill tag-green">MODULE 4 • SESSIONS 12–14</span>
+          <h2>Clean Functions & The Streamlit Web Gateway 🌐</h2>
+          <p class="lead" style="margin-top: 8px;">
+            The defining turning point of the course! Students refactor their logic into modular, reusable functions (DRY principle), then cross the chasm from black console windows to <b>modern interactive browser Web GUIs</b> with Streamlit.
+          </p>
+          <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-green);">🏭 Function Factories (def & return):</strong> Building modular logic blocks that can be plugged seamlessly into web event triggers.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-blue);">☁️ Web Server Architecture (Port 8501):</strong> Understanding local web hosting, port forwarding in Codespaces, and live hot-reloading.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-streamlit);">🎛️ Interactive Web Widgets:</strong> Replacing rigid text prompts with graphical sliders, buttons, inputs, metrics, and balloons!
+            </div>
+          </div>
+        </div>
+        <div class="w-40 scene">
+          ${mascot('var(--c-green)', true)}
+          <div class="bubble top-right">Goodbye rigid console, hello browser GUI! 👋💻</div>
+        </div>
+      </div>`,
+
+      // 12. Module 4 Timeline & Breakdown
+      `<div>
+        <span class="tag-pill tag-green">Module 4 Breakdown</span>
+        <h2>Sessions 12 to 14: Functions to Web UI Components 🚀</h2>
+        <div class="cards-grid cards-3" style="margin-top: 16px;">
+          <div class="session-item-card" style="border-left-color: var(--c-green);">
+            <span class="session-badge tag-green">Session 12</span>
+            <h3 style="font-size: 1.1rem;">Reusable Function Factories</h3>
+            <p style="font-size: 0.84rem;">
+              The professional DRY rule (<i>Don't Repeat Yourself</i>), function parameters, local vs global scope, and the sacred difference between <code>return</code> (output data) and <code>print()</code> (display only).
+            </p>
+            <div style="margin-top: auto; font-size: 0.78rem; font-weight: 700; color: var(--c-green);">
+              🎯 Mission: Rock-Paper-Scissors AI Game
+            </div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-green);">
+            <span class="session-badge tag-green">Session 13</span>
+            <h3 style="font-size: 1.1rem;">Hello Streamlit Web App!</h3>
+            <p style="font-size: 0.84rem;">
+              Installing Streamlit (<code>pip install streamlit</code>), launching the server on port 8501, live reload mechanics, and core rendering elements: <code>st.title()</code>, <code>st.header()</code>, <code>st.write()</code>, and <code>st.markdown()</code>.
+            </p>
+            <div style="margin-top: auto; font-size: 0.78rem; font-weight: 700; color: var(--c-green);">
+              🎯 Mission: First Interactive Coder Web Bio
+            </div>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-green);">
+            <span class="session-badge tag-green">Session 14</span>
+            <h3 style="font-size: 1.1rem;">Interactive Web Input Widgets</h3>
+            <p style="font-size: 0.84rem;">
+              Translating terminal input into GUI widgets: <code>st.text_input()</code>, <code>st.slider()</code>, <code>st.selectbox()</code>, execution triggers (<code>if st.button():</code>), and celebratory animations with <code>st.balloons()</code>.
+            </p>
+            <div style="margin-top: auto; font-size: 0.78rem; font-weight: 700; color: var(--c-green);">
+              🎯 Mission: Interactive Web Health & BMI App
+            </div>
+          </div>
+        </div>
+        <div class="callout streamlit" style="margin-top: 16px;">
+          <strong>🏆 Milestone 4:</strong> Pure Python algorithms now control a live graphical web interface that runs smoothly inside a modern web browser.
+        </div>
+      </div>`,
+
+      // 13. Module 5 Overview
+      `<div class="row h-full align-center justify-between">
+        <div class="col w-60">
+          <span class="tag-pill tag-streamlit">MODULE 5 • SESSIONS 15–16</span>
+          <h2>Capstone Project & Graduation Showcase 🎓</h2>
+          <p class="lead" style="margin-top: 8px;">
+            The grand culmination of the 16-session curriculum! Students integrate all their acquired skills—variables, loops, collections, functions, and Streamlit components—into a complete, polished, and deployable web application.
+          </p>
+          <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 10px;">
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-streamlit);">🎨 Professional Multi-Column Layouts:</strong> Utilizing <code>st.columns()</code> for clean data cards and <code>st.sidebar</code> for intuitive settings.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-purple);">🛡️ Defensive Anti-Crash Coding:</strong> Validating inputs to ensure the web application never crashes during live demonstrations.
+            </div>
+            <div class="card" style="padding: 12px 18px;">
+              <strong style="color: var(--c-green);">🎤 Public Demo Showcase & Graduation:</strong> Screen-sharing live projects, presenting features, peer appreciation, and diploma celebration.
+            </div>
+          </div>
+        </div>
+        <div class="w-40 scene">
+          ${mascot('var(--c-streamlit)', true)}
+          <div class="bubble top-right">Proudly sharing real web apps with the world! 🎉</div>
+        </div>
+      </div>`,
+
+      // 14. Module 5 Timeline & Breakdown
+      `<div>
+        <span class="tag-pill tag-streamlit">Module 5 Breakdown</span>
+        <h2>Sessions 15 to 16: Building, Polishing & Demo Day 🏆</h2>
+        <div class="cards-grid cards-2" style="margin-top: 16px;">
+          <div class="session-item-card" style="border-left-color: var(--c-streamlit);">
+            <span class="session-badge tag-streamlit">Session 15</span>
+            <h3 style="font-size: 1.1rem;">Capstone Day 1: Architecture & UI Assembly</h3>
+            <ul style="list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
+              <li>💡 <b>I Do (15'):</b> Project decomposition strategy, sketching layout wireframes with <code>st.sidebar</code> and multi-column grids (<code>st.columns([1, 2])</code>).</li>
+              <li>🤝 <b>We Do (35'):</b> Setting up the primary <code>app.py</code> repository, initializing application state, and binding backend Python functions to GUI widgets.</li>
+              <li>🚀 <b>You Do (30'):</b> Independent feature implementation with 1-on-1 mentor guidance.</li>
+              <li>💾 <b>Git Commit:</b> <code>feat: capstone streamlit web app core engine and layout</code></li>
+            </ul>
+          </div>
+
+          <div class="session-item-card" style="border-left-color: var(--c-streamlit);">
+            <span class="session-badge tag-streamlit">Session 16</span>
+            <h3 style="font-size: 1.1rem;">Capstone Day 2: Polish, Docs & Demo Day!</h3>
+            <ul style="list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
+              <li>🛡️ <b>Anti-Crash & Polish (20'):</b> Empty input validation, visual dividers, and balloon animations.</li>
+              <li>📝 <b>Documentation (20'):</b> Writing a professional GitHub <code>README.md</code> with screenshots.</li>
+              <li>🎤 <b>Live Demo Showcase (40'):</b> 3-minute screen-share live presentations by each student, peer feedback, and Semester 1 Graduation Ceremony!</li>
+              <li>💾 <b>Git Commit:</b> <code>docs: final capstone release and graduation showcase</code></li>
+            </ul>
+          </div>
+        </div>
+      </div>`,
+
+      // 15. Capstone Project Tracks
+      `<div>
+        <span class="tag-pill tag-streamlit">Creative Freedom</span>
+        <h2>3 Real-World Capstone Project Pathways 🌟</h2>
+        <p class="lead">Students choose one of three distinct project tracks based on their personal passion.</p>
+        <div class="cards-grid cards-3" style="margin-top: 16px;">
+          <div class="card">
+            <span class="session-badge tag-blue">Pathway A</span>
+            <h3 style="color: var(--c-blue); margin-top: 6px;">Smart Student Hub</h3>
+            <p style="font-size: 0.84rem; margin-top: 6px;">
+              A comprehensive student productivity suite: automated grade point calculator, dynamic homework to-do checklist, exam countdown timer, and daily study streak metrics.
+            </p>
+            <div style="background:#F1F5F9; padding:8px 12px; border-radius:10px; font-size:0.78rem; font-weight:700; margin-top:auto;">
+              Key Features: List checklists, statistical averages, st.metric cards.
+            </div>
+          </div>
+
+          <div class="card">
+            <span class="session-badge tag-orange">Pathway B</span>
+            <h3 style="color: var(--c-orange); margin-top: 6px;">RPG Hero & Battle Studio</h3>
+            <p style="font-size: 0.84rem; margin-top: 6px;">
+              An interactive game studio: customize hero attributes with responsive sliders, equip weapons from dropdowns, and simulate turns against boss dragons with RNG dice.
+            </p>
+            <div style="background:#FFF7ED; padding:8px 12px; border-radius:10px; font-size:0.78rem; font-weight:700; margin-top:auto;">
+              Key Features: Dictionary storage, random module, st.balloons.
+            </div>
+          </div>
+
+          <div class="card">
+            <span class="session-badge tag-green">Pathway C</span>
+            <h3 style="color: var(--c-green); margin-top: 6px;">Pocket Money & Expense Tracker</h3>
+            <p style="font-size: 0.84rem; margin-top: 6px;">
+              A personal finance dashboard for teens: log allowance income, record spending items, track real-time balance calculations, and generate budget health warnings.
+            </p>
+            <div style="background:#ECFDF5; padding:8px 12px; border-radius:10px; font-size:0.78rem; font-weight:700; margin-top:auto;">
+              Key Features: Transaction histories, balance metrics, st.warning alerts.
+            </div>
+          </div>
+        </div>
+      </div>`,
+
+      // 16. Paradigm Shift: CLI vs Streamlit
+      `<div>
+        <span class="tag-pill tag-streamlit">Code Transformation</span>
+        <h2>The Paradigm Shift: From CLI to Streamlit Web 🔄</h2>
+        <p class="lead">Notice how clean and intuitive the transition is from terminal commands to web components.</p>
+        <div class="vs-container" style="margin-top: 14px;">
+          <div class="vs-box">
+            <h3 style="color:#64748B;">Old Command-Line Interface (CLI)</h3>
+            <div style="background:var(--ide-bg); color:white; padding:14px; border-radius:14px; font-family:'Fira Code'; font-size:0.84rem; line-height:1.65;">
+              <span style="color:#8D93B8"># Rigid line-by-line terminal input</span><br>
+              nama = input(<span style="color:#F1FA8C">"Student Name: "</span>)<br>
+              score = int(input(<span style="color:#F1FA8C">"Energy Level (1-100): "</span>))<br>
+              <br>
+              <span style="color:#FF79C6">if</span> score &gt;= 90:<br>
+              &nbsp;&nbsp;<span style="color:#FF79C6">print</span>(<span style="color:#F1FA8C">f"Awesome {nama}! Rank: Master Coder"</span>)
+            </div>
+            <p style="font-size:0.84rem; color:#64748B;">Text-only terminal window. Hard to demo, impossible to link over the web.</p>
+          </div>
+
+          <div class="vs-box highlight">
+            <h3 style="color:var(--c-streamlit);">Modern Streamlit Web Application (GUI)</h3>
+            <div style="background:var(--ide-bg); color:white; padding:14px; border-radius:14px; font-family:'Fira Code'; font-size:0.84rem; line-height:1.65;">
+              <span style="color:#8D93B8"># Magical web components in pure Python!</span><br>
+              nama = st.text_input(<span style="color:#F1FA8C">"Student Name:"</span>)<br>
+              score = st.slider(<span style="color:#F1FA8C">"Energy Level:"</span>, 1, 100, 95)<br>
+              <br>
+              <span style="color:#FF79C6">if</span> st.button(<span style="color:#F1FA8C">"Analyze Rank"</span>):<br>
+              &nbsp;&nbsp;st.success(<span style="color:#F1FA8C">f"Awesome {nama}! Rank: Master Coder 🏆"</span>)<br>
+              &nbsp;&nbsp;st.balloons()
+            </div>
+            <p style="font-size:0.84rem; color:var(--c-streamlit); font-weight:600;">Produces an interactive web app with forms, sliders, alert banners, and balloon celebrations!</p>
+          </div>
+        </div>
+      </div>`,
+
+      // 17. Live Interactive Streamlit App Simulator
+      `<div>
+        <div class="row justify-between align-center" style="margin-bottom: 6px;">
+          <div>
+            <span class="tag-pill tag-streamlit">Live Showcase Mockup</span>
+            <h2>Interactive Streamlit Web App Simulator 🌐</h2>
+          </div>
+          <p style="font-size: 0.85rem; max-width: 480px;">Adjust the inputs on the left and click the button to see the web app react live!</p>
+        </div>
+
+        <div class="row gap-md" style="align-items: stretch; margin-top: 10px;">
+          <!-- Left: Realistic Interactive Browser Mockup -->
+          <div class="w-half" style="position: relative;">
+            <div class="st-browser-frame" id="live-st-frame">
+              <div class="st-red-line"></div>
+              <div class="st-topbar">
+                <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+                <div class="st-url">🔒 http://localhost:8501 &bull; Streamlit Cloud Codespaces</div>
+              </div>
+              <div class="st-viewport">
+                <!-- Sidebar -->
+                <div class="st-mockup-sidebar">
+                  <strong style="color: #334155;">⚙️ Settings Sidebar</strong>
+                  <span style="font-size: 0.72rem; color: #64748B;">Selected Focus:</span>
+                  <select id="sim-jurus" class="st-input-box" style="font-size: 0.75rem; padding: 4px;">
+                    <option>🐍 Python Core</option>
+                    <option selected>🌐 Streamlit Web</option>
+                    <option>🎮 Game Algorithms</option>
+                  </select>
+
+                  <span style="font-size: 0.72rem; color: #64748B; margin-top: 4px;">Enthusiasm Level:</span>
+                  <input type="range" id="sim-slider" min="10" max="100" value="95" style="width: 100%; accent-color: var(--c-streamlit);" oninput="document.getElementById('sim-slider-val').innerText = this.value">
+                  <span style="font-weight: 700; color: var(--c-streamlit); font-size: 0.8rem;" id="sim-slider-val">95</span>
+                </div>
+
+                <!-- Main Content -->
+                <div class="st-mockup-main">
+                  <h4 style="color: #0F172A; font-size: 1.05rem;">🚀 Student Coder Studio & App</h4>
+                  <div>
+                    <label style="font-size: 0.75rem; font-weight: 600; color: #475569;">Student Name:</label>
+                    <input type="text" id="sim-nama" class="st-input-box" value="Alex Johnson">
+                  </div>
+                  <button class="st-action-btn" onclick="triggerSimAction()">Launch Web App 🎈</button>
+
+                  <div id="sim-result" class="st-alert-pill">
+                    <span>🎉 Great work Alex Johnson! Status: <b>Master Coder 🏆</b></span>
+                  </div>
+
+                  <div class="row gap-sm" style="margin-top: 4px;">
+                    <div style="flex:1; background:#F1F5F9; border-left:4px solid var(--c-streamlit); padding:6px 10px; border-radius:8px;">
+                      <div style="font-size:0.68rem; color:#64748B;">Logic Score</div>
+                      <strong style="font-size:0.92rem; color:var(--c-streamlit);">98 / 100</strong>
+                    </div>
+                    <div style="flex:1; background:#F1F5F9; border-left:4px solid var(--c-green); padding:6px 10px; border-radius:8px;">
+                      <div style="font-size:0.68rem; color:#64748B;">Port 8501</div>
+                      <strong style="font-size:0.92rem; color:var(--c-green);">Online Active</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Backend Python Equivalent -->
+          <div class="w-half col">
+            <div class="ide-window" style="height: 320px;">
+              <div class="ide-header" style="background: #202030; color: white;">
+                <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+                <span style="margin-left: 6px; font-family:'Fira Code'">app.py (Streamlit Backend)</span>
+              </div>
+              <textarea class="ide-editor" id="code-st" spellcheck="false">
+# Streamlit Python Backend (Sessions 14-16)
+def evaluate_student(name, score, track):
+    if score >= 90:
+        badge = "Master Coder 🏆"
+    else:
+        badge = "Rising Star ⭐"
+    
+    return f"Hello {name}!\nTrack: {track}\nStatus: {badge}\nAction: st.balloons() launched! 🎈"
+
+# Execute logic triggered by st.button()
+output = evaluate_student("Alex Johnson", 95, "Streamlit Web")
+print("=== STREAMLIT SERVER LOGS ===")
+print(output)
+              </textarea>
+              <div class="ide-header" style="background: #E2E8F0; color: #475569; height: 30px;">
+                <span>Terminal Output</span>
+              </div>
+              <div class="ide-output" id="out-st" style="height: 75px; font-size: 0.8rem;">(Click below to run Python backend...)</div>
+            </div>
+            <button class="btn-run" style="margin-top: 8px;" onclick="runPythonEngine('code-st', 'out-st', this)">Run Backend Code ▶️</button>
+          </div>
+        </div>
+      </div>`,
+
+      // 18. Student Competency & Skill Growth Matrix
+      `<div>
+        <span class="tag-pill tag-purple">Learning Outcomes</span>
+        <h2>Student Competency & Skills Matrix 🌟</h2>
+        <p class="lead">Developing both technical engineering proficiency and durable computational thinking habits.</p>
+        <div class="cards-grid cards-2" style="margin-top: 16px;">
+          <div class="card">
+            <h3 style="color: var(--c-blue);">🛠️ Technical Engineering Skills</h3>
+            <ul style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+              <li>✓ Confident navigation of cloud Linux environments in GitHub Codespaces.</li>
+              <li>✓ Daily mastery of Git version control (stage, commit, push) for project backups.</li>
+              <li>✓ Fluent handling of 4 core data types, arithmetic operators, and type conversions.</li>
+              <li>✓ Independent construction of conditional logic trees and automated loops.</li>
+              <li>✓ Managing complex structured data with Lists and Key-Value Dictionaries.</li>
+              <li>✓ Building and styling interactive browser web applications with Streamlit.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3 style="color: var(--c-green);">🧠 Computational Thinking & Soft Skills</h3>
+            <ul style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+              <li>✓ <b>Decomposition:</b> Breaking daunting project ideas into small, manageable functions.</li>
+              <li>✓ <b>Debugging Resilience:</b> Reading red error traces calmly and methodically fixing bugs.</li>
+              <li>✓ <b>Self-Reliance:</b> Independently inspecting documentation and testing edge cases.</li>
+              <li>✓ <b>Technical Documentation:</b> Authoring clean, structured Markdown README files.</li>
+              <li>✓ <b>Presentation Confidence:</b> Articulating technical achievements in live demo days.</li>
+            </ul>
+          </div>
+        </div>
+      </div>`,
+
+      // 19. In-Browser Python Playground IDE
+      `<div>
+        <div class="row justify-between align-center" style="margin-bottom: 8px;">
+          <div>
+            <span class="tag-pill tag-streamlit">Interactive Sandbox</span>
+            <h2>Universal Python & Logic Sandbox 💻</h2>
+          </div>
+          <p style="font-size: 0.85rem; max-width: 450px;">A full in-browser Python runtime to test any code concept live on the spot!</p>
+        </div>
+
+        <div class="ide-container" style="height: 320px;">
+          <div class="ide-window">
+            <div class="ide-header" style="background: #202030; color: white;">
+              <div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+              <span style="margin-left: 6px; font-family:'Fira Code'">sandbox_python.py</span>
+            </div>
+            <textarea class="ide-editor" id="code-sandbox" spellcheck="false">
+# Universal Python Playground — Semester 1
+print("🎉 Welcome to the Python & Streamlit Sandbox!")
+
+curriculum_pillars = [
+    "Cloud Codespaces & Virtual Environments",
+    "Variables, Memory RAM & Core Data Types",
+    "Arithmetic, Modulo Magic & Type Casting",
+    "Dynamic User Input & Modern f-strings",
+    "Decision Making with If-Elif-Else Logic",
+    "Automated Repetition with While & For Loops",
+    "Structured Collections (Lists & Dictionaries)",
+    "Modular Code Architecture (def & return)",
+    "Streamlit Web Server & Local Port 8501",
+    "Graphical Input Widgets & Balloon Animations",
+    "Capstone Web App Deployment & Live Showcase"
+]
+
+print("\n📋 11 Core Pillars Mastered by Students:")
+for index, topic in enumerate(curriculum_pillars, 1):
+    print(f"[{index:02d}] {topic} ✅")
+
+print("\n🚀 Ready to build the future of software!")
+            </textarea>
+          </div>
+
+          <div class="ide-window">
+            <div class="ide-header" style="background: #E2E8F0; color: #475569;">
+              <span>Terminal Output (Pyodide Python 3.12 Engine)</span>
+            </div>
+            <div class="ide-output" id="out-sandbox">(Click 'Run Code' below to execute directly in browser...)</div>
+          </div>
+        </div>
+        <button class="btn-run" onclick="runPythonEngine('code-sandbox', 'out-sandbox', this)">Run Code ▶️</button>
+      </div>`,
+
+      // 20. Summary, Graduation & Bridge to Semester 2
+      `<div class="row h-full align-center justify-between">
+        <div class="col w-60">
+          <span class="tag-pill tag-streamlit">🎉 Graduation & What's Next</span>
+          <h2 style="font-size: 2.8rem; line-height: 1.15;">16 Sessions to a Real Digital Portfolio 🚀</h2>
+          <p style="font-size: 1.05rem; margin-top: 12px; margin-bottom: 20px;">
+            From typing their very first print statement to launching interactive web applications in the cloud, students walk away with tangible software engineering superpowers.
+          </p>
+          
+          <div class="row gap-md">
+            <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
+              <h3 style="font-size: 2rem; color: var(--c-blue);">100%</h3>
+              <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Hands-On Coding</p>
+            </div>
+            <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
+              <h3 style="font-size: 2rem; color: var(--c-purple);">16</h3>
+              <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Structured Sessions</p>
+            </div>
+            <div class="card" style="flex:1; background: white; text-align:center; padding: 15px;">
+              <h3 style="font-size: 2rem; color: var(--c-streamlit);">1</h3>
+              <p style="font-size: 0.8rem; font-weight:700; color: var(--text-dark);">Live Web App</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; padding: 14px 18px; background: rgba(68, 126, 224, 0.08); border-left: 5px solid var(--c-blue); border-radius: 14px;">
+            <strong style="color: var(--c-blue); font-size: 0.95rem;">Bridge to Term 2 (The Next Step):</strong>
+            <p style="font-size: 0.84rem; color: #475569; margin-top: 4px;">
+              These foundational algorithmic and web skills will be elevated in Term 2 to connect Python with real cloud APIs and create <b>Automated Telegram Bots & AI Personal Assistants</b>! 🤖
+            </p>
+          </div>
+        </div>
+
+        <div class="w-40 col align-center justify-center scene">
+          ${mascot('var(--c-streamlit)', true)}
+          <div class="bubble bottom-left">Thank you & Happy Coding! 🎉🚀</div>
+        </div>
+      </div>`
+    ];
+
+    // --- Render Slides Dynamically ---
+    const slidesRoot = document.getElementById('slides-root');
+    slidesRoot.innerHTML = slides.map((html, idx) => `
+      <section class="slide${idx === 0 ? ' active' : ''}" id="slide-${idx + 1}" aria-label="Slide ${idx + 1} of ${slides.length}">
+        ${html}
+      </section>
+    `).join('');
+
+    // --- Navigation Logic ---
+    const allSlides = document.querySelectorAll('.slide');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const currentPage = document.getElementById('current-page');
+    const totalPage = document.getElementById('total-page');
+    const progressBar = document.getElementById('progress');
+    let currentSlideIndex = 0;
+
+    totalPage.textContent = allSlides.length;
+
+    function updateSlideView() {
+      allSlides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === currentSlideIndex);
+      });
+      currentPage.textContent = currentSlideIndex + 1;
+      progressBar.style.width = ((currentSlideIndex + 1) / allSlides.length * 100) + '%';
+
+      prevBtn.disabled = currentSlideIndex === 0;
+
+      if (currentSlideIndex === allSlides.length - 1) {
+        nextBtn.disabled = true;
+        nextBtn.textContent = 'Completed 🎉';
+        nextBtn.classList.remove('nav-btn-primary');
+      } else {
+        nextBtn.disabled = false;
+        nextBtn.textContent = 'Next ➞';
+        nextBtn.classList.add('nav-btn-primary');
+      }
+    }
+
+    function move(step) {
+      const nextIndex = currentSlideIndex + step;
+      if (nextIndex >= 0 && nextIndex < allSlides.length) {
+        currentSlideIndex = nextIndex;
+        updateSlideView();
+      }
+    }
+
+    prevBtn.addEventListener('click', () => move(-1));
+    nextBtn.addEventListener('click', () => move(1));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.target.matches('textarea, input, select')) return;
+      if (e.key === 'ArrowRight' || e.key === 'Space') {
+        e.preventDefault();
+        move(1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        move(-1);
+      }
+    });
+
+    updateSlideView();
+
+    // --- Universal Pyodide Python Runner ---
+    let pyodideInstance = null;
+    let pyodidePromise = initPyodide();
+
+    async function initPyodide() {
+      try {
+        pyodideInstance = await loadPyodide();
+        document.querySelectorAll('.btn-run').forEach(b => {
+          b.disabled = false;
+          b.textContent = 'Run Code ▶️';
+        });
+        return pyodideInstance;
+      } catch (err) {
+        console.error('Pyodide failed to load:', err);
+        document.querySelectorAll('.btn-run').forEach(b => {
+          b.textContent = 'Failed to Load Python ❌';
+        });
+      }
+    }
+
+    async function runPythonEngine(editorId, outputId, btn) {
+      if (!pyodideInstance) {
+        const p = await pyodidePromise;
+        if (!p) return;
+      }
+
+      const editor = document.getElementById(editorId);
+      const out = document.getElementById(outputId);
+      if (!editor || !out) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Running... ⚙️';
+      out.textContent = '';
+
+      const lines = [];
+      pyodideInstance.setStdout({ batched: (msg) => lines.push(msg) });
+
+      try {
+        await pyodideInstance.runPythonAsync(editor.value);
+        out.textContent = lines.join('\n') || 'Program executed successfully with no output.';
+        out.style.color = '#1E293B';
+      } catch (err) {
+        out.textContent = `Oops, there is a bug 🐛:\n\n${err.message}`;
+        out.style.color = 'var(--c-pink)';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Run Code ▶️';
+      }
+    }
+
+    // --- Interactive Live Streamlit Simulation ---
+    function triggerSimAction() {
+      const nama = document.getElementById('sim-nama').value || 'Coder';
+      const jurus = document.getElementById('sim-jurus').value;
+      const semangat = parseInt(document.getElementById('sim-slider').value);
+      const res = document.getElementById('sim-result');
+      const frame = document.getElementById('live-st-frame');
+
+      let predikat = semangat >= 85 ? 'Master Coder 🏆' : 'Rising Star ⭐';
+      res.innerHTML = `<span>🎉 Great job ${nama}! Track: <b>${jurus}</b> &bull; Status: <b>${predikat}</b></span>`;
+
+      // Launch floating celebration balloons!
+      for (let i = 0; i < 6; i++) {
+        const balloon = document.createElement('div');
+        balloon.className = 'balloon-particle';
+        balloon.innerText = ['🎈', '✨', '🚀', '⭐', '🎉'][i % 5];
+        balloon.style.left = (15 + Math.random() * 70) + '%';
+        balloon.style.bottom = '20px';
+        balloon.style.animationDuration = (2.2 + Math.random() * 1.2) + 's';
+        frame.appendChild(balloon);
+        setTimeout(() => balloon.remove(), 3200);
+      }
+    }
+  </script>
+</body>
+</html>
